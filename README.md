@@ -2,6 +2,14 @@
 
 Static proof-of-concept decision support dashboard for the Vijayawada FloodRESQ review bundle.
 
+## Open The DSS
+
+Use the GitHub Pages link for the interactive dashboard:
+
+https://udit1408.github.io/vijayawada-floodresq-dss/
+
+Do not open `index.html` from the GitHub file viewer if you want the interactive DSS. The GitHub repository view shows source files; GitHub Pages serves the actual dashboard.
+
 ## Contents
 
 - `index.html` - stakeholder-facing multi-tab DSS.
@@ -12,13 +20,4 @@ Static proof-of-concept decision support dashboard for the Vijayawada FloodRESQ 
 
 ## GitHub Pages
 
-This folder is designed to be published directly from the repository root using GitHub Pages.
-
-Recommended setup:
-
-1. Create a GitHub repository, for example `vijayawada-floodresq-dss`.
-2. Push this folder to the repository `main` branch.
-3. In GitHub, open `Settings -> Pages`.
-4. Select `Deploy from a branch`, choose `main` and `/root`, then save.
-
-The site entrypoint is `index.html`.
+This repository is published from the `main` branch root. The site entrypoint is `index.html`.

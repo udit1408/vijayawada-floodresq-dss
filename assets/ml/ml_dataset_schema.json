@@ -1,0 +1,103 @@
+{
+  "generated_utc": "2026-05-04T06:29:37Z",
+  "purpose": "Scenario evidence design for FloodRESQ historical forcing ensembles",
+  "current_seed_status": "global timestep summaries, dynamic forcing rows, static triangle features, and per-location timestep response variables are available for completed exported scenarios",
+  "primary_keys": [
+    "run_id",
+    "time_s",
+    "location_id"
+  ],
+  "X_static_location": [
+    "x_utm44n",
+    "y_utm44n",
+    "ward_id",
+    "elevation_m",
+    "slope_deg",
+    "distance_to_budameru_m",
+    "distance_to_krishna_m",
+    "distance_to_canal_m",
+    "distance_to_drainage_m",
+    "distance_to_pump_m",
+    "building_obstruction_fraction",
+    "physics_surface_class",
+    "manning_n",
+    "infiltration_capacity_mm_h",
+    "soil_hydrologic_group_proxy"
+  ],
+  "X_dynamic_forcing": [
+    "time_s",
+    "rainfall_intensity_mm_h",
+    "cumulative_rainfall_mm",
+    "budameru_inflow_m3s",
+    "krishna_stage_m",
+    "canal_stage_m",
+    "antecedent_depth_scale",
+    "drainage_sink_rate_mm_h",
+    "pump_available_fraction"
+  ],
+  "X_scenario": [
+    "scenario_family",
+    "rainfall_total_mm",
+    "river_profile",
+    "budameru_profile",
+    "canal_profile",
+    "budameru_inflow_scale",
+    "pump_availability",
+    "drainage_availability",
+    "grid_resolution_m",
+    "outer_area_m2",
+    "refined_area_m2"
+  ],
+  "Y_targets_per_location_timestep": [
+    "depth_m",
+    "velocity_x_mps",
+    "velocity_y_mps",
+    "velocity_magnitude_mps",
+    "wet_extent_flag",
+    "water_surface_elevation_m",
+    "arrival_time_s",
+    "recession_time_s"
+  ],
+  "Y_targets_global_timestep_seed": [
+    "run_id",
+    "time_h",
+    "time_s",
+    "surface_volume_m3",
+    "wet_area_ha_gt_threshold",
+    "max_depth_m",
+    "mean_wet_depth_m",
+    "max_speed_m_s",
+    "rainfall_intensity_mm_h",
+    "budameru_inflow_m3s",
+    "breach_inflow_m3s",
+    "rainfall_cumulative_m3",
+    "infiltration_removed_m3",
+    "budameru_boundary_inflow_m3",
+    "breach_added_m3",
+    "drainage_removed_m3",
+    "pump_removed_m3",
+    "rainfall_total_mm",
+    "river_profile",
+    "budameru_profile",
+    "canal_profile",
+    "antecedent_depth_scale",
+    "budameru_inflow_scale",
+    "pump_availability",
+    "drainage_availability",
+    "drainage_sink_rate_mm_h",
+    "finaltime_s",
+    "yieldstep_s"
+  ],
+  "recommended_storage": {
+    "spatial_features": "Parquet partitioned by domain tile or ward",
+    "time_series_targets": "Parquet partitioned by run_id and timestep",
+    "raster_snapshots": "Cloud-optimized GeoTIFF or Zarr for depth, velocity and wet-extent grids",
+    "scenario_catalog": "CSV or Parquet with one row per hyetograph and hydrograph ensemble member"
+  },
+  "current_files": {
+    "global_timestep_seed_csv": "assets/ml/ml_global_timestep_seed.csv",
+    "spatiotemporal_output_catalog_csv": "assets/ml/ml_spatiotemporal_output_catalog.csv",
+    "scenario_matrix_csv": "../floodresq_runs/historical_hourly_12h_ensemble_mpi10x3_v0/scenario_matrix.csv",
+    "batch_summary_csv": "../floodresq_runs/historical_hourly_12h_ensemble_mpi10x3_v0/batch_summary.csv"
+  }
+}

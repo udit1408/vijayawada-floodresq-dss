@@ -272,7 +272,7 @@ window.VJ_DSS_DATA = {
     {
       "key": "rtgs_hotspots",
       "title": "RTGS AWARE flood hotspots and NRSC inflow boundary",
-      "image": "assets/maps/styled/rtgs_aware_hotspots_styled.png?v=20260504062612",
+      "image": "assets/maps/styled/rtgs_aware_hotspots_styled.png?v=f96fb67",
       "kind": "image",
       "default_on": true,
       "group": "RTGS AWARE",

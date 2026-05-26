@@ -1,19 +1,21 @@
-<!-- pages-release: 2026-05-26T11:03:30Z -->
+<!-- live-release: 2026-05-26T11:45:00Z -->
 # Vijayawada FloodRESQ DSS
 
-Static proof-of-concept decision support dashboard for the Vijayawada FloodRESQ review bundle.
+Live decision-support dashboard for the Vijayawada FloodReSQ review bundle.
 
 ## Open The DSS
 
-Use the GitHub Pages link for the interactive dashboard:
+Current canonical stakeholder link:
 
-https://udit1408.github.io/vijayawada-floodresq-dss/
+https://broadcasting-trout-age-companion.trycloudflare.com/
 
-Do not open `index.html` from the GitHub file viewer if you want the interactive DSS. The GitHub repository view shows source files; GitHub Pages serves the actual dashboard.
+This link is served by the FloodAstra nowcast backend on the office Mac. It is the only link that is currently verified to open the latest DSS and connect to chat, live-data checks, and GPU-backed nowcast runs.
+
+Do not use the old GitHub Pages URL for stakeholder review until it is re-verified. GitHub Pages is currently treated as a static fallback, not the canonical deployment.
 
 ## Contents
 
-- `index.html` - canonical stakeholder-facing Vijayawada FloodReSQ Live DSS. This is the one public link to share.
+- `index.html` - stakeholder-facing Vijayawada FloodReSQ Live DSS shell served by the backend.
 - `map_dashboard.html` - supporting layer-rich map dashboard opened from the live DSS when detailed map review is needed.
 - `nowcast.html` - backward-compatible redirect to `index.html` for older links.
 - `assets/config.js` - optional deployment-time API endpoint setting for GitHub Pages or other static hosting.
@@ -23,12 +25,14 @@ Do not open `index.html` from the GitHub file viewer if you want the interactive
 - `assets/forcing/` - rainfall and boundary-condition CSVs used by the dashboard.
 - `assets/ml/` - lightweight scenario and timestep data descriptors for later ML workflow design.
 
-## GitHub Pages
+## Deployment Status
 
-This repository is published from the `main` branch root. The single public entrypoint is `index.html`.
-Deployment is handled by `.github/workflows/pages.yml` so the public URL is rebuilt from the latest `main` commit.
+- Canonical live server: `https://broadcasting-trout-age-companion.trycloudflare.com/`
+- Backend/API health: `https://broadcasting-trout-age-companion.trycloudflare.com/api/assistant/health`
+- Nowcast options: `https://broadcasting-trout-age-companion.trycloudflare.com/api/nowcast/options`
+- GitHub Pages: static fallback only until a Pages build is verified to serve this same `index.html`.
 
-For GitHub Pages, `index.html` serves the latest live DSS shell. Chat and run controls require a reachable FloodAstra backend. Set `window.FLOODASTRA_VIJAYAWADA_API_BASE` in `assets/config.js` to the HTTPS backend URL, or pass `?api=https://backend.example.com/` while testing. If the backend is password-protected, use the connection box on the live DSS or set the optional user/password variables in `assets/config.js` on the deployment server only.
+For static hosting, `index.html` can serve the same live DSS shell, but chat and run controls require a reachable FloodAstra backend. Set `window.FLOODASTRA_VIJAYAWADA_API_BASE` in `assets/config.js` to the HTTPS backend URL, or pass `?api=https://backend.example.com/` while testing.
 
 For same-machine review, run the backend and open the local page:
 

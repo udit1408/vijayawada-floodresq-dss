@@ -111,13 +111,13 @@ window.VJ_DSS_DATA = {
     },
     {
       "key": "flow_arrows",
-      "title": "Key water-flow direction arrows",
-      "image": "assets/maps/styled/flow_arrows_emphasis.png?v=20260526_arrows_v2",
+      "title": "Identified flow-direction arrows",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260526_identified_arrows",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
-      "description": "High-contrast review arrows for Krishna, Budameru and canal flow direction.",
-      "swatch": "#0f4c81"
+      "description": "Identified review arrows for Krishna, Budameru and canal flow direction.",
+      "swatch": "#b45309"
     },
     {
       "key": "budameru_breach_susceptibility",

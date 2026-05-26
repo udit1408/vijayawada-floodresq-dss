@@ -1,1372 +1,1667 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vijayawada FloodRESQ RTGS AWARE DSS</title>
-<script src="assets/site_data.js?v=20260504062612"></script>
-<script src="assets/cursor_probe.js?v=20260504062612"></script>
-<style>
-:root {
-  --bg:#f4f7f7; --ink:#14212b; --muted:#5c6a76; --line:#d5dde5; --panel:#ffffff;
-  --teal:#087f73; --blue:#155e91; --orange:#b45309; --red:#b42318; --soft:#eef5f4;
-  --shadow:0 16px 38px rgba(20,33,43,.10);
-}
-* { box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body { margin:0; background:var(--bg); color:var(--ink); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-button, input, select { font:inherit; }
-a { color:var(--blue); text-decoration:none; }
-a:hover { text-decoration:underline; }
-.shell { max-width:1440px; margin:0 auto; padding:18px; }
-.topbar { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px; align-items:start; border-bottom:1px solid var(--line); padding:10px 0 14px; }
-.brand-head { display:grid; grid-template-columns:72px minmax(0,1fr); gap:14px; align-items:center; }
-.brand-logo { width:72px; height:72px; border:1px solid #d9e2e8; border-radius:8px; background:#fff; object-fit:contain; box-shadow:0 8px 22px rgba(20,33,43,.08); }
-h1 { margin:0 0 6px; font-size:clamp(26px,3.2vw,42px); line-height:1.05; letter-spacing:0; }
-.subtitle { max-width:980px; color:var(--muted); line-height:1.45; }
-.status { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-.pill { display:inline-flex; align-items:center; gap:7px; min-height:32px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:800; font-size:12px; color:#23313d; }
-.pill.primary { border-color:#9ccdc7; background:#eef9f7; color:#075e55; }
-.pill.action { border-color:#77b9b0; background:#087f73; color:#fff; text-decoration:none; }
-.pill.action:hover { text-decoration:none; background:#075e55; }
-.dot { width:8px; height:8px; border-radius:50%; background:var(--teal); }
-.tabs { position:sticky; top:0; z-index:50; display:flex; gap:6px; flex-wrap:wrap; background:rgba(244,247,247,.94); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:10px 0; }
-.tab-btn { border:1px solid var(--line); background:#fff; color:#20303c; border-radius:7px; padding:8px 11px; font-weight:850; cursor:pointer; }
-.tabs a.tab-btn { text-decoration:none; }
-.tab-btn.live { background:#eef9f7; border-color:#9ccdc7; color:#075e55; }
-.tab-btn.active { background:var(--teal); border-color:var(--teal); color:#fff; }
-.tab-panel { display:none; padding:16px 0 28px; }
-.tab-panel.active { display:block; }
-.metric-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin:14px 0; }
-.metric { background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; min-height:92px; box-shadow:0 8px 24px rgba(20,33,43,.05); }
-.metric span { display:block; color:var(--muted); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0; }
-.metric b { display:block; margin-top:7px; font-size:clamp(21px,2vw,30px); }
-.metric small { display:block; margin-top:5px; color:var(--muted); line-height:1.35; }
-.grid-2 { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(340px,.8fr); gap:14px; align-items:start; }
-.panel { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; box-shadow:0 8px 24px rgba(20,33,43,.05); }
-.panel h2, .panel h3 { margin:0 0 10px; letter-spacing:0; }
-.panel p { color:var(--muted); line-height:1.48; margin:0 0 10px; }
-.map-layout { display:grid; grid-template-columns:360px minmax(0,1fr); gap:14px; align-items:start; }
-.overview-layout { display:grid; grid-template-columns:310px minmax(0,1fr) 310px; gap:14px; align-items:start; margin:14px 0; }
-.overview-layout .controls { max-height:650px; }
-.overview-layout .map-card { min-height:480px; }
-.overview-inspector { max-height:650px; overflow:auto; }
-.overview-inspector .legend { position:static; margin-bottom:10px; }
-.mini-media { width:100%; max-height:220px; object-fit:contain; border:1px solid var(--line); border-radius:7px; background:#fff; display:block; margin:8px 0 12px; }
-.controls { background:#fff; border:1px solid var(--line); border-radius:8px; padding:13px; max-height:calc(100vh - 130px); overflow:auto; box-shadow:0 8px 24px rgba(20,33,43,.05); }
-.control-block { border-top:1px solid #e7edf2; padding-top:12px; margin-top:12px; }
-.control-block:first-child { border-top:0; padding-top:0; margin-top:0; }
-.field { display:grid; gap:5px; margin:8px 0; }
-.field label { color:#31414d; font-size:12px; font-weight:850; }
-select, input[type=range] { width:100%; }
-.hint { color:var(--muted); font-size:12px; line-height:1.35; margin:6px 0 0; }
-.callout-link { display:inline-flex; align-items:center; justify-content:center; min-height:36px; margin-top:8px; padding:8px 11px; border-radius:6px; background:var(--teal); color:#fff; font-weight:850; text-decoration:none; }
-.callout-link:hover { background:#075e55; text-decoration:none; }
-.segmented { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; }
-.segmented button { border:1px solid var(--line); border-radius:6px; background:#fff; padding:7px 8px; cursor:pointer; font-weight:850; }
-.segmented button.active { background:#e5f3f1; border-color:#77b9b0; color:#075e55; }
-.preset-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
-.preset-grid button { border:1px solid #cbd8e3; border-radius:6px; background:#fff; color:#20303c; padding:8px 9px; cursor:pointer; font-weight:850; text-align:left; }
-.preset-grid button.active { background:#e5f3f1; border-color:#77b9b0; color:#075e55; }
-details { border-top:1px solid #e7edf2; padding:9px 0; }
-details:first-of-type { border-top:0; }
-summary { cursor:pointer; font-weight:900; color:#22313d; }
-.layer-row { display:grid; grid-template-columns:18px 13px minmax(0,1fr); gap:8px; align-items:center; padding:5px 0; color:#263642; font-size:13px; }
-.swatch { width:12px; height:12px; border-radius:3px; border:1px solid rgba(0,0,0,.12); }
-.map-card { position:relative; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#f8fafc; min-height:520px; box-shadow:var(--shadow); }
-.map-stage { position:relative; width:100%; aspect-ratio:1700/1916; transform-origin:50% 50%; transition:transform .16s ease; cursor:crosshair; }
-.map-stage img, .map-stage object { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; user-select:none; border:0; }
-.base-map { z-index:1; }
-.result-layer { z-index:5; opacity:.84; pointer-events:none; }
-.overlay-layer { z-index:8; pointer-events:none; }
-.cursor-pin { position:absolute; z-index:30; width:18px; height:18px; border:2px solid #fff; border-radius:50%; background:var(--red); transform:translate(-50%,-50%); box-shadow:0 0 0 2px rgba(180,35,24,.55); display:none; }
-.cursor-tooltip { position:absolute; z-index:36; display:none; min-width:210px; max-width:290px; pointer-events:none; transform:translate(12px,-105%); background:rgba(15,23,42,.94); color:#fff; border:1px solid rgba(255,255,255,.35); border-radius:7px; padding:8px 9px; font-size:12px; box-shadow:0 12px 30px rgba(15,23,42,.25); }
-.cursor-tooltip b { display:block; margin-bottom:4px; }
-.cursor-tooltip span { display:block; color:#dbeafe; line-height:1.35; }
-.map-footer { position:absolute; z-index:25; left:10px; right:10px; bottom:10px; display:flex; gap:8px; justify-content:space-between; flex-wrap:wrap; pointer-events:none; }
-.map-callout { position:absolute; z-index:26; top:10px; left:10px; max-width:min(470px,calc(100% - 20px)); background:rgba(255,255,255,.93); border:1px solid rgba(148,163,184,.72); border-radius:8px; padding:9px 11px; color:#263642; font-size:12px; line-height:1.35; box-shadow:0 10px 28px rgba(20,33,43,.13); pointer-events:none; }
-.map-callout b { display:block; color:#14212b; font-size:13px; margin-bottom:2px; }
-.readout, .legend { background:rgba(255,255,255,.92); border:1px solid rgba(148,163,184,.7); border-radius:7px; padding:7px 9px; font-size:12px; color:#172033; }
-.legend-ramp { height:9px; width:190px; border-radius:999px; margin:5px 0; }
-.legend-labels { display:flex; justify-content:space-between; gap:8px; color:#4b5965; }
-.legend-list { display:grid; grid-template-columns:1fr; gap:6px; margin:8px 0 12px; }
-.legend-note { color:var(--muted); font-size:12px; line-height:1.35; margin:0 0 9px; }
-.legend-chip { display:grid; grid-template-columns:14px minmax(0,1fr); gap:7px; align-items:center; font-size:12px; color:#24333f; }
-.table-wrap { overflow:auto; border:1px solid var(--line); border-radius:8px; background:#fff; }
-table { width:100%; border-collapse:collapse; font-size:13px; }
-th, td { padding:9px 10px; border-bottom:1px solid #e7edf2; text-align:left; vertical-align:top; }
-th { background:#f8fafc; font-weight:900; color:#253542; }
-.media-grid { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr); gap:14px; align-items:start; }
-.media { width:100%; border:1px solid var(--line); border-radius:8px; background:#fff; display:block; }
-.animation-dashboard { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:14px; align-items:start; }
-.animation-stage { position:relative; width:100%; aspect-ratio:1700/1916; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#eef3f6; }
-.animation-stage img, .animation-stage object { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; border:0; user-select:none; }
-.anim-base { z-index:1; }
-.anim-original { z-index:4; opacity:0; transition:opacity .18s ease; }
-.anim-depth { z-index:5; opacity:0; transition:opacity .22s linear; }
-.anim-depth.active { opacity:1; }
-.anim-context-layer { z-index:9; pointer-events:none; }
-.animation-stage.solver-mode .anim-base, .animation-stage.solver-mode .anim-depth { opacity:0; }
-.animation-stage.solver-mode .anim-original { opacity:1; }
-.animation-time-badge { position:absolute; left:12px; top:12px; z-index:25; display:grid; gap:4px; max-width:min(520px,calc(100% - 24px)); background:rgba(255,255,255,.92); border:1px solid rgba(148,163,184,.75); border-radius:8px; padding:10px 12px; box-shadow:0 12px 28px rgba(15,23,42,.12); }
-.animation-time-badge b { font-size:clamp(19px,2.2vw,30px); line-height:1.05; }
-.animation-time-badge span { color:#40505d; font-size:13px; line-height:1.3; }
-.depth-legend { position:absolute; z-index:26; right:12px; bottom:12px; width:min(260px,calc(100% - 24px)); background:rgba(255,255,255,.92); border:1px solid rgba(148,163,184,.75); border-radius:8px; padding:9px 10px; font-size:12px; color:#20303c; }
-.depth-ramp { height:12px; border-radius:999px; margin:6px 0; background:linear-gradient(90deg,#e2f9ff,#67d8f6,#1f8be2,#244bc5,#7e34be,#e22a54); }
-.animation-controls { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:10px; align-items:center; margin-top:10px; }
-.animation-tools { display:grid; grid-template-columns:minmax(260px,2fr) minmax(160px,1fr) minmax(180px,1fr); gap:10px; margin:0 0 12px; padding:10px; border:1px solid #d8e3ea; border-radius:8px; background:#f8fbfc; }
-.animation-tools .field { margin:0; }
-.animation-tools select { min-height:40px; border:1px solid #b8c7d2; border-radius:6px; background:#fff; color:#14212b; }
-.mode-toggle { display:grid; grid-template-columns:repeat(2,1fr); gap:5px; }
-.mode-toggle button { border:1px solid var(--line); border-radius:6px; background:#fff; padding:7px 8px; cursor:pointer; font-weight:850; }
-.mode-toggle button.active { background:#e5f3f1; border-color:#77b9b0; color:#075e55; }
-.animation-kpis { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
-.animation-kpi { border:1px solid #dbe3ea; background:#f8fbfd; border-radius:7px; padding:8px; }
-.animation-kpi span { display:block; font-size:11px; font-weight:850; color:#64748b; text-transform:uppercase; }
-.animation-kpi b { display:block; margin-top:4px; font-size:18px; }
-.phase-track { display:grid; grid-template-columns:1.1fr 1fr 1fr; gap:5px; margin:10px 0 12px; }
-.phase-track span { min-height:34px; display:flex; align-items:center; justify-content:center; border:1px solid #dbe3ea; border-radius:7px; background:#f8fbfd; color:#526170; font-size:12px; font-weight:850; }
-.phase-track span.active { background:#e5f3f1; border-color:#77b9b0; color:#075e55; }
-.hydro-layout { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(360px,.65fr); gap:14px; align-items:start; }
-.chart-media { width:100%; border:1px solid var(--line); border-radius:8px; background:#fff; display:block; }
-.stage-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:8px 0 12px; }
-.stage-card { border:1px solid #dbe3ea; border-radius:7px; background:#f8fbfd; padding:9px; }
-.stage-card span { display:block; color:#64748b; font-size:11px; font-weight:850; text-transform:uppercase; }
-.stage-card b { display:block; margin-top:4px; font-size:20px; }
-.stage-card small { display:block; margin-top:3px; color:#526170; line-height:1.25; }
-.frame-controls { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:8px; align-items:center; margin-top:10px; }
-.link-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-.link-grid a { display:block; min-height:42px; padding:9px 10px; border:1px solid var(--line); border-radius:7px; background:#fff; font-weight:850; }
-.schema-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-.poc-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:12px; }
-.poc-card { border:1px solid #dbe3ea; border-radius:8px; background:#fff; padding:13px; }
-.poc-card h3 { margin:0 0 8px; font-size:16px; }
-.poc-card p { margin:0; color:#526170; line-height:1.45; }
-.poc-list { display:grid; gap:8px; margin:10px 0 0; padding:0; list-style:none; }
-.poc-list li { border:1px solid #e1e8ee; border-radius:7px; background:#f8fbfd; padding:9px 10px; color:#24333f; line-height:1.35; }
-.poc-callout { border-left:4px solid var(--teal); background:#eef7f5; padding:12px 13px; border-radius:7px; color:#253542; line-height:1.45; }
-.tag-list { display:flex; flex-wrap:wrap; gap:6px; }
-.tag { border:1px solid #cbd8e3; background:#f8fbfd; border-radius:999px; padding:5px 8px; font-size:12px; color:#253542; }
-@media (max-width:1050px) { .map-layout,.overview-layout,.grid-2,.media-grid,.animation-dashboard,.hydro-layout,.schema-grid,.poc-grid { grid-template-columns:1fr; } .controls { max-height:none; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .topbar { grid-template-columns:1fr; } .status { justify-content:flex-start; } }
-@media (max-width:640px) { .brand-head { grid-template-columns:54px minmax(0,1fr); } .brand-logo { width:54px; height:54px; } }
-@media (max-width:640px) { .metric-grid,.link-grid,.animation-tools,.animation-kpis { grid-template-columns:1fr; } .shell { padding:12px; } }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vijayawada FloodReSQ Live DSS</title>
+  <script src="assets/config.js?v=20260526_chat_tunnel"></script>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #627083;
+      --line: #d7dde6;
+      --panel: #ffffff;
+      --soft: #f5f7fa;
+      --accent: #0f766e;
+      --accent-2: #1d4ed8;
+      --warn: #b45309;
+      --bad: #b91c1c;
+      --good: #047857;
+      --shadow: 0 12px 36px rgba(23, 32, 51, 0.11);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eef2f6;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 22px 30px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .brand-head {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+    }
+
+    .brand-logo {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      border: 1px solid #d9e2e8;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(20, 33, 43, 0.08);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.2vw, 34px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 900px;
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #b7d7d2;
+      background: #edfdfa;
+      color: #075f57;
+      font-weight: 700;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #c6cfda;
+      background: #ffffff;
+      color: #184076;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 22px 30px 34px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 16px 18px;
+      font-size: 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-body { padding: 18px; }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #253248;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #c6cfda;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    select {
+      min-height: 42px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .hint {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      min-height: 42px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      color: white;
+      background: var(--accent);
+    }
+
+    button.secondary {
+      color: #1f2a44;
+      background: #e9eef5;
+      border: 1px solid #cdd5e0;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .status-card {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .metric .value {
+      margin-top: 5px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .progress-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fbfcfe;
+      margin-bottom: 16px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 9px;
+    }
+
+    .progress {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #dce3ec;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.25s ease;
+    }
+
+    .job-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: #e8eef8;
+      color: #243b6b;
+    }
+
+    .pill.completed { background: #e7f8ef; color: var(--good); }
+    .pill.failed { background: #fdecec; color: var(--bad); }
+    .pill.running { background: #fff6e7; color: var(--warn); }
+
+    .quicklook {
+      width: 100%;
+      min-height: 380px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      overflow: hidden;
+    }
+
+    .quicklook img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 30px;
+      line-height: 1.5;
+    }
+
+    .outputs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .outputs a {
+      display: block;
+      padding: 11px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: #184076;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 10px 9px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #344158;
+      background: #f7f9fc;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    tr:hover td { background: #fbfcfe; }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+
+    .notice {
+      margin-top: 14px;
+      padding: 12px 13px;
+      border-radius: 8px;
+      border: 1px solid #cfd9e7;
+      background: #f8fbff;
+      color: #344158;
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .endpoint-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+      align-items: end;
+      margin-top: 10px;
+    }
+
+    .endpoint-row input {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid #c6cfda;
+      border-radius: 6px;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .endpoint-auth-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .endpoint-auth-row label {
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .endpoint-auth-row input {
+      width: 100%;
+      min-height: 38px;
+      margin-top: 5px;
+      padding: 8px 10px;
+      border: 1px solid #c6cfda;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    .notice.good {
+      border-color: #a7f3d0;
+      background: #ecfdf5;
+    }
+
+    .notice.warn {
+      border-color: #fed7aa;
+      background: #fff7ed;
+    }
+
+    .interpretation {
+      margin-top: 12px;
+      padding: 12px 13px;
+      border-radius: 8px;
+      border: 1px solid #cdd5e0;
+      background: #ffffff;
+      color: #344158;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .interpretation strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .inline-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-top: 10px;
+      color: #253248;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .inline-check input {
+      width: 16px;
+      height: 16px;
+      margin-top: 1px;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .feed-card {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfe;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .feed-card b {
+      display: block;
+      color: #253248;
+      margin-bottom: 3px;
+    }
+
+    .assistant-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .assistant-intro {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+    }
+
+    .assistant-intro .kicker {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .assistant-intro h3 {
+      margin: 7px 0 8px;
+      font-size: 24px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .assistant-intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      max-width: 760px;
+    }
+
+    .mode-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 0;
+    }
+
+    .mode-button {
+      min-height: 34px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #c6cfda;
+      background: #ffffff;
+      color: #1f2a44;
+      font-size: 13px;
+    }
+
+    .mode-button.active {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+      box-shadow: inset 0 0 0 1px rgba(22, 101, 52, 0.08);
+    }
+
+    .assistant-status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .assistant-box {
+      display: flex;
+      flex-direction: column;
+      min-height: 420px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .chat-log {
+      flex: 1;
+      min-height: 250px;
+      max-height: 520px;
+      overflow: auto;
+      padding: 14px;
+      background: #f8fafc;
+    }
+
+    .message {
+      max-width: 92%;
+      margin: 0 0 12px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #263247;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .message.user {
+      margin-left: auto;
+      color: #062f2b;
+      background: #e6fffb;
+      border-color: #a7e6dc;
+    }
+
+    .message.assistant strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+
+    .source-block {
+      margin-top: 9px;
+      padding-top: 8px;
+      border-top: 1px solid #e5eaf2;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: normal;
+    }
+
+    .source-block a {
+      color: #184076;
+      font-weight: 800;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+
+    .source-block strong {
+      display: inline;
+      margin: 0;
+    }
+
+    .chat-form {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .chat-form textarea {
+      min-height: 88px;
+    }
+
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .prompt-chip {
+      min-height: 32px;
+      padding: 7px 10px;
+      border: 1px solid #cdd5e0;
+      border-radius: 999px;
+      color: #1f2a44;
+      background: #f4f7fb;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .assistant-hero { grid-template-columns: 1fr; }
+      .feed-grid { grid-template-columns: 1fr; }
+      .status-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .outputs { grid-template-columns: 1fr; }
+      header, main { padding-left: 16px; padding-right: 16px; }
+      .topline { align-items: flex-start; flex-direction: column; }
+      .header-actions { justify-content: flex-start; }
+      .endpoint-row { grid-template-columns: 1fr; }
+      .endpoint-auth-row { grid-template-columns: 1fr; }
+      .brand-head { grid-template-columns: 60px minmax(0, 1fr); }
+      .brand-logo { width: 60px; height: 60px; }
+    }
+  </style>
 </head>
 <body>
-<div class="shell">
-  <header class="topbar">
-    <div class="brand-head">
-      <img class="brand-logo" src="assets/branding/floodresq.png" alt="FloodReSQ logo">
-      <div>
-        <h1>Vijayawada FloodReSQ Decision Support System</h1>
-        <div class="subtitle">Review-ready RTGS AWARE dashboard for Vijayawada: flood depth, extent and velocity results layered with wards, roads, drainage, manholes, water bodies, canals, pumps, terrain, physics inputs and operational hotspots.</div>
+  <header>
+    <div class="topline">
+      <div class="brand-head">
+        <img class="brand-logo" src="assets/branding/floodresq.png" alt="FloodReSQ logo">
+        <div>
+          <h1>Vijayawada FloodReSQ Live DSS</h1>
+          <p class="subtitle">Single public entrypoint for the latest Vijayawada FloodReSQ system: choose rain, Budameru inflow and river/canal backwater condition, then the GPU-backed FloodAstra server prepares inputs, runs the city flood model and returns maps, tables, animations and evidence-grounded chat here.</p>
+        </div>
       </div>
-    </div>
-    <div class="status">
-      <span class="pill primary"><span class="dot"></span> Layer-rich review build</span>
-      <a class="pill action" href="nowcast.html">Your FloodAstra</a>
-      <span class="pill">18 scenario ensemble</span>
-      <span class="pill">No external map tiles</span>
+      <div class="header-actions">
+        <a class="link-button" href="map_dashboard.html">Open Layer Dashboard</a>
+        <div class="badge" id="serverBadge">Checking server</div>
+      </div>
     </div>
   </header>
 
-  <nav class="tabs" aria-label="DSS tabs">
-    <button class="tab-btn active" data-tab="overview">Overview</button>
-    <a class="tab-btn live" href="nowcast.html">Your FloodAstra</a>
-    <button class="tab-btn" data-tab="map">Interactive Map</button>
-    <button class="tab-btn" data-tab="forcing">Hydrographs</button>
-    <button class="tab-btn" data-tab="animation">Animation</button>
-    <button class="tab-btn" data-tab="scenarios">Scenario Library</button>
-    <button class="tab-btn" data-tab="poc">Model Scope</button>
-  </nav>
-
-  <section id="overview" class="tab-panel active">
-    <div class="metric-grid">
-      <div class="metric"><span>Scenarios</span><b>18</b><small>current reviewed run set</small></div>
-      <div class="metric"><span>Duration</span><b>12 h</b><small>15-minute reporting interval</small></div>
-      <div class="metric"><span>Review Status</span><b>Complete</b><small>18-scenario layer package</small></div>
-      <div class="metric"><span>Max Depth</span><b>5.81 m</b><small>maximum-depth envelope</small></div>
-      <div class="metric"><span>Peak Wet Area</span><b>5,128 ha</b><small>0.05 m depth threshold</small></div>
-    </div>
-    <div class="overview-layout">
-      <aside class="controls">
-        <div class="control-block">
-          <h3>Your FloodAstra</h3>
-          <p class="hint">Open the latest Vijayawada runner to ask evidence-grounded questions, convert scenario stories into model inputs, and launch a local or server-backed nowcast.</p>
-          <a class="callout-link" href="nowcast.html">Open Your FloodAstra</a>
-        </div>
-        <div class="control-block">
-          <h3>Overview Map</h3>
-          <div class="field"><label for="overviewScenarioSelect">Scenario</label><select id="overviewScenarioSelect"><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q060">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q080">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q100">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q060">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q080">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q100">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q060">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q080">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q100">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q060">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q080">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q100">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 100% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q060">Historical extreme rainfall | High river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q080">Historical extreme rainfall | High river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q100">Historical extreme rainfall | High river/canal state | Budameru inflow 100% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q060">Historical extreme rainfall | Normal river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q080">Historical extreme rainfall | Normal river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q100">Historical extreme rainfall | Normal river/canal state | Budameru inflow 100% | 133 mm rainfall</option></select></div>
-          <div class="field"><label>Result variable</label><div class="segmented" id="overviewResultButtons"><button data-result="depth" class="active">Depth</button><button data-result="extent">Extent</button><button data-result="speed">Velocity</button></div></div>
-          <div class="field"><label for="overviewResultOpacity">Result opacity <span id="overviewOpacityText">38%</span></label><input type="range" min="0" max="100" value="38" id="overviewResultOpacity"></div>
-          <div class="field">
-            <label>Layer preset</label>
-            <div class="preset-grid" id="overviewPresetButtons">
-              <button type="button" class="active" data-overview-preset="operational">Operational overview</button>
-              <button type="button" data-overview-preset="infrastructure">Drainage + pumps</button>
-              <button type="button" data-overview-preset="terrain">Terrain + physics</button>
-              <button type="button" data-overview-preset="all">All evidence layers</button>
+  <main>
+    <div class="grid">
+      <section class="panel">
+        <h2>Run Setup</h2>
+        <div class="panel-body">
+          <div class="notice" id="apiConfigNotice">
+            <strong>Connection</strong>
+            <p class="hint" id="apiBaseHint">Checking FloodAstra server endpoint.</p>
+            <div class="endpoint-row">
+              <input id="apiBaseInput" type="url" placeholder="https://your-floodastra-backend.example.com">
+              <button id="apiSaveBtn" class="secondary" type="button">Use Endpoint</button>
+              <button id="apiResetBtn" class="secondary" type="button">Reset</button>
             </div>
-            <p class="hint">Operational overview keeps the map readable while exposing wards, roads, water system, drainage, pumps, hotspots and Budameru context.</p>
+            <div class="endpoint-auth-row">
+              <label for="apiUserInput">Backend user
+                <input id="apiUserInput" autocomplete="username" placeholder="Optional">
+              </label>
+              <label for="apiPasswordInput">Backend password
+                <input id="apiPasswordInput" type="password" autocomplete="current-password" placeholder="Optional">
+              </label>
+            </div>
           </div>
-          <div class="field"><label for="overviewZoomRange">Map zoom</label><input type="range" min="100" max="175" value="100" id="overviewZoomRange"></div>
-          <p id="overviewScenarioMeta"></p>
-        </div>
-        <div class="control-block">
-          <h3>Layer Controls</h3>
-          <details open><summary>Flood results</summary>
-                <label class="layer-row" title="Maximum depth envelope from all 18 scenarios.">
-                  <input type="checkbox" data-overview-layer="scenario_envelope" >
-                  <span class="swatch" style="background:#2563eb"></span>
-                  <span>Scenario max-depth envelope</span>
-                </label></details><details open><summary>Administrative</summary>
-                <label class="layer-row" title="Municipal boundary and 71 revenue wards.">
-                  <input type="checkbox" data-overview-layer="administrative" checked>
-                  <span class="swatch" style="background:#111827"></span>
-                  <span>Municipal boundary and wards</span>
-                </label></details><details open><summary>Urban fabric</summary>
-                <label class="layer-row" title="Local road network from source shapefile.">
-                  <input type="checkbox" data-overview-layer="roads" checked>
-                  <span class="swatch" style="background:#4b5563"></span>
-                  <span>Road network</span>
-                </label>
-                <label class="layer-row" title="TUM GlobalBuildingAtlas LoD1 building polygons clipped to Vijayawada municipal boundary.">
-                  <input type="checkbox" data-overview-layer="buildings_tum_gba" checked>
-                  <span class="swatch" style="background:#8b7355"></span>
-                  <span>Building footprints (TUM GlobalBuildingAtlas)</span>
-                </label></details><details open><summary>Land surface</summary>
-                <label class="layer-row" title="Tree cover, shrub/grass, cropland, sparse pervious and wetland cells from the surface-physics classification.">
-                  <input type="checkbox" data-overview-layer="green_open_space" checked>
-                  <span class="swatch" style="background:#22c55e"></span>
-                  <span>Green and pervious open areas</span>
-                </label>
-                <label class="layer-row" title="Proxy land-surface classes from TUM buildings, road network, drainage corridors and merged waterbodies.">
-                  <input type="checkbox" data-overview-layer="lulc_proxy" >
-                  <span class="swatch" style="background:#a855f7"></span>
-                  <span>LULC proxy: buildings, roads, drainage and water</span>
-                </label></details><details open><summary>Drainage</summary>
-                <label class="layer-row" title="Mapped drainage links used for 1D-drainage readiness and sink sensitivity.">
-                  <input type="checkbox" data-overview-layer="drainage" checked>
-                  <span class="swatch" style="background:#15803d"></span>
-                  <span>Drainage network</span>
-                </label>
-                <label class="layer-row" title="Mapped manhole inventory.">
-                  <input type="checkbox" data-overview-layer="manholes" checked>
-                  <span class="swatch" style="background:#0f3d2e"></span>
-                  <span>Manholes</span>
-                </label></details><details open><summary>Water system</summary>
-                <label class="layer-row" title="Local waterbody polygons.">
-                  <input type="checkbox" data-overview-layer="waterbodies" checked>
-                  <span class="swatch" style="background:#0ea5e9"></span>
-                  <span>Krishna, reservoir and Budameru water bodies</span>
-                </label>
-                <label class="layer-row" title="OSM canal review alignments plus extended Budameru rivulet/canal.">
-                  <input type="checkbox" data-overview-layer="canals_budameru" checked>
-                  <span class="swatch" style="background:#b45309"></span>
-                  <span>Major canals and extended Budameru</span>
-                </label>
-                <label class="layer-row" title="Review arrows for Krishna, Budameru and canal flow direction.">
-                  <input type="checkbox" data-overview-layer="flow_arrows" checked>
-                  <span class="swatch" style="background:#7c2d12"></span>
-                  <span>Waterbody flow direction arrows</span>
-                </label>
-                <label class="layer-row" title="Budameru breach-susceptibility review layer for boundary and inflow-risk context.">
-                  <input type="checkbox" data-overview-layer="budameru_breach_susceptibility" checked>
-                  <span class="swatch" style="background:#be123c"></span>
-                  <span>Budameru breach susceptibility</span>
-                </label></details><details open><summary>Coupling</summary>
-                <label class="layer-row" title="Drainage pumps, candidate outfalls and FloodRESQ exchange points.">
-                  <input type="checkbox" data-overview-layer="pumps_outfalls" checked>
-                  <span class="swatch" style="background:#ea580c"></span>
-                  <span>Pumps, outfalls and exchange points</span>
-                </label>
-                <label class="layer-row" title="Pump-to-drain and pump-to-waterbody provisional connectors.">
-                  <input type="checkbox" data-overview-layer="pump_connectors" checked>
-                  <span class="swatch" style="background:#7c3aed"></span>
-                  <span>Pump connection review lines</span>
-                </label></details><details open><summary>Model setup</summary>
-                <label class="layer-row" title="2D computation domain plus river, canal, pump, drainage and high-exposure urban refinement zones.">
-                  <input type="checkbox" data-overview-layer="mesh_refinement" >
-                  <span class="swatch" style="background:#db2777"></span>
-                  <span>FloodRESQ domain and adaptive refinement zones</span>
-                </label>
-                <label class="layer-row" title="DEM validity, filled model-surface continuity, hydro-corridor connectivity and Budameru boundary point.">
-                  <input type="checkbox" data-overview-layer="domain_continuity" >
-                  <span class="swatch" style="background:#16a34a"></span>
-                  <span>Domain continuity QA</span>
-                </label></details><details open><summary>Terrain / Hydroconditioning</summary>
-                <label class="layer-row" title="20 m clipped DEM/DTM model surface. Current source is DEM_VMB with domain gaps filled for modeling continuity.">
-                  <input type="checkbox" data-overview-layer="terrain_dem" >
-                  <span class="swatch" style="background:#84cc16"></span>
-                  <span>DEM/DTM model surface</span>
-                </label>
-                <label class="layer-row" title="Hillshade derived from the gap-filled 20 m terrain surface.">
-                  <input type="checkbox" data-overview-layer="terrain_hillshade" >
-                  <span class="swatch" style="background:#737373"></span>
-                  <span>Terrain hillshade</span>
-                </label>
-                <label class="layer-row" title="Slope derivative used to review terrain gradients, levee-like breaks and flow-path sensitivity.">
-                  <input type="checkbox" data-overview-layer="terrain_slope" >
-                  <span class="swatch" style="background:#c2410c"></span>
-                  <span>Slope / local relief</span>
-                </label>
-                <label class="layer-row" title="Draft burn-in from merged waterbodies, major canals, Budameru and drainage corridors.">
-                  <input type="checkbox" data-overview-layer="hydroconditioned_dem_delta" >
-                  <span class="swatch" style="background:#a16207"></span>
-                  <span>Hydroconditioned DEM burn-in</span>
-                </label></details><details open><summary>Physics inputs</summary>
-                <label class="layer-row" title="Surface classes used to assign roughness, infiltration and obstruction behavior.">
-                  <input type="checkbox" data-overview-layer="physics_surface_class" checked>
-                  <span class="swatch" style="background:#9333ea"></span>
-                  <span>Manning/LULC surface partition</span>
-                </label>
-                <label class="layer-row" title="Manning n raster applied in the FloodRESQ run, including roads, buildings, vegetation, water and open corridors.">
-                  <input type="checkbox" data-overview-layer="spatial_manning_n" >
-                  <span class="swatch" style="background:#65a30d"></span>
-                  <span>Spatial Manning n roughness</span>
-                </label>
-                <label class="layer-row" title="Spatial infiltration-capacity proxy derived from hydrologic-soil-group proxy and land-surface class.">
-                  <input type="checkbox" data-overview-layer="infiltration_capacity" >
-                  <span class="swatch" style="background:#84cc16"></span>
-                  <span>Infiltration capacity</span>
-                </label>
-                <label class="layer-row" title="Hydrologic soil groups represented as a replaceable proxy until authoritative soil classification is added.">
-                  <input type="checkbox" data-overview-layer="soil_hydrologic_group_proxy" >
-                  <span class="swatch" style="background:#ca8a04"></span>
-                  <span>Hydrologic soil group proxy</span>
-                </label>
-                <label class="layer-row" title="Rasterized building-footprint fraction used for building obstruction and high roughness.">
-                  <input type="checkbox" data-overview-layer="building_obstruction_fraction" >
-                  <span class="swatch" style="background:#7f1d1d"></span>
-                  <span>Building obstruction fraction</span>
-                </label>
-                <label class="layer-row" title="Hydroconditioned terrain surface used by the current physics-enabled run.">
-                  <input type="checkbox" data-overview-layer="conditioned_hydraulic_terrain" >
-                  <span class="swatch" style="background:#4d7c0f"></span>
-                  <span>Conditioned hydraulic terrain</span>
-                </label></details><details open><summary>RTGS AWARE</summary>
-                <label class="layer-row" title="Target symbols for top modeled flood hotspots and the Budameru NRSC inflow boundary condition point.">
-                  <input type="checkbox" data-overview-layer="rtgs_hotspots" checked>
-                  <span class="swatch" style="background:#dc2626"></span>
-                  <span>RTGS AWARE flood hotspots and NRSC inflow boundary</span>
-                </label>
-                <label class="layer-row" title="Ward-scale review layer for operational response prioritization.">
-                  <input type="checkbox" data-overview-layer="urban_ward_routine" >
-                  <span class="swatch" style="background:#7c3aed"></span>
-                  <span>Ward-level response routine</span>
-                </label></details><details open><summary>Boundary forcing</summary>
-                <label class="layer-row" title="Boundary inflow and river/canal stage targets; shown as a chart panel on Overview.">
-                  <input type="checkbox" data-overview-layer="boundary_hydrographs" >
-                  <span class="swatch" style="background:#f59e0b"></span>
-                  <span>Boundary hydrographs and stage templates</span>
-                </label></details>
-        </div>
-      </aside>
-      <div class="map-card" id="overviewMapCard">
-        <div class="map-stage" id="overviewMapStage">
-          <img class="base-map" src="assets/maps/base_context.png?v=20260504062612" alt="Base map">
-          <img class="result-layer" id="overviewResultLayer" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Selected flood result">
-          <img class="overlay-layer" id="overview-layer-scenario_envelope" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/scenario_envelope_overlay.png?v=20260504062612" loading="lazy" decoding="async" alt="Scenario max-depth envelope" style="opacity:0.35; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-administrative" src="assets/maps/styled/administrative_styled.png?v=20260504062612" data-src="assets/maps/styled/administrative_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Municipal boundary and wards" style="opacity:0.86; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-roads" src="assets/maps/styled/roads_styled.png?v=20260504062612" data-src="assets/maps/styled/roads_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Road network" style="opacity:0.78; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-buildings_tum_gba" src="assets/maps/styled/buildings_tum_gba_styled.png?v=20260504062612" data-src="assets/maps/styled/buildings_tum_gba_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Building footprints (TUM GlobalBuildingAtlas)" style="opacity:0.68; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-green_open_space" src="assets/maps/green_open_space.png?v=20260504062612" data-src="assets/maps/green_open_space.png?v=20260504062612" loading="lazy" decoding="async" alt="Green and pervious open areas" style="opacity:0.72; z-index:4; display:block;"><img class="overlay-layer" id="overview-layer-drainage" src="assets/maps/styled/drainage_styled.png?v=20260504062612" data-src="assets/maps/styled/drainage_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Drainage network" style="opacity:0.88; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-manholes" src="assets/maps/styled/manholes_styled.png?v=20260504062612" data-src="assets/maps/styled/manholes_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Manholes" style="opacity:0.88; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-waterbodies" src="assets/maps/waterbodies.png?v=20260504062612" data-src="assets/maps/waterbodies.png?v=20260504062612" loading="lazy" decoding="async" alt="Krishna, reservoir and Budameru water bodies" style="opacity:0.82; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-canals_budameru" src="assets/maps/styled/canals_budameru_styled.png?v=20260504062612" data-src="assets/maps/styled/canals_budameru_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Major canals and extended Budameru" style="opacity:0.92; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-flow_arrows" src="assets/maps/styled/flow_arrows_styled.png?v=20260504062612" data-src="assets/maps/styled/flow_arrows_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Waterbody flow direction arrows" style="opacity:0.96; z-index:8; display:block;"><img class="overlay-layer" id="overview-layer-pumps_outfalls" src="assets/maps/styled/pumps_outfalls_styled.png?v=20260504062612" data-src="assets/maps/styled/pumps_outfalls_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Pumps, outfalls and exchange points" style="opacity:0.98; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-pump_connectors" src="assets/maps/styled/pump_connectors_styled.png?v=20260504062612" data-src="assets/maps/styled/pump_connectors_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Pump connection review lines" style="opacity:0.94; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-mesh_refinement" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/mesh_refinement_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="FloodRESQ domain and adaptive refinement zones" style="opacity:0.86; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-lulc_proxy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/lulc_proxy.png?v=20260504062612" loading="lazy" decoding="async" alt="LULC proxy: buildings, roads, drainage and water" style="opacity:0.62; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-terrain_dem" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/terrain_dem.png?v=20260504062612" loading="lazy" decoding="async" alt="DEM/DTM model surface" style="opacity:0.55; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-terrain_hillshade" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/terrain_hillshade.png?v=20260504062612" loading="lazy" decoding="async" alt="Terrain hillshade" style="opacity:0.55; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-terrain_slope" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/terrain_slope.png?v=20260504062612" loading="lazy" decoding="async" alt="Slope / local relief" style="opacity:0.55; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-hydroconditioned_dem_delta" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/hydroconditioned_dem_delta.png?v=20260504062612" loading="lazy" decoding="async" alt="Hydroconditioned DEM burn-in" style="opacity:0.86; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-domain_continuity" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/domain_continuity.png?v=20260504062612" loading="lazy" decoding="async" alt="Domain continuity QA" style="opacity:0.86; z-index:4; display:none;"><object class="overlay-layer overlay-object" id="overview-layer-physics_surface_class" data="assets/maps/physics_surface_class.svg?v=20260504062612" data-src="assets/maps/physics_surface_class.svg?v=20260504062612" type="image/svg+xml" aria-label="Manning/LULC surface partition" style="opacity:0.42; z-index:4; display:block;"></object><img class="overlay-layer" id="overview-layer-spatial_manning_n" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/spatial_manning_n.png?v=20260504062612" loading="lazy" decoding="async" alt="Spatial Manning n roughness" style="opacity:0.58; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-infiltration_capacity" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/infiltration_capacity.png?v=20260504062612" loading="lazy" decoding="async" alt="Infiltration capacity" style="opacity:0.58; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-soil_hydrologic_group_proxy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/soil_hydrologic_group_proxy.png?v=20260504062612" loading="lazy" decoding="async" alt="Hydrologic soil group proxy" style="opacity:0.86; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-building_obstruction_fraction" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/building_obstruction_fraction.png?v=20260504062612" loading="lazy" decoding="async" alt="Building obstruction fraction" style="opacity:0.68; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-conditioned_hydraulic_terrain" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/conditioned_hydraulic_terrain.png?v=20260504062612" loading="lazy" decoding="async" alt="Conditioned hydraulic terrain" style="opacity:0.58; z-index:4; display:none;"><img class="overlay-layer" id="overview-layer-rtgs_hotspots" src="assets/maps/styled/rtgs_aware_hotspots_styled.png?v=f96fb67" data-src="assets/maps/styled/rtgs_aware_hotspots_styled.png?v=f96fb67" loading="lazy" decoding="async" alt="RTGS AWARE flood hotspots and NRSC inflow boundary" style="opacity:0.86; z-index:18; display:block;"><img class="overlay-layer" id="overview-layer-urban_ward_routine" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/urban_ward_routine.png?v=20260504062612" loading="lazy" decoding="async" alt="Ward-level response routine" style="opacity:0.86; z-index:4; display:none;"><object class="overlay-layer overlay-object" id="overview-layer-boundary_hydrographs" data-src="assets/maps/boundary_hydrographs.svg?v=20260504062612" type="image/svg+xml" aria-label="Boundary hydrographs and stage templates" style="opacity:0.96; z-index:18; display:none;"></object>
-          <img class="overlay-layer" id="overview-layer-budameru_breach_susceptibility" src="assets/maps/budameru_breach_susceptibility.png?v=20260504062612" data-src="assets/maps/budameru_breach_susceptibility.png?v=20260504062612" loading="lazy" decoding="async" alt="Budameru breach susceptibility" style="opacity:0.64; z-index:7; display:block;">
-          <div class="cursor-pin" id="overviewCursorPin"></div>
-          <div class="cursor-tooltip" id="overviewCursorTooltip"></div>
-        </div>
-        <div class="map-callout">
-          <b>Operational overview layer stack</b>
-          Wards, roads, drainage, manholes, water bodies, Budameru/canal flow, pumps/outfalls, breach-susceptibility context and RTGS AWARE hotspots are switched on by default.
-        </div>
-        <div class="map-footer">
-          <div class="readout" id="overviewCursorReadout">Move cursor on map for UTM and lat/lon</div>
-        </div>
-      </div>
-      <aside class="panel overview-inspector">
-        <h3>Legend</h3>
-        <div class="legend" id="overviewResultLegend"></div>
-        <p class="legend-note">The default overview preset shows the layers most useful for review: administrative context, flood result, drainage connectivity, water pathways, pumps/outfalls and priority hotspots. Terrain and physics layers remain one click away for audit.</p>
-        <div class="legend-list">
-        <div class="legend-chip">
-          <span class="swatch" style="background:#111827"></span>
-          <span>Municipal boundary and wards</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#4b5563"></span>
-          <span>Road network</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#8b7355"></span>
-          <span>Building footprints (TUM GlobalBuildingAtlas)</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#22c55e"></span>
-          <span>Green and pervious open areas</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#15803d"></span>
-          <span>Drainage network</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#0f3d2e"></span>
-          <span>Manholes</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#0ea5e9"></span>
-          <span>Krishna, reservoir and Budameru water bodies</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#b45309"></span>
-          <span>Major canals and extended Budameru</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#7c2d12"></span>
-          <span>Waterbody flow direction arrows</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#be123c"></span>
-          <span>Budameru breach susceptibility</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#ea580c"></span>
-          <span>Pumps, outfalls and exchange points</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#7c3aed"></span>
-          <span>Pump connection review lines</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#9333ea"></span>
-          <span>Manning/LULC surface partition</span>
-        </div>
-        <div class="legend-chip">
-          <span class="swatch" style="background:#dc2626"></span>
-          <span>RTGS AWARE flood hotspots and NRSC inflow boundary</span>
-        </div></div>
-        <h3>River and Canal Conditions</h3>
-        <img class="mini-media" src="assets/maps/boundary_conditions_stage_profiles.png?v=20260504062612" alt="Boundary condition stage profiles">
-        <object class="mini-media" data="assets/maps/boundary_hydrographs.svg?v=20260504062612" type="image/svg+xml" aria-label="Boundary hydrographs"></object>
-        <h3>Rainfall Forcing</h3>
-        <img class="mini-media" src="assets/maps/rainfall_hyetograph.png?v=20260504062612" alt="Rainfall hyetograph">
-      </aside>
-    </div>
-    <div class="grid-2">
-      <div class="panel">
-        <h2>Decision Context</h2>
-        <p>The current dashboard packages all available model inputs and outputs into one review surface: river and Budameru water bodies, major canals, drainage, pumps, building footprints, roads, terrain readiness, Manning roughness, infiltration capacity, building obstruction, boundary-condition targets and flood hotspots.</p>
-        <p>The current run set uses historical hourly rainfall hyetographs plus Budameru inflow and river/canal antecedent sensitivity. Each completed scenario is available as a map toggle, with hydrographs, flood response, context layers and animation available in the same review package.</p>
-        <div class="tag-list">
-          <span class="tag">Layer toggles</span><span class="tag">Cursor coordinate readout</span><span class="tag">Depth, extent, velocity</span><span class="tag">Hydrograph panels</span><span class="tag">Animation frame review</span><span class="tag">Model scope</span>
-        </div>
-      </div>
-      <div class="panel">
-        <h2>Envelope Snapshot</h2>
-        <img class="media" src="assets/maps/scenario_envelope_overlay.png?v=20260504062612" alt="Maximum flood depth envelope">
-      </div>
-    </div>
-  </section>
-
-  <section id="map" class="tab-panel">
-    <div class="map-layout">
-      <aside class="controls">
-        <div class="control-block">
-          <h3>Scenario</h3>
-          <div class="field"><label for="scenarioSelect">Active run</label><select id="scenarioSelect"><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q060">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q080">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q100">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q060">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q080">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q100">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q060">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q080">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q100">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q060">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q080">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q100">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 100% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q060">Historical extreme rainfall | High river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q080">Historical extreme rainfall | High river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q100">Historical extreme rainfall | High river/canal state | Budameru inflow 100% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q060">Historical extreme rainfall | Normal river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q080">Historical extreme rainfall | Normal river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q100">Historical extreme rainfall | Normal river/canal state | Budameru inflow 100% | 133 mm rainfall</option></select></div>
-          <div class="field"><label>Result variable</label><div class="segmented" id="resultButtons"><button data-result="depth" class="active">Depth</button><button data-result="extent">Extent</button><button data-result="speed">Velocity</button></div></div>
-          <div class="field"><label for="resultOpacity">Result opacity <span id="opacityText">72%</span></label><input type="range" min="15" max="100" value="72" id="resultOpacity"></div>
-          <div class="field"><label for="zoomRange">Map zoom</label><input type="range" min="100" max="175" value="100" id="zoomRange"></div>
-          <p id="scenarioMeta"></p>
-        </div>
-        <div class="control-block">
-          <h3>Layer Controls</h3>
-          <details open><summary>Flood results</summary>
-                <label class="layer-row" title="Maximum depth envelope from all 18 scenarios.">
-                  <input type="checkbox" data-layer="scenario_envelope" >
-                  <span class="swatch" style="background:#2563eb"></span>
-                  <span>Scenario max-depth envelope</span>
-                </label></details><details open><summary>Administrative</summary>
-                <label class="layer-row" title="Municipal boundary and 71 revenue wards.">
-                  <input type="checkbox" data-layer="administrative" checked>
-                  <span class="swatch" style="background:#111827"></span>
-                  <span>Municipal boundary and wards</span>
-                </label></details><details open><summary>Urban fabric</summary>
-                <label class="layer-row" title="Local road network from source shapefile.">
-                  <input type="checkbox" data-layer="roads" >
-                  <span class="swatch" style="background:#4b5563"></span>
-                  <span>Road network</span>
-                </label>
-                <label class="layer-row" title="TUM GlobalBuildingAtlas LoD1 building polygons clipped to Vijayawada municipal boundary.">
-                  <input type="checkbox" data-layer="buildings_tum_gba" >
-                  <span class="swatch" style="background:#8b7355"></span>
-                  <span>Building footprints (TUM GlobalBuildingAtlas)</span>
-                </label></details><details open><summary>Land surface</summary>
-                <label class="layer-row" title="Tree cover, shrub/grass, cropland, sparse pervious and wetland cells from the surface-physics classification.">
-                  <input type="checkbox" data-layer="green_open_space" >
-                  <span class="swatch" style="background:#22c55e"></span>
-                  <span>Green and pervious open areas</span>
-                </label>
-                <label class="layer-row" title="Proxy land-surface classes from TUM buildings, road network, drainage corridors and merged waterbodies.">
-                  <input type="checkbox" data-layer="lulc_proxy" >
-                  <span class="swatch" style="background:#a855f7"></span>
-                  <span>LULC proxy: buildings, roads, drainage and water</span>
-                </label></details><details open><summary>Drainage</summary>
-                <label class="layer-row" title="Mapped drainage links used for 1D-drainage readiness and sink sensitivity.">
-                  <input type="checkbox" data-layer="drainage" >
-                  <span class="swatch" style="background:#15803d"></span>
-                  <span>Drainage network</span>
-                </label>
-                <label class="layer-row" title="Mapped manhole inventory.">
-                  <input type="checkbox" data-layer="manholes" >
-                  <span class="swatch" style="background:#0f3d2e"></span>
-                  <span>Manholes</span>
-                </label></details><details open><summary>Water system</summary>
-                <label class="layer-row" title="Local waterbody polygons.">
-                  <input type="checkbox" data-layer="waterbodies" checked>
-                  <span class="swatch" style="background:#0ea5e9"></span>
-                  <span>Krishna, reservoir and Budameru water bodies</span>
-                </label>
-                <label class="layer-row" title="OSM canal review alignments plus extended Budameru rivulet/canal.">
-                  <input type="checkbox" data-layer="canals_budameru" checked>
-                  <span class="swatch" style="background:#b45309"></span>
-                  <span>Major canals and extended Budameru</span>
-                </label>
-                <label class="layer-row" title="Review arrows for Krishna, Budameru and canal flow direction.">
-                  <input type="checkbox" data-layer="flow_arrows" checked>
-                  <span class="swatch" style="background:#7c2d12"></span>
-                  <span>Waterbody flow direction arrows</span>
-                </label>
-                <label class="layer-row" title="Budameru breach-susceptibility review layer for boundary and inflow-risk context.">
-                  <input type="checkbox" data-layer="budameru_breach_susceptibility" >
-                  <span class="swatch" style="background:#be123c"></span>
-                  <span>Budameru breach susceptibility</span>
-                </label></details><details open><summary>Coupling</summary>
-                <label class="layer-row" title="Drainage pumps, candidate outfalls and FloodRESQ exchange points.">
-                  <input type="checkbox" data-layer="pumps_outfalls" checked>
-                  <span class="swatch" style="background:#ea580c"></span>
-                  <span>Pumps, outfalls and exchange points</span>
-                </label>
-                <label class="layer-row" title="Pump-to-drain and pump-to-waterbody provisional connectors.">
-                  <input type="checkbox" data-layer="pump_connectors" >
-                  <span class="swatch" style="background:#7c3aed"></span>
-                  <span>Pump connection review lines</span>
-                </label></details><details open><summary>Model setup</summary>
-                <label class="layer-row" title="2D computation domain plus river, canal, pump, drainage and high-exposure urban refinement zones.">
-                  <input type="checkbox" data-layer="mesh_refinement" >
-                  <span class="swatch" style="background:#db2777"></span>
-                  <span>FloodRESQ domain and adaptive refinement zones</span>
-                </label>
-                <label class="layer-row" title="DEM validity, filled model-surface continuity, hydro-corridor connectivity and Budameru boundary point.">
-                  <input type="checkbox" data-layer="domain_continuity" >
-                  <span class="swatch" style="background:#16a34a"></span>
-                  <span>Domain continuity QA</span>
-                </label></details><details open><summary>Terrain / Hydroconditioning</summary>
-                <label class="layer-row" title="20 m clipped DEM/DTM model surface. Current source is DEM_VMB with domain gaps filled for modeling continuity.">
-                  <input type="checkbox" data-layer="terrain_dem" >
-                  <span class="swatch" style="background:#84cc16"></span>
-                  <span>DEM/DTM model surface</span>
-                </label>
-                <label class="layer-row" title="Hillshade derived from the gap-filled 20 m terrain surface.">
-                  <input type="checkbox" data-layer="terrain_hillshade" >
-                  <span class="swatch" style="background:#737373"></span>
-                  <span>Terrain hillshade</span>
-                </label>
-                <label class="layer-row" title="Slope derivative used to review terrain gradients, levee-like breaks and flow-path sensitivity.">
-                  <input type="checkbox" data-layer="terrain_slope" >
-                  <span class="swatch" style="background:#c2410c"></span>
-                  <span>Slope / local relief</span>
-                </label>
-                <label class="layer-row" title="Draft burn-in from merged waterbodies, major canals, Budameru and drainage corridors.">
-                  <input type="checkbox" data-layer="hydroconditioned_dem_delta" >
-                  <span class="swatch" style="background:#a16207"></span>
-                  <span>Hydroconditioned DEM burn-in</span>
-                </label></details><details open><summary>Physics inputs</summary>
-                <label class="layer-row" title="Surface classes used to assign roughness, infiltration and obstruction behavior.">
-                  <input type="checkbox" data-layer="physics_surface_class" >
-                  <span class="swatch" style="background:#9333ea"></span>
-                  <span>Manning/LULC surface partition</span>
-                </label>
-                <label class="layer-row" title="Manning n raster applied in the FloodRESQ run, including roads, buildings, vegetation, water and open corridors.">
-                  <input type="checkbox" data-layer="spatial_manning_n" >
-                  <span class="swatch" style="background:#65a30d"></span>
-                  <span>Spatial Manning n roughness</span>
-                </label>
-                <label class="layer-row" title="Spatial infiltration-capacity proxy derived from hydrologic-soil-group proxy and land-surface class.">
-                  <input type="checkbox" data-layer="infiltration_capacity" >
-                  <span class="swatch" style="background:#84cc16"></span>
-                  <span>Infiltration capacity</span>
-                </label>
-                <label class="layer-row" title="Hydrologic soil groups represented as a replaceable proxy until authoritative soil classification is added.">
-                  <input type="checkbox" data-layer="soil_hydrologic_group_proxy" >
-                  <span class="swatch" style="background:#ca8a04"></span>
-                  <span>Hydrologic soil group proxy</span>
-                </label>
-                <label class="layer-row" title="Rasterized building-footprint fraction used for building obstruction and high roughness.">
-                  <input type="checkbox" data-layer="building_obstruction_fraction" >
-                  <span class="swatch" style="background:#7f1d1d"></span>
-                  <span>Building obstruction fraction</span>
-                </label>
-                <label class="layer-row" title="Hydroconditioned terrain surface used by the current physics-enabled run.">
-                  <input type="checkbox" data-layer="conditioned_hydraulic_terrain" >
-                  <span class="swatch" style="background:#4d7c0f"></span>
-                  <span>Conditioned hydraulic terrain</span>
-                </label></details><details open><summary>RTGS AWARE</summary>
-                <label class="layer-row" title="Target symbols for top modeled flood hotspots and the Budameru NRSC inflow boundary condition point.">
-                  <input type="checkbox" data-layer="rtgs_hotspots" checked>
-                  <span class="swatch" style="background:#dc2626"></span>
-                  <span>RTGS AWARE flood hotspots and NRSC inflow boundary</span>
-                </label>
-                <label class="layer-row" title="Ward-scale review layer for operational response prioritization.">
-                  <input type="checkbox" data-layer="urban_ward_routine" >
-                  <span class="swatch" style="background:#7c3aed"></span>
-                  <span>Ward-level response routine</span>
-                </label></details><details open><summary>Boundary forcing</summary>
-                <label class="layer-row" title="Boundary inflow and river/canal stage targets; shown as a chart panel on Overview.">
-                  <input type="checkbox" data-layer="boundary_hydrographs" >
-                  <span class="swatch" style="background:#f59e0b"></span>
-                  <span>Boundary hydrographs and stage templates</span>
-                </label></details>
-        </div>
-      </aside>
-      <div class="map-card" id="mapCard">
-        <div class="map-stage" id="mapStage">
-          <img class="base-map" src="assets/maps/base_context.png?v=20260504062612" alt="Base map">
-          <img class="result-layer" id="resultLayer" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Selected flood result">
-          <img class="overlay-layer" id="layer-scenario_envelope" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/scenario_envelope_overlay.png?v=20260504062612" loading="lazy" decoding="async" alt="Scenario max-depth envelope" style="opacity:0.35; z-index:4; display:none;"><img class="overlay-layer" id="layer-administrative" src="assets/maps/styled/administrative_styled.png?v=20260504062612" data-src="assets/maps/styled/administrative_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Municipal boundary and wards" style="opacity:0.86; z-index:18; display:block;"><img class="overlay-layer" id="layer-roads" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/roads_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Road network" style="opacity:0.78; z-index:18; display:none;"><img class="overlay-layer" id="layer-buildings_tum_gba" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/buildings_tum_gba_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Building footprints (TUM GlobalBuildingAtlas)" style="opacity:0.68; z-index:18; display:none;"><img class="overlay-layer" id="layer-green_open_space" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/green_open_space.png?v=20260504062612" loading="lazy" decoding="async" alt="Green and pervious open areas" style="opacity:0.72; z-index:4; display:none;"><img class="overlay-layer" id="layer-drainage" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/drainage_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Drainage network" style="opacity:0.88; z-index:18; display:none;"><img class="overlay-layer" id="layer-manholes" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/manholes_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Manholes" style="opacity:0.88; z-index:18; display:none;"><img class="overlay-layer" id="layer-waterbodies" src="assets/maps/waterbodies.png?v=20260504062612" data-src="assets/maps/waterbodies.png?v=20260504062612" loading="lazy" decoding="async" alt="Krishna, reservoir and Budameru water bodies" style="opacity:0.82; z-index:18; display:block;"><img class="overlay-layer" id="layer-canals_budameru" src="assets/maps/styled/canals_budameru_styled.png?v=20260504062612" data-src="assets/maps/styled/canals_budameru_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Major canals and extended Budameru" style="opacity:0.92; z-index:18; display:block;"><img class="overlay-layer" id="layer-flow_arrows" src="assets/maps/styled/flow_arrows_styled.png?v=20260504062612" data-src="assets/maps/styled/flow_arrows_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Waterbody flow direction arrows" style="opacity:0.96; z-index:8; display:block;"><img class="overlay-layer" id="layer-pumps_outfalls" src="assets/maps/styled/pumps_outfalls_styled.png?v=20260504062612" data-src="assets/maps/styled/pumps_outfalls_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Pumps, outfalls and exchange points" style="opacity:0.98; z-index:18; display:block;"><img class="overlay-layer" id="layer-pump_connectors" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/pump_connectors_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Pump connection review lines" style="opacity:0.94; z-index:18; display:none;"><img class="overlay-layer" id="layer-mesh_refinement" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/mesh_refinement_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="FloodRESQ domain and adaptive refinement zones" style="opacity:0.86; z-index:4; display:none;"><img class="overlay-layer" id="layer-lulc_proxy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/lulc_proxy.png?v=20260504062612" loading="lazy" decoding="async" alt="LULC proxy: buildings, roads, drainage and water" style="opacity:0.62; z-index:4; display:none;"><img class="overlay-layer" id="layer-terrain_dem" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/terrain_dem.png?v=20260504062612" loading="lazy" decoding="async" alt="DEM/DTM model surface" style="opacity:0.55; z-index:4; display:none;"><img class="overlay-layer" id="layer-terrain_hillshade" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/terrain_hillshade.png?v=20260504062612" loading="lazy" decoding="async" alt="Terrain hillshade" style="opacity:0.55; z-index:4; display:none;"><img class="overlay-layer" id="layer-terrain_slope" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/terrain_slope.png?v=20260504062612" loading="lazy" decoding="async" alt="Slope / local relief" style="opacity:0.55; z-index:4; display:none;"><img class="overlay-layer" id="layer-hydroconditioned_dem_delta" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/hydroconditioned_dem_delta.png?v=20260504062612" loading="lazy" decoding="async" alt="Hydroconditioned DEM burn-in" style="opacity:0.86; z-index:4; display:none;"><img class="overlay-layer" id="layer-domain_continuity" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/domain_continuity.png?v=20260504062612" loading="lazy" decoding="async" alt="Domain continuity QA" style="opacity:0.86; z-index:4; display:none;"><object class="overlay-layer overlay-object" id="layer-physics_surface_class" data-src="assets/maps/physics_surface_class.svg?v=20260504062612" type="image/svg+xml" aria-label="Manning/LULC surface partition" style="opacity:0.42; z-index:4; display:none;"></object><img class="overlay-layer" id="layer-spatial_manning_n" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/spatial_manning_n.png?v=20260504062612" loading="lazy" decoding="async" alt="Spatial Manning n roughness" style="opacity:0.58; z-index:4; display:none;"><img class="overlay-layer" id="layer-infiltration_capacity" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/infiltration_capacity.png?v=20260504062612" loading="lazy" decoding="async" alt="Infiltration capacity" style="opacity:0.58; z-index:4; display:none;"><img class="overlay-layer" id="layer-soil_hydrologic_group_proxy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/soil_hydrologic_group_proxy.png?v=20260504062612" loading="lazy" decoding="async" alt="Hydrologic soil group proxy" style="opacity:0.86; z-index:4; display:none;"><img class="overlay-layer" id="layer-building_obstruction_fraction" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/building_obstruction_fraction.png?v=20260504062612" loading="lazy" decoding="async" alt="Building obstruction fraction" style="opacity:0.68; z-index:4; display:none;"><img class="overlay-layer" id="layer-conditioned_hydraulic_terrain" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/conditioned_hydraulic_terrain.png?v=20260504062612" loading="lazy" decoding="async" alt="Conditioned hydraulic terrain" style="opacity:0.58; z-index:4; display:none;"><img class="overlay-layer" id="layer-rtgs_hotspots" src="assets/maps/styled/rtgs_aware_hotspots_styled.png?v=f96fb67" data-src="assets/maps/styled/rtgs_aware_hotspots_styled.png?v=f96fb67" loading="lazy" decoding="async" alt="RTGS AWARE flood hotspots and NRSC inflow boundary" style="opacity:0.86; z-index:18; display:block;"><img class="overlay-layer" id="layer-urban_ward_routine" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/urban_ward_routine.png?v=20260504062612" loading="lazy" decoding="async" alt="Ward-level response routine" style="opacity:0.86; z-index:4; display:none;"><object class="overlay-layer overlay-object" id="layer-boundary_hydrographs" data-src="assets/maps/boundary_hydrographs.svg?v=20260504062612" type="image/svg+xml" aria-label="Boundary hydrographs and stage templates" style="opacity:0.96; z-index:18; display:none;"></object>
-          <img class="overlay-layer" id="layer-budameru_breach_susceptibility" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/budameru_breach_susceptibility.png?v=20260504062612" loading="lazy" decoding="async" alt="Budameru breach susceptibility" style="opacity:0.64; z-index:7; display:none;">
-          <div class="cursor-pin" id="cursorPin"></div>
-          <div class="cursor-tooltip" id="cursorTooltip"></div>
-        </div>
-        <div class="map-footer">
-          <div class="readout" id="cursorReadout">Move cursor on map for UTM and lat/lon</div>
-          <div class="legend" id="resultLegend"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="forcing" class="tab-panel">
-    <div class="metric-grid">
-      <div class="metric"><span>Selected Event</span><b>133 mm</b><small>Historical extreme rainfall | High river/canal state | Budameru inflow 100% | 133 mm rainfall</small></div>
-      <div class="metric"><span>Duration</span><b>12 h</b><small>15-minute reporting interval</small></div>
-      <div class="metric"><span>Budameru Peak</span><b>1,550</b><small>m3/s inflow forcing</small></div>
-      <div class="metric"><span>Peak Depth</span><b>5.82 m</b><small>selected scenario response</small></div>
-      <div class="metric"><span>Peak Wet Area</span><b>4,491 ha</b><small>0.05 m threshold</small></div>
-    </div>
-    <div class="hydro-layout">
-      <div class="panel">
-        <h2>Forcing and Flood Response</h2>
-        <img class="chart-media" src="assets/maps/forcing_hydrograph_panel.png?v=20260504062612" alt="Rainfall, Budameru inflow and modeled flood response chart">
-      </div>
-      <div class="panel">
-        <h2>River and Canal Stage Targets</h2>
-        <div class="stage-grid">
-        <div class="stage-card">
-          <span>Reservoir</span>
-          <b>23.06 m</b>
-          <small>PRAKASAM BARRAGE</small>
-        </div>
-        <div class="stage-card">
-          <span>River</span>
-          <b>18.18 m</b>
-          <small>Krishna River</small>
-        </div>
-        <div class="stage-card">
-          <span>River</span>
-          <b>21.17 m</b>
-          <small>Krishna</small>
-        </div>
-        <div class="stage-card">
-          <span>Budameru Canal</span>
-          <b>20.65 m</b>
-          <small>Budameru canal</small>
-        </div></div>
-        <img class="chart-media" src="assets/maps/boundary_conditions_stage_profiles.png?v=20260504062612" alt="Boundary condition stage profiles">
-      </div>
-    </div>
-    <div class="hydro-layout" style="margin-top:14px;">
-      <div class="panel">
-        <h2>Rainfall Hyetograph</h2>
-        <img class="chart-media" src="assets/maps/rainfall_hyetograph.png?v=20260504062612" alt="Rainfall hyetograph">
-      </div>
-      <div class="panel">
-        <h2>Boundary Location Layer</h2>
-        <p>The boundary layer remains available as a map overlay in the Overview and Interactive Map tabs. This tab uses chart-first views so the forcing is readable at review scale.</p>
-        <div class="link-grid" style="grid-template-columns:1fr;">
-          <a href="assets/maps/boundary_hydrographs.svg?v=20260504062612">Open boundary map overlay</a>
-          <a href="assets/forcing/budameru_inflow_hydrograph.csv">Open Budameru inflow CSV</a>
-          <a href="assets/forcing/selected_rainfall_hyetograph.csv">Open rainfall forcing CSV</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="animation" class="tab-panel">
-    <div class="animation-dashboard">
-      <div class="panel">
-        <h2>Flood Ingress and Egress Animation</h2>
-        <div class="animation-tools">
-          <div class="field"><label for="animationScenarioSelect">Select animation scenario</label><select id="animationScenarioSelect"><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q060">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q080">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_elevated_q100">Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q060">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q080">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_high_q100">Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q060">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 60% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q080">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 80% | 77 mm rainfall</option><option value="hist12h_hist_2024_budameru_peak_12h_normal_q100">Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 100% | 77 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q060">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q080">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_elevated_q100">Historical extreme rainfall | Elevated river/canal state | Budameru inflow 100% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q060">Historical extreme rainfall | High river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q080">Historical extreme rainfall | High river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_high_q100">Historical extreme rainfall | High river/canal state | Budameru inflow 100% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q060">Historical extreme rainfall | Normal river/canal state | Budameru inflow 60% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q080">Historical extreme rainfall | Normal river/canal state | Budameru inflow 80% | 133 mm rainfall</option><option value="hist12h_hist_extreme_2001_2025_12h_normal_q100">Historical extreme rainfall | Normal river/canal state | Budameru inflow 100% | 133 mm rainfall</option></select></div>
-          <div class="field"><label for="animationSpeed">Playback speed</label><input type="range" id="animationSpeed" min="70" max="380" value="150"></div>
-          <div class="field"><label for="animationLayerOpacity">Context opacity <span id="animationLayerOpacityText">88%</span></label><input type="range" id="animationLayerOpacity" min="25" max="100" value="88"></div>
-        </div>
-        <div class="animation-stage smooth-mode" id="animationStage">
-          <img class="anim-base" src="assets/maps/base_context.png?v=20260504062612" alt="Base map">
-          <img class="anim-depth active" id="animFrameA" src="assets/video/scenarios/hist12h_hist_extreme_2001_2025_12h_high_q100/smooth_frame_000.png?v=20260504062612" alt="Smoothed flood depth frame">
-          <img class="anim-depth" id="animFrameB" src="assets/video/scenarios/hist12h_hist_extreme_2001_2025_12h_high_q100/smooth_frame_000.png?v=20260504062612" alt="">
-          <img class="anim-context-layer" id="anim-layer-administrative" src="assets/maps/styled/administrative_styled.png?v=20260504062612" data-src="assets/maps/styled/administrative_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Municipal boundary and wards" style="opacity:0.86; z-index:18; display:block;"><img class="anim-context-layer" id="anim-layer-roads" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/roads_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Road network" style="opacity:0.78; z-index:18; display:none;"><img class="anim-context-layer" id="anim-layer-buildings_tum_gba" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/buildings_tum_gba_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Building footprints (TUM GlobalBuildingAtlas)" style="opacity:0.68; z-index:18; display:none;"><img class="anim-context-layer" id="anim-layer-green_open_space" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/green_open_space.png?v=20260504062612" loading="lazy" decoding="async" alt="Green and pervious open areas" style="opacity:0.72; z-index:4; display:none;"><img class="anim-context-layer" id="anim-layer-drainage" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/drainage_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Drainage network" style="opacity:0.88; z-index:18; display:none;"><img class="anim-context-layer" id="anim-layer-waterbodies" src="assets/maps/waterbodies.png?v=20260504062612" data-src="assets/maps/waterbodies.png?v=20260504062612" loading="lazy" decoding="async" alt="Krishna, reservoir and Budameru water bodies" style="opacity:0.82; z-index:18; display:block;"><img class="anim-context-layer" id="anim-layer-canals_budameru" src="assets/maps/styled/canals_budameru_styled.png?v=20260504062612" data-src="assets/maps/styled/canals_budameru_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Major canals and extended Budameru" style="opacity:0.92; z-index:18; display:block;"><img class="anim-context-layer" id="anim-layer-pumps_outfalls" src="assets/maps/styled/pumps_outfalls_styled.png?v=20260504062612" data-src="assets/maps/styled/pumps_outfalls_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Pumps, outfalls and exchange points" style="opacity:0.98; z-index:18; display:block;"><img class="anim-context-layer" id="anim-layer-pump_connectors" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="assets/maps/styled/pump_connectors_styled.png?v=20260504062612" loading="lazy" decoding="async" alt="Pump connection review lines" style="opacity:0.94; z-index:18; display:none;"><img class="anim-context-layer" id="anim-layer-rtgs_hotspots" src="assets/maps/styled/rtgs_aware_hotspots_styled.png?v=f96fb67" data-src="assets/maps/styled/rtgs_aware_hotspots_styled.png?v=f96fb67" loading="lazy" decoding="async" alt="RTGS AWARE flood hotspots and NRSC inflow boundary" style="opacity:0.86; z-index:18; display:block;">
-          <div class="animation-time-badge">
-            <b id="animTimeLabel">0.00 h</b>
-            <span id="animMetricLabel">Depth, velocity and wet-area response</span>
+          <div class="field">
+            <label for="rainfall">Rainfall condition</label>
+            <select id="rainfall"></select>
+            <p class="hint" id="rainfallHint"></p>
           </div>
-          <div class="depth-legend">
-            <b>Smoothed depth surface</b>
-            <div class="depth-ramp"></div>
-            <div class="legend-labels"><span>shallow</span><span>deep</span></div>
+          <div class="field">
+            <label for="hydrograph">Budameru inflow</label>
+            <select id="hydrograph"></select>
+            <p class="hint" id="hydrographHint"></p>
+          </div>
+          <div class="field">
+            <label for="stage">River/canal backwater</label>
+            <select id="stage"></select>
+            <p class="hint" id="stageHint"></p>
+          </div>
+          <div class="field">
+            <label for="runLength">Forecast window</label>
+            <select id="runLength"></select>
+            <p class="hint" id="runLengthHint"></p>
+          </div>
+          <div class="button-row">
+            <button id="runBtn" type="button">Run Nowcast</button>
+            <button id="refreshBtn" class="secondary" type="button">Refresh Runs</button>
+          </div>
+          <div class="notice" id="physicsNote">Model setup will load from the server.</div>
+          <div class="notice" id="awarePanel">
+            <strong>Live rain and river/canal data</strong>
+            <p class="hint" id="awareStatus">Checking live rain and river/canal data feed.</p>
+            <label class="inline-check" for="useAwareLatest">
+              <input id="useAwareLatest" type="checkbox">
+              <span>Use the latest reviewed live rain and river/canal snapshot for the next run.</span>
+            </label>
+            <div class="button-row">
+              <button id="awareDryBtn" class="secondary" type="button">Check Data Request</button>
+              <button id="awareFetchBtn" class="secondary" type="button">Fetch Latest Data</button>
+              <button id="awareRunBtn" type="button" disabled>Run With Live Data</button>
+            </div>
+            <div class="interpretation" id="awareBox">
+              <strong>Live Data Snapshot</strong>
+              No live snapshot loaded yet.
+            </div>
+          </div>
+          <div class="notice" id="scenarioChat">
+            <strong>Story to Run</strong>
+            <p class="hint" id="narrativeHint">Write a short story of the expected flood situation. FloodAstra converts it into rainfall, Budameru inflow, river/canal condition and forecast-window numbers before any run starts.</p>
+            <div class="prompt-chips" aria-label="Scenario examples">
+              <button class="prompt-chip" type="button" data-scenario-prompt="Story: It is evening in Vijayawada. Rain is expected to intensify for several hours, Budameru is carrying a strong inflow, and Krishna/canal levels are high enough to slow drainage. Run a quick 10 minute check first.">Story quick check</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run a quick 10 minute check with severe rain, high river/canal backwater and Budameru peak inflow.">Severe quick check</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run a full 6 hour forecast with 80 mm rain over the active window, Budameru at 60 percent and elevated river/canal backwater.">80 mm + Budameru 60%</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run no local rain with normal river/canal condition and Budameru lower inflow for a quick 10 minute check.">No rain boundary check</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run the standard heavy rain case with high river/canal backwater for the full 6 hour forecast window.">Standard full run</button>
+            </div>
+            <div class="field" style="margin-top:12px;">
+              <label for="narrative">Story or scenario message</label>
+              <textarea id="narrative" placeholder="Example: Story: rain increases in the evening, Budameru is at 60 percent of peak, river/canal levels are elevated, and we need a full 6 hour forecast."></textarea>
+            </div>
+            <div class="button-row">
+              <button id="interpretBtn" class="secondary" type="button">Convert Story</button>
+              <button id="runNarrativeBtn" type="button">Convert Story and Run</button>
+            </div>
+          </div>
+          <div class="interpretation" id="interpretationBox">
+            <strong>Story conversion</strong>
+            No story converted yet.
           </div>
         </div>
-        <div class="animation-controls">
-          <button class="tab-btn" id="playFrames" type="button">Play</button>
-          <input type="range" min="0" max="48" value="0" id="frameSlider">
-          <span class="pill" id="frameLabel">Frame 0</span>
+      </section>
+
+      <section class="panel">
+        <h2>Active Run</h2>
+        <div class="panel-body">
+          <div class="job-title">
+            <div>
+              <strong id="activeName">No active job selected</strong>
+              <div class="hint mono" id="activeId"></div>
+            </div>
+            <span class="pill" id="activeStatus">idle</span>
+          </div>
+
+          <div class="status-card">
+            <div class="metric">
+              <div class="label">Elapsed</div>
+              <div class="value" id="elapsed">-</div>
+            </div>
+            <div class="metric">
+              <div class="label">ETA</div>
+              <div class="value" id="eta">-</div>
+            </div>
+            <div class="metric">
+              <div class="label">Forecast Time Covered</div>
+              <div class="value" id="modelClock">-</div>
+            </div>
+            <div class="metric">
+              <div class="label">Current Step</div>
+              <div class="value" id="phase">-</div>
+            </div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span id="progressText">Waiting for run</span>
+              <span id="progressPct">0%</span>
+            </div>
+            <div class="progress"><div class="bar" id="progressBar"></div></div>
+          </div>
+
+          <div class="quicklook" id="quicklook">
+            <div class="empty">Run a nowcast to show the boundary-aware flood map here.</div>
+          </div>
+          <div class="outputs" id="outputs"></div>
         </div>
-        <div class="animation-kpis">
-          <div class="animation-kpi"><span>Max depth</span><b id="animDepthKpi">-</b></div>
-          <div class="animation-kpi"><span>Max velocity</span><b id="animSpeedKpi">-</b></div>
-          <div class="animation-kpi"><span>Wet area</span><b id="animWetAreaKpi">-</b></div>
-        </div>
-      </div>
-      <div class="panel">
-        <h2>Animation Layers</h2>
-        <p id="animationScenarioDescription">Historical extreme rainfall | High river/canal state | Budameru inflow 100% | 133 mm rainfall</p>
-        <div class="phase-track" id="phaseTrack"><span data-phase="rising" class="active">Ingress</span><span data-phase="peak">Peak window</span><span data-phase="recession">Egress</span></div>
-        <div class="control-block">
-          <h3>Context Overlays</h3>
-          
-        <label class="layer-row" title="Municipal boundary and 71 revenue wards.">
-          <input type="checkbox" data-animation-layer="administrative" checked>
-          <span class="swatch" style="background:#111827"></span>
-          <span>Municipal boundary and wards</span>
-        </label>
-        <label class="layer-row" title="Local road network from source shapefile.">
-          <input type="checkbox" data-animation-layer="roads" >
-          <span class="swatch" style="background:#4b5563"></span>
-          <span>Road network</span>
-        </label>
-        <label class="layer-row" title="TUM GlobalBuildingAtlas LoD1 building polygons clipped to Vijayawada municipal boundary.">
-          <input type="checkbox" data-animation-layer="buildings_tum_gba" >
-          <span class="swatch" style="background:#8b7355"></span>
-          <span>Building footprints (TUM GlobalBuildingAtlas)</span>
-        </label>
-        <label class="layer-row" title="Tree cover, shrub/grass, cropland, sparse pervious and wetland cells from the surface-physics classification.">
-          <input type="checkbox" data-animation-layer="green_open_space" >
-          <span class="swatch" style="background:#22c55e"></span>
-          <span>Green and pervious open areas</span>
-        </label>
-        <label class="layer-row" title="Mapped drainage links used for 1D-drainage readiness and sink sensitivity.">
-          <input type="checkbox" data-animation-layer="drainage" >
-          <span class="swatch" style="background:#15803d"></span>
-          <span>Drainage network</span>
-        </label>
-        <label class="layer-row" title="Local waterbody polygons.">
-          <input type="checkbox" data-animation-layer="waterbodies" checked>
-          <span class="swatch" style="background:#0ea5e9"></span>
-          <span>Krishna, reservoir and Budameru water bodies</span>
-        </label>
-        <label class="layer-row" title="OSM canal review alignments plus extended Budameru rivulet/canal.">
-          <input type="checkbox" data-animation-layer="canals_budameru" checked>
-          <span class="swatch" style="background:#b45309"></span>
-          <span>Major canals and extended Budameru</span>
-        </label>
-        <label class="layer-row" title="Drainage pumps, candidate outfalls and FloodRESQ exchange points.">
-          <input type="checkbox" data-animation-layer="pumps_outfalls" checked>
-          <span class="swatch" style="background:#ea580c"></span>
-          <span>Pumps, outfalls and exchange points</span>
-        </label>
-        <label class="layer-row" title="Pump-to-drain and pump-to-waterbody provisional connectors.">
-          <input type="checkbox" data-animation-layer="pump_connectors" >
-          <span class="swatch" style="background:#7c3aed"></span>
-          <span>Pump connection review lines</span>
-        </label>
-        <label class="layer-row" title="Target symbols for top modeled flood hotspots and the Budameru NRSC inflow boundary condition point.">
-          <input type="checkbox" data-animation-layer="rtgs_hotspots" checked>
-          <span class="swatch" style="background:#dc2626"></span>
-          <span>RTGS AWARE flood hotspots and NRSC inflow boundary</span>
-        </label>
-        </div>
-        <div class="control-block">
-          <h3>Review Notes</h3>
-          <p>The smooth view interpolates exported timestep depth to a continuous surface for presentation. Use the scenario dropdown to compare flood ingress, peak spread and egress timing across completed forcing states.</p>
-          <p>Use the layer toggles to bring roads, buildings, drainage, water bodies, pump links and hotspot targets into the movie view.</p>
-        </div>
-      </div>
+      </section>
     </div>
-  </section>
 
-  <section id="scenarios" class="tab-panel">
-    <div class="panel">
-      <h2>Scenario Library</h2>
-      <p>Each completed scenario is available as depth, wet-extent and velocity overlays. Future hyetograph and hydrograph ensembles can be appended to this same selector without changing the stakeholder workflow.</p>
-      <div class="table-wrap"><table><thead><tr><th>Scenario</th><th>Duration</th><th>Profile</th><th>Max depth</th><th>Wet area</th><th>Final volume</th></tr></thead><tbody>
-        <tr>
-          <td>Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 60% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>Elevated / Budameru 60%</td>
-          <td>5.27 m</td>
-          <td>4,265 ha</td>
-          <td>48,634,321 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 80% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>Elevated / Budameru 80%</td>
-          <td>5.56 m</td>
-          <td>4,520 ha</td>
-          <td>61,471,597 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 100% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>Elevated / Budameru 100%</td>
-          <td>5.80 m</td>
-          <td>4,804 ha</td>
-          <td>74,312,571 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 60% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>High / Budameru 60%</td>
-          <td>5.27 m</td>
-          <td>4,349 ha</td>
-          <td>53,465,765 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 80% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>High / Budameru 80%</td>
-          <td>5.56 m</td>
-          <td>4,631 ha</td>
-          <td>66,303,239 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | High river/canal state | Budameru inflow 100% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>High / Budameru 100%</td>
-          <td>5.80 m</td>
-          <td>4,873 ha</td>
-          <td>79,144,761 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 60% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>Normal / Budameru 60%</td>
-          <td>5.27 m</td>
-          <td>4,139 ha</td>
-          <td>44,484,660 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 80% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>Normal / Budameru 80%</td>
-          <td>5.56 m</td>
-          <td>4,430 ha</td>
-          <td>57,320,897 m3</td>
-        </tr>
-        <tr>
-          <td>Observed Aug 2024 rainfall | Normal river/canal state | Budameru inflow 100% | 77 mm rainfall</td>
-          <td>720 min</td>
-          <td>Normal / Budameru 100%</td>
-          <td>5.80 m</td>
-          <td>4,714 ha</td>
-          <td>70,160,957 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | Elevated river/canal state | Budameru inflow 60% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>Elevated / Budameru 60%</td>
-          <td>5.29 m</td>
-          <td>4,605 ha</td>
-          <td>52,902,765 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | Elevated river/canal state | Budameru inflow 80% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>Elevated / Budameru 80%</td>
-          <td>5.57 m</td>
-          <td>4,876 ha</td>
-          <td>65,756,555 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | Elevated river/canal state | Budameru inflow 100% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>Elevated / Budameru 100%</td>
-          <td>5.81 m</td>
-          <td>5,072 ha</td>
-          <td>78,611,503 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | High river/canal state | Budameru inflow 60% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>High / Budameru 60%</td>
-          <td>5.29 m</td>
-          <td>4,675 ha</td>
-          <td>57,740,822 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | High river/canal state | Budameru inflow 80% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>High / Budameru 80%</td>
-          <td>5.57 m</td>
-          <td>4,958 ha</td>
-          <td>70,594,742 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | High river/canal state | Budameru inflow 100% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>High / Budameru 100%</td>
-          <td>5.82 m</td>
-          <td>5,128 ha</td>
-          <td>83,449,848 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | Normal river/canal state | Budameru inflow 60% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>Normal / Budameru 60%</td>
-          <td>5.29 m</td>
-          <td>4,512 ha</td>
-          <td>48,747,498 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | Normal river/canal state | Budameru inflow 80% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>Normal / Budameru 80%</td>
-          <td>5.57 m</td>
-          <td>4,777 ha</td>
-          <td>61,600,549 m3</td>
-        </tr>
-        <tr>
-          <td>Historical extreme rainfall | Normal river/canal state | Budameru inflow 100% | 133 mm rainfall</td>
-          <td>720 min</td>
-          <td>Normal / Budameru 100%</td>
-          <td>5.81 m</td>
-          <td>4,998 ha</td>
-          <td>74,454,629 m3</td>
-        </tr></tbody></table></div>
-    </div>
-  </section>
-
-  <section id="poc" class="tab-panel">
-    <div class="panel">
-      <h2>Model Scope</h2>
-      <p class="poc-callout">This review build demonstrates how a Vijayawada flood decision-support workflow can combine local hydraulic context, public-domain rainfall and boundary forcing, adaptive FloodRESQ scenario outputs, and operational review layers in one stakeholder-facing interface. The FloodRESQ solvers are designed in-house by IIT Gandhinagar MIR Lab.</p>
-      <div class="poc-grid">
-        <div class="poc-card">
-          <h3>What It Demonstrates</h3>
-          <p>Interactive review of flood depth, wet extent and velocity alongside city context, river/canal conditions, drainage assets, pumps, buildings, green/pervious areas and terrain-derived physics layers.</p>
-        </div>
-        <div class="poc-card">
-          <h3>Current Scenario Set</h3>
-          <p>18 completed historical-forcing scenarios covering observed Aug 2024 rainfall, a historical extreme rainfall case, normal/elevated/high river-canal states and Budameru inflow scaling.</p>
-        </div>
-        <div class="poc-card">
-          <h3>Decision Use</h3>
-          <p>Supports quick screening of likely inundation zones, flood hotspots, boundary-condition sensitivity, waterbody flow direction, and where field verification or operational attention should be focused.</p>
+    <section class="panel" style="margin-top:18px;">
+      <h2>Your FloodAstra Vijayawada</h2>
+      <div class="panel-body">
+        <div class="assistant-hero">
+          <div class="assistant-intro">
+            <div class="kicker">FloodAstra query desk</div>
+            <h3>Your city. Your prompts. Responses tied to FloodAstra evidence.</h3>
+            <p>Ask about latest nowcast results, worst wards, road/locality exposure, pipe surcharge, layers, runtime, Budameru context, or what should be checked first. Verified Evidence mode uses only approved local FloodAstra outputs. Expanded Answer mode keeps local evidence first and can add outside context only when the question needs it.</p>
+            <div class="mode-row" role="group" aria-label="Assistant mode">
+              <button class="mode-button active" id="modeVerified" type="button">Verified Evidence</button>
+              <button class="mode-button" id="modeHybrid" type="button">Expanded Answer</button>
+            </div>
+            <div class="assistant-status" id="assistantStatus">Assistant status will load from the server.</div>
+            <div class="prompt-chips">
+              <button class="prompt-chip" type="button" data-prompt="Which wards are worst in the latest Vijayawada run?">Worst wards</button>
+              <button class="prompt-chip" type="button" data-prompt="Which roads or localities should be checked first?">Field checks</button>
+              <button class="prompt-chip" type="button" data-prompt="Explain pipe surcharge and backflow in simple words.">Backflow</button>
+              <button class="prompt-chip" type="button" data-prompt="Use hybrid mode: what is the public historical context of Budameru flooding in Vijayawada?">Budameru context</button>
+            </div>
+          </div>
+          <div class="assistant-box">
+            <div class="chat-log" id="assistantMessages">
+              <div class="message assistant"><strong>FloodAstra</strong>Ask a Vijayawada nowcast or preparedness question. I will use the latest local run evidence first.</div>
+            </div>
+            <div class="chat-form">
+              <label for="assistantQuestion">Ask FloodAstra</label>
+              <textarea id="assistantQuestion" placeholder="Example: What is happening near the worst road exposure locations, and what should the field team check first?"></textarea>
+              <div class="button-row">
+                <button id="assistantAskBtn" type="button">Ask</button>
+                <button id="assistantClearBtn" class="secondary" type="button">Clear</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="grid-2" style="margin-top:14px;">
-      <div class="panel">
-        <h2>Evidence Layers Included</h2>
-        <ul class="poc-list">
-          <li>Hydraulic context: Krishna water bodies, extended Budameru, major canals, flow-direction arrows, pump and outfall exchange points.</li>
-          <li>Urban exposure context: municipal boundary, wards, roads, building footprints, hotspots and ward-level response routine layer.</li>
-          <li>Terrain and surface physics: DEM/DTM model surface, hydroconditioned terrain, slope, Manning/LULC partition, roughness, infiltration, soil-group proxy and building obstruction fraction.</li>
-          <li>Forcing context: rainfall hyetographs, Budameru inflow hydrograph, river/canal stage templates and scenario-specific flood response curves.</li>
-        </ul>
+    </section>
+
+    <section class="panel" style="margin-top:18px;">
+      <h2>Recent Jobs</h2>
+      <div class="panel-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Created</th>
+              <th>Run</th>
+              <th>Selections</th>
+              <th>Status</th>
+              <th>Outputs</th>
+            </tr>
+          </thead>
+          <tbody id="jobsBody">
+            <tr><td colspan="5" class="empty">No jobs loaded yet.</td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="panel">
-        <h2>Review Workflow</h2>
-        <ul class="poc-list">
-          <li>Start in Overview to turn context layers on/off and inspect the city-scale map.</li>
-          <li>Use Interactive Map for depth, extent and velocity overlays with cursor readout for location, approximate depth, velocity and wet duration.</li>
-          <li>Use Hydrographs to understand rainfall, Budameru inflow, river/canal target stages and flood-response timing.</li>
-          <li>Use Animation to review ingress and egress across the modeled event window.</li>
-          <li>Use Scenario Library to compare the completed scenario envelope across rainfall and antecedent-condition combinations.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="panel" style="margin-top:14px;">
-      <h2>Current Review Status</h2>
-      <p>The current package is a stakeholder review build. It is designed to show that the layer stack, scenario toggles, hydrograph panels, cursor-based review, animation and flood-variable overlays work together as a coherent decision-support experience.</p>
-      <div class="tag-list">
-        <span class="tag">Interactive context map</span>
-        <span class="tag">Depth / extent / velocity</span>
-        <span class="tag">Hydrographs and stage targets</span>
-        <span class="tag">Flood ingress-egress animation</span>
-        <span class="tag">Hotspot review</span>
-        <span class="tag">Scenario comparison</span>
-      </div>
-    </div>
-  </section>
-</div>
+    </section>
+  </main>
 
-<script>
-(function() {
-  const data = window.VJ_DSS_DATA;
-  const bounds = data.map.bounds_utm44n;
-  const cursorGrids = window.VJ_CURSOR_GRIDS || null;
-  const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-  let playTimer = null;
-
-  document.querySelectorAll('img').forEach(img => {
-    img.addEventListener('error', () => {
-      img.src = transparentPixel;
-      img.style.display = 'none';
-    });
-  });
-
-  const legends = {
-    depth: ['Maximum depth, metres', 'linear-gradient(90deg, rgba(189,228,247,.65), rgba(59,161,214,.8), rgba(14,82,179,.9), rgba(6,23,84,.96))', ['0.03','1','3','5.2+ m']],
-    extent: ['Wet extent', 'linear-gradient(90deg, rgba(16,137,170,.20), rgba(16,137,170,.78))', ['dry','wet footprint']],
-    speed: ['Velocity magnitude, m/s', 'linear-gradient(90deg, rgba(250,226,94,.65), rgba(245,117,39,.82), rgba(193,30,53,.9), rgba(90,18,107,.96))', ['0.02','0.5','1','2+']]
-  };
-  function scenario(id) { return data.scenarios.find(s => s.run_id === id) || data.scenarios[0]; }
-  function updateLegend(resultType, resultLegend) {
-    const l = legends[resultType];
-    resultLegend.innerHTML = `<b>${l[0]}</b><div class="legend-ramp" style="background:${l[1]}"></div><div class="legend-labels">${l[2].map(x => `<span>${x}</span>`).join('')}</div>`;
-  }
-  function scenarioText(s, resultType) {
-    const maxDepth = Number(s.max_depth_m || 0);
-    const maxSpeed = Number(s.max_speed_mps || 0);
-    const p95Speed = Number(s.p95_speed_mps || 0);
-    const wetArea = Number(s.wet_area_ha || 0);
-    const finalVolume = Number(s.final_surface_volume_m3 || 0);
-    if (resultType === 'speed') {
-      return `Velocity view: max ${maxSpeed.toFixed(2)} m/s; p95 ${p95Speed.toFixed(2)} m/s.`;
+  <script>
+    const LIVE_RUNNER_URL = "http://127.0.0.1:8788/";
+    const API_BASE_STORAGE_KEY = "floodastra:vijayawada:apiBase";
+    const API_USER_STORAGE_KEY = "floodastra:vijayawada:apiUser";
+    const API_PASSWORD_STORAGE_KEY = "floodastra:vijayawada:apiPassword";
+    if (window.location.protocol === "file:") {
+      const target = new URL(LIVE_RUNNER_URL);
+      target.search = window.location.search;
+      target.hash = window.location.hash;
+      document.body.insertAdjacentHTML("afterbegin", `
+        <div style="position:fixed;inset:14px auto auto 14px;z-index:9999;max-width:520px;padding:14px 16px;border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;color:#7c2d12;font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.12);">
+          <strong style="display:block;margin-bottom:4px;">Open through the FloodAstra server</strong>
+          This page was opened as a local file, so the nowcast API cannot be reached. Redirecting to
+          <a href="${target.href}" style="color:#0f766e;font-weight:800;">${target.href}</a>.
+        </div>
+      `);
+      window.location.replace(target.href);
     }
-    if (resultType === 'extent') {
-      return `Wet extent view: ${Math.round(wetArea).toLocaleString()} ha; final volume ${Math.round(finalVolume).toLocaleString()} m3.`;
-    }
-    return `Depth view: max ${maxDepth.toFixed(2)} m; wet area ${Math.round(wetArea).toLocaleString()} ha; final volume ${Math.round(finalVolume).toLocaleString()} m3.`;
-  }
-  function sampleProbe(runId, px, py) {
-    if (!cursorGrids || !cursorGrids.scenarios || !cursorGrids.scenarios[runId]) return null;
-    const grid = cursorGrids.scenarios[runId];
-    const col = Math.max(0, Math.min(cursorGrids.width - 1, Math.floor(px * cursorGrids.width)));
-    const row = Math.max(0, Math.min(cursorGrids.height - 1, Math.floor(py * cursorGrids.height)));
-    const idx = row * cursorGrids.width + col;
-    return {
-      depth: (grid.d[idx] || 0) / cursorGrids.depth_scale,
-      speed: (grid.v[idx] || 0) / cursorGrids.speed_scale,
-      duration: (grid.w[idx] || 0) / cursorGrids.duration_scale
-    };
-  }
-  function formatProbe(probe, scenarioItem) {
-    if (!probe) {
-      return `Depth ${scenarioItem.max_depth_m.toFixed(2)} m max | Velocity ${scenarioItem.max_speed_mps.toFixed(2)} m/s max | Duration ${(scenarioItem.duration_min / 60).toFixed(1)} h`;
-    }
-    return `Depth ${probe.depth.toFixed(2)} m | Velocity ${probe.speed.toFixed(2)} m/s | Wet duration ${probe.duration.toFixed(1)} h`;
-  }
-  function ensureMediaLoaded(element) {
-    const source = element.dataset ? element.dataset.src : '';
-    if (!source) return;
-    const tag = element.tagName.toLowerCase();
-    if (tag === 'object') {
-      if (element.getAttribute('data') !== source) element.setAttribute('data', source);
-    } else if (element.getAttribute('src') !== source) {
-      element.setAttribute('src', source);
-    }
-  }
-
-  function utmToLatLon(easting, northing) {
-    const a = 6378137.0, eccSquared = 0.00669438, k0 = 0.9996;
-    const zoneNumber = 44;
-    const x = easting - 500000.0;
-    const y = northing;
-    const longOrigin = (zoneNumber - 1) * 6 - 180 + 3;
-    const eccPrimeSquared = eccSquared / (1 - eccSquared);
-    const M = y / k0;
-    const mu = M / (a * (1 - eccSquared / 4 - 3 * eccSquared * eccSquared / 64 - 5 * Math.pow(eccSquared, 3) / 256));
-    const e1 = (1 - Math.sqrt(1 - eccSquared)) / (1 + Math.sqrt(1 - eccSquared));
-    const J1 = 3 * e1 / 2 - 27 * Math.pow(e1, 3) / 32;
-    const J2 = 21 * e1 * e1 / 16 - 55 * Math.pow(e1, 4) / 32;
-    const J3 = 151 * Math.pow(e1, 3) / 96;
-    const J4 = 1097 * Math.pow(e1, 4) / 512;
-    const fp = mu + J1 * Math.sin(2 * mu) + J2 * Math.sin(4 * mu) + J3 * Math.sin(6 * mu) + J4 * Math.sin(8 * mu);
-    const sinfp = Math.sin(fp), cosfp = Math.cos(fp), tanfp = Math.tan(fp);
-    const C1 = eccPrimeSquared * cosfp * cosfp;
-    const T1 = tanfp * tanfp;
-    const R1 = a * (1 - eccSquared) / Math.pow(1 - eccSquared * sinfp * sinfp, 1.5);
-    const N1 = a / Math.sqrt(1 - eccSquared * sinfp * sinfp);
-    const D = x / (N1 * k0);
-    const lat = fp - (N1 * tanfp / R1) * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared) * Math.pow(D, 4) / 24 + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eccPrimeSquared - 3 * C1 * C1) * Math.pow(D, 6) / 720);
-    const lon = (D - (1 + 2 * T1 + C1) * Math.pow(D, 3) / 6 + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eccPrimeSquared + 24 * T1 * T1) * Math.pow(D, 5) / 120) / cosfp;
-    return [lat * 180 / Math.PI, longOrigin + lon * 180 / Math.PI];
-  }
-  function setupMapController(cfg) {
-    if (!cfg.scenarioSelect || !cfg.resultLayer || !cfg.mapStage || !cfg.mapCard) return;
-    let resultType = 'depth';
-    function updateResult() {
-      const s = scenario(cfg.scenarioSelect.value);
-      cfg.resultLayer.src = (s.images && s.images[resultType]) || s.image;
-      cfg.resultLayer.style.display = 'block';
-      cfg.resultLayer.style.opacity = Number(cfg.resultOpacity.value) / 100;
-      cfg.opacityText.textContent = `${cfg.resultOpacity.value}%`;
-      cfg.scenarioMeta.textContent = scenarioText(s, resultType);
-      updateLegend(resultType, cfg.resultLegend);
-    }
-    cfg.scenarioSelect.addEventListener('change', updateResult);
-    cfg.resultOpacity.addEventListener('input', updateResult);
-    cfg.resultButtons.forEach(btn => btn.addEventListener('click', () => {
-      resultType = btn.dataset.result;
-      cfg.resultButtons.forEach(x => x.classList.toggle('active', x === btn));
-      updateResult();
-    }));
-
-    document.querySelectorAll(cfg.layerSelector).forEach(input => {
-      const layerKey = input.dataset[cfg.layerDataset];
-      const layer = document.getElementById(cfg.layerPrefix + layerKey);
-      if (!layer) return;
-      function sync() {
-        if (input.checked) ensureMediaLoaded(layer);
-        layer.style.display = input.checked ? 'block' : 'none';
-      }
-      input.addEventListener('change', sync);
-      sync();
-    });
-    cfg.zoomRange.addEventListener('input', event => {
-      cfg.mapStage.style.transform = `scale(${Number(event.target.value) / 100})`;
-    });
-
-    function updateCursor(event) {
-      const r = cfg.mapStage.getBoundingClientRect();
-      const px = Math.max(0, Math.min(1, (event.clientX - r.left) / r.width));
-      const py = Math.max(0, Math.min(1, (event.clientY - r.top) / r.height));
-      const e = bounds[0] + px * (bounds[2] - bounds[0]);
-      const n = bounds[3] - py * (bounds[3] - bounds[1]);
-      const ll = utmToLatLon(e, n);
-      const s = scenario(cfg.scenarioSelect.value);
-      const probe = sampleProbe(s.run_id, px, py);
-      const probeText = formatProbe(probe, s);
-      cfg.cursorReadout.textContent = `UTM44N E ${Math.round(e).toLocaleString()} m, N ${Math.round(n).toLocaleString()} m | ${ll[0].toFixed(5)}, ${ll[1].toFixed(5)} | ${probeText}`;
-      if (cfg.cursorTooltip) {
-        cfg.cursorTooltip.style.left = `${event.clientX - r.left}px`;
-        cfg.cursorTooltip.style.top = `${event.clientY - r.top}px`;
-        cfg.cursorTooltip.innerHTML = `<b>Approx. at cursor</b><span>${probeText}</span><span>${ll[0].toFixed(5)}, ${ll[1].toFixed(5)}</span>`;
-        cfg.cursorTooltip.style.display = 'block';
+    const state = { options: null, activeJobId: null, assistantMode: "verified", assistantHistory: [], awareSnapshot: null, apiBase: "", apiUser: "", apiPassword: "" };
+    const $ = (id) => document.getElementById(id);
+    function normalizeApiBase(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      try {
+        const url = new URL(raw, window.location.href);
+        url.hash = "";
+        url.search = "";
+        return url.toString().replace(/\/+$/, "/");
+      } catch (_) {
+        return "";
       }
     }
-    cfg.mapCard.addEventListener('mousemove', updateCursor);
-    cfg.mapCard.addEventListener('mouseleave', () => {
-      if (cfg.cursorTooltip) cfg.cursorTooltip.style.display = 'none';
-    });
-    cfg.mapCard.addEventListener('click', event => {
-      const r = cfg.mapStage.getBoundingClientRect();
-      cfg.cursorPin.style.left = `${event.clientX - r.left}px`;
-      cfg.cursorPin.style.top = `${event.clientY - r.top}px`;
-      cfg.cursorPin.style.display = 'block';
-      updateCursor(event);
-    });
-    updateResult();
-  }
-
-  setupMapController({
-    scenarioSelect: document.getElementById('overviewScenarioSelect'),
-    resultButtons: [...document.querySelectorAll('#overviewResultButtons [data-result]')],
-    resultLayer: document.getElementById('overviewResultLayer'),
-    resultOpacity: document.getElementById('overviewResultOpacity'),
-    opacityText: document.getElementById('overviewOpacityText'),
-    scenarioMeta: document.getElementById('overviewScenarioMeta'),
-    resultLegend: document.getElementById('overviewResultLegend'),
-    mapStage: document.getElementById('overviewMapStage'),
-    mapCard: document.getElementById('overviewMapCard'),
-    cursorReadout: document.getElementById('overviewCursorReadout'),
-    cursorPin: document.getElementById('overviewCursorPin'),
-    cursorTooltip: document.getElementById('overviewCursorTooltip'),
-    zoomRange: document.getElementById('overviewZoomRange'),
-    layerSelector: '[data-overview-layer]',
-    layerDataset: 'overviewLayer',
-    layerPrefix: 'overview-layer-'
-  });
-
-  const overviewLayerPresets = {
-    operational: [
-      'administrative', 'roads', 'buildings_tum_gba', 'drainage', 'manholes',
-      'waterbodies', 'canals_budameru', 'flow_arrows', 'budameru_breach_susceptibility',
-      'pumps_outfalls', 'pump_connectors', 'rtgs_hotspots'
-    ],
-    infrastructure: [
-      'administrative', 'roads', 'drainage', 'manholes', 'waterbodies',
-      'canals_budameru', 'flow_arrows', 'pumps_outfalls', 'pump_connectors',
-      'rtgs_hotspots'
-    ],
-    terrain: [
-      'administrative', 'waterbodies', 'canals_budameru', 'flow_arrows',
-      'terrain_hillshade', 'terrain_slope', 'hydroconditioned_dem_delta',
-      'domain_continuity', 'physics_surface_class', 'spatial_manning_n',
-      'infiltration_capacity', 'conditioned_hydraulic_terrain'
-    ],
-    all: [
-      'scenario_envelope', 'administrative', 'roads', 'buildings_tum_gba',
-      'green_open_space', 'lulc_proxy', 'drainage', 'manholes', 'waterbodies',
-      'canals_budameru', 'flow_arrows', 'budameru_breach_susceptibility',
-      'pumps_outfalls', 'pump_connectors', 'mesh_refinement', 'domain_continuity',
-      'terrain_dem', 'terrain_hillshade', 'terrain_slope', 'hydroconditioned_dem_delta',
-      'physics_surface_class', 'spatial_manning_n', 'infiltration_capacity',
-      'soil_hydrologic_group_proxy', 'building_obstruction_fraction',
-      'conditioned_hydraulic_terrain', 'rtgs_hotspots', 'urban_ward_routine',
-      'boundary_hydrographs'
-    ]
-  };
-  function applyOverviewPreset(key) {
-    const activeLayers = new Set(overviewLayerPresets[key] || overviewLayerPresets.operational);
-    document.querySelectorAll('[data-overview-layer]').forEach(input => {
-      input.checked = activeLayers.has(input.dataset.overviewLayer);
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-    document.querySelectorAll('[data-overview-preset]').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.overviewPreset === key);
-    });
-  }
-  document.querySelectorAll('[data-overview-preset]').forEach(btn => {
-    btn.addEventListener('click', () => applyOverviewPreset(btn.dataset.overviewPreset));
-  });
-  applyOverviewPreset('operational');
-
-  setupMapController({
-    scenarioSelect: document.getElementById('scenarioSelect'),
-    resultButtons: [...document.querySelectorAll('#resultButtons [data-result]')],
-    resultLayer: document.getElementById('resultLayer'),
-    resultOpacity: document.getElementById('resultOpacity'),
-    opacityText: document.getElementById('opacityText'),
-    scenarioMeta: document.getElementById('scenarioMeta'),
-    resultLegend: document.getElementById('resultLegend'),
-    mapStage: document.getElementById('mapStage'),
-    mapCard: document.getElementById('mapCard'),
-    cursorReadout: document.getElementById('cursorReadout'),
-    cursorPin: document.getElementById('cursorPin'),
-    cursorTooltip: document.getElementById('cursorTooltip'),
-    zoomRange: document.getElementById('zoomRange'),
-    layerSelector: '[data-layer]',
-    layerDataset: 'layer',
-    layerPrefix: 'layer-'
-  });
-
-  document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('active', x === btn));
-    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === btn.dataset.tab));
-  }));
-
-  const frameSlider = document.getElementById('frameSlider');
-  const animationStage = document.getElementById('animationStage');
-  const animFrameA = document.getElementById('animFrameA');
-  const animFrameB = document.getElementById('animFrameB');
-  const frameLabel = document.getElementById('frameLabel');
-  const animTimeLabel = document.getElementById('animTimeLabel');
-  const animMetricLabel = document.getElementById('animMetricLabel');
-  const animDepthKpi = document.getElementById('animDepthKpi');
-  const animSpeedKpi = document.getElementById('animSpeedKpi');
-  const animWetAreaKpi = document.getElementById('animWetAreaKpi');
-  const animationSpeed = document.getElementById('animationSpeed');
-  const animationLayerOpacity = document.getElementById('animationLayerOpacity');
-  const animationLayerOpacityText = document.getElementById('animationLayerOpacityText');
-  const animationScenarioSelect = document.getElementById('animationScenarioSelect');
-  const animationScenarioDescription = document.getElementById('animationScenarioDescription');
-  const phaseTrack = document.getElementById('phaseTrack');
-  let activeSmoothFrame = animFrameA;
-  function animationInfo(runId) {
-    const library = data.animation.scenarios || {};
-    return library[runId] || data.animation || {};
-  }
-  function scenarioTitle(runId) {
-    const item = scenario(runId);
-    return item && item.title ? item.title : runId;
-  }
-  function framePath(info, idx) {
-    const pattern = info.smooth_frame_pattern || 'assets/video/smooth_frame_{index}.png';
-    const path = pattern.replace('{index}', idx);
-    return path.includes('?') ? path : `${path}?v=20260504062612`;
-  }
-  function setFrame(i) {
-    const runId = animationScenarioSelect.value;
-    const info = animationInfo(runId);
-    const count = Number(info.smooth_frame_count || data.animation.frame_count || 49);
-    const frameIndex = Math.max(0, Math.min(count - 1, Number(i) || 0));
-    const idx = String(frameIndex).padStart(3, '0');
-    const nextSmoothFrame = activeSmoothFrame === animFrameA ? animFrameB : animFrameA;
-    nextSmoothFrame.src = framePath(info, idx);
-    nextSmoothFrame.classList.add('active');
-    activeSmoothFrame.classList.remove('active');
-    activeSmoothFrame = nextSmoothFrame;
-    const item = (info.frame_metrics || [])[frameIndex] || {};
-    const timeH = Number(item.time_h ?? ((data.animation.time_s || [])[frameIndex] || 0) / 3600);
-    const maxDepth = Number(item.max_depth_m || 0);
-    const maxSpeed = Number(item.max_speed_mps || 0);
-    const wetArea = Number(item.wet_area_ha || 0);
-    frameLabel.textContent = `Frame ${frameIndex} / ${Math.max(count - 1, 0)}`;
-    animTimeLabel.textContent = `${timeH.toFixed(2)} h`;
-    animMetricLabel.textContent = `Max depth ${maxDepth.toFixed(2)} m | max velocity ${maxSpeed.toFixed(2)} m/s | wet area ${wetArea.toLocaleString(undefined, {maximumFractionDigits:0})} ha`;
-    animDepthKpi.textContent = `${maxDepth.toFixed(2)} m`;
-    animSpeedKpi.textContent = `${maxSpeed.toFixed(2)} m/s`;
-    animWetAreaKpi.textContent = `${wetArea.toLocaleString(undefined, {maximumFractionDigits:0})} ha`;
-    const phase = frameIndex < count * 0.42 ? 'rising' : (frameIndex < count * 0.72 ? 'peak' : 'recession');
-    phaseTrack.querySelectorAll('[data-phase]').forEach(x => x.classList.toggle('active', x.dataset.phase === phase));
-    frameSlider.value = frameIndex;
-  }
-  frameSlider.addEventListener('input', event => setFrame(Number(event.target.value)));
-  function preloadAnimationFrames(runId) {
-    const info = animationInfo(runId);
-    const count = Number(info.smooth_frame_count || data.animation.frame_count || 49);
-    for (let i = 0; i < count; i += 1) {
-      const idx = String(i).padStart(3, '0');
-      const img = new Image();
-      img.src = framePath(info, idx);
+    function initialApiBase() {
+      const params = new URLSearchParams(window.location.search);
+      const fromUrl = normalizeApiBase(params.get("api"));
+      if (fromUrl) {
+        localStorage.setItem(API_BASE_STORAGE_KEY, fromUrl);
+        return fromUrl;
+      }
+      const fromStorage = normalizeApiBase(localStorage.getItem(API_BASE_STORAGE_KEY));
+      if (fromStorage) return fromStorage;
+      const fromConfig = normalizeApiBase(window.FLOODASTRA_VIJAYAWADA_API_BASE);
+      if (fromConfig) return fromConfig;
+      if (window.location.hostname.endsWith("github.io")) return "";
+      return normalizeApiBase(window.location.origin);
     }
-  }
-  animationScenarioSelect.addEventListener('change', () => {
-    const info = animationInfo(animationScenarioSelect.value);
-    const count = Number(info.smooth_frame_count || data.animation.frame_count || 49);
-    frameSlider.max = Math.max(count - 1, 0);
-    animationScenarioDescription.textContent = scenarioTitle(animationScenarioSelect.value);
-    if (playTimer) {
-      clearInterval(playTimer);
-      playTimer = null;
-      document.getElementById('playFrames').textContent = 'Play';
+    function setApiBase(value, persist = false) {
+      state.apiBase = normalizeApiBase(value);
+      if (persist) {
+        if (state.apiBase) localStorage.setItem(API_BASE_STORAGE_KEY, state.apiBase);
+        else localStorage.removeItem(API_BASE_STORAGE_KEY);
+      }
+      const input = $("apiBaseInput");
+      if (input) input.value = state.apiBase;
+      const hint = $("apiBaseHint");
+      if (hint) {
+        hint.textContent = state.apiBase
+          ? `Using FloodAstra API endpoint: ${state.apiBase}`
+          : "Set the FloodAstra API endpoint to enable chat, live data and nowcast runs from this public page.";
+      }
     }
-    setFrame(0);
-    preloadAnimationFrames(animationScenarioSelect.value);
-  });
-  document.querySelectorAll('[data-animation-layer]').forEach(input => {
-    const layer = document.getElementById('anim-layer-' + input.dataset.animationLayer);
-    if (!layer) return;
-    function sync() {
-      if (input.checked) ensureMediaLoaded(layer);
-      layer.style.display = input.checked ? 'block' : 'none';
+    function initialApiAuth() {
+      const params = new URLSearchParams(window.location.search);
+      const urlUser = String(params.get("api_user") || "").trim();
+      const urlPassword = String(params.get("api_password") || "").trim();
+      if (urlUser || urlPassword) return { user: urlUser, password: urlPassword };
+      return {
+        user: String(localStorage.getItem(API_USER_STORAGE_KEY) || window.FLOODASTRA_VIJAYAWADA_API_USER || "").trim(),
+        password: String(localStorage.getItem(API_PASSWORD_STORAGE_KEY) || window.FLOODASTRA_VIJAYAWADA_API_PASSWORD || "").trim()
+      };
     }
-    input.addEventListener('change', sync);
-    sync();
-  });
-  animationLayerOpacity.addEventListener('input', event => {
-    const opacity = Number(event.target.value) / 100;
-    animationLayerOpacityText.textContent = `${event.target.value}%`;
-    document.querySelectorAll('.anim-context-layer').forEach(layer => layer.style.opacity = opacity);
-  });
-  document.getElementById('playFrames').addEventListener('click', event => {
-    if (playTimer) {
-      clearInterval(playTimer); playTimer = null; event.target.textContent = 'Play'; return;
+    function setApiAuth(user, password, persist = false) {
+      state.apiUser = String(user || "").trim();
+      state.apiPassword = String(password || "").trim();
+      const userInput = $("apiUserInput");
+      const passwordInput = $("apiPasswordInput");
+      if (userInput) userInput.value = state.apiUser;
+      if (passwordInput) passwordInput.value = state.apiPassword;
+      if (persist) {
+        if (state.apiUser) localStorage.setItem(API_USER_STORAGE_KEY, state.apiUser);
+        else localStorage.removeItem(API_USER_STORAGE_KEY);
+        if (state.apiPassword) localStorage.setItem(API_PASSWORD_STORAGE_KEY, state.apiPassword);
+        else localStorage.removeItem(API_PASSWORD_STORAGE_KEY);
+      }
     }
-    event.target.textContent = 'Pause';
-    playTimer = setInterval(() => {
-      const info = animationInfo(animationScenarioSelect.value);
-      const count = Number(info.smooth_frame_count || data.animation.frame_count || 49);
-      const next = (Number(frameSlider.value) + 1) % count;
-      setFrame(next);
-    }, Number(animationSpeed.value));
-  });
-  if (animationScenarioSelect.querySelector(`option[value="${data.animation.source_scenario || ''}"]`)) {
-    animationScenarioSelect.value = data.animation.source_scenario;
-  }
-  preloadAnimationFrames(animationScenarioSelect.value);
-  setFrame(0);
+    function apiUrl(path) {
+      if (!state.apiBase) {
+        throw new Error("Set the FloodAstra API endpoint first. For local testing use http://127.0.0.1:8788/; for public access use the HTTPS backend/tunnel URL.");
+      }
+      return new URL(path, state.apiBase).toString();
+    }
+    function apiFetch(path, options = {}) {
+      const request = { ...options };
+      const headers = new Headers(request.headers || {});
+      if (state.apiUser || state.apiPassword) {
+        headers.set("Authorization", `Basic ${btoa(`${state.apiUser}:${state.apiPassword}`)}`);
+      }
+      request.headers = headers;
+      return fetch(apiUrl(path), request);
+    }
+    async function setImageFromEndpoint(img, href) {
+      if (!img || !href) return;
+      if (!state.apiUser && !state.apiPassword) {
+        img.src = href;
+        return;
+      }
+      try {
+        const response = await apiFetch(href, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Image request failed with status ${response.status}`);
+        const blob = await response.blob();
+        img.src = URL.createObjectURL(blob);
+      } catch (error) {
+        img.alt = `${img.alt || "Image"} could not be loaded: ${error.message}`;
+      }
+    }
+    function assetHref(href) {
+      const raw = String(href || "").trim();
+      if (!raw) return "";
+      if (/^(https?:|data:|blob:|mailto:)/i.test(raw)) return raw;
+      if (!state.apiBase) return raw;
+      return new URL(raw, state.apiBase).toString();
+    }
 
-})();
-</script>
+    function fmtSeconds(value) {
+      if (value === null || value === undefined || value === "" || Number.isNaN(Number(value))) return "-";
+      const s = Math.max(0, Math.round(Number(value)));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return m > 0 ? `${m}m ${String(r).padStart(2, "0")}s` : `${r}s`;
+    }
+
+    function cleanPhase(value) {
+      return String(value || "-").replaceAll("_", " ");
+    }
+
+    function setBadge(ok, text) {
+      const badge = $("serverBadge");
+      badge.textContent = text;
+      badge.style.background = ok ? "#edfdfa" : "#fdecec";
+      badge.style.borderColor = ok ? "#b7d7d2" : "#f3b8b8";
+      badge.style.color = ok ? "#075f57" : "#991b1b";
+    }
+
+    function setSelect(selectId, hintId, items, selectedId) {
+      const select = $(selectId);
+      select.innerHTML = "";
+      for (const item of items) {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.label;
+        select.appendChild(option);
+      }
+      select.value = selectedId;
+      const updateHint = () => {
+        const item = items.find((row) => row.id === select.value);
+        $(hintId).textContent = item ? item.description : "";
+      };
+      select.addEventListener("change", updateHint);
+      updateHint();
+    }
+
+    async function loadOptions() {
+      const response = await apiFetch("/api/nowcast/options");
+      if (!response.ok) throw new Error(await response.text());
+      const options = await response.json();
+      state.options = options;
+      setSelect("rainfall", "rainfallHint", options.rainfall_scenarios, options.defaults.rainfall);
+      setSelect("hydrograph", "hydrographHint", options.hydrograph_scenarios, options.defaults.hydrograph);
+      setSelect("stage", "stageHint", options.stage_scenarios, options.defaults.stage);
+      setSelect("runLength", "runLengthHint", options.run_lengths, options.defaults.run_length);
+      $("physicsNote").textContent = "City rainfall, Budameru inflow, river/canal level, terrain and storm-drain exchange are checked together. Live river/outflow data choose the best available normal, elevated or high backwater condition.";
+      const parser = options.narrative_parser || {};
+      $("narrativeHint").textContent = parser.expanded_parser_available
+        ? "Expanded story conversion is active on the server. The converted numbers are shown before launch."
+        : "Rule-based story conversion is active. The operator can still review and edit the selected run settings before launch.";
+      renderAssistantStatus(options.assistant || {});
+      renderAwareStatus(options.external_data || options.aware_api || {});
+      setBadge(true, "Local server connected");
+    }
+
+    function awareSnapshotUsable(snapshot = state.awareSnapshot) {
+      if (!snapshot || snapshot.dry_run) return false;
+      const rec = snapshot.recommendation || {};
+      const readiness = snapshot.model_readiness_status || {};
+      return !!(readiness.run_ready || rec.run_ready);
+    }
+
+    function updateAwareRunControls(snapshot = state.awareSnapshot) {
+      const usable = awareSnapshotUsable(snapshot);
+      $("useAwareLatest").disabled = !usable;
+      $("awareRunBtn").disabled = !usable;
+      $("awarePanel").classList.toggle("good", usable);
+      $("awarePanel").classList.toggle("warn", !usable);
+      if (!usable) $("useAwareLatest").checked = false;
+    }
+
+    async function startRun(options = {}) {
+      $("runBtn").disabled = true;
+      $("awareRunBtn").disabled = true;
+      try {
+        const useLive = !!options.useLive || $("useAwareLatest").checked;
+        if (useLive && !awareSnapshotUsable()) {
+          throw new Error("No usable live rain or river/canal snapshot is loaded. Click Fetch Latest Data first, then run with live data.");
+        }
+        const payload = {
+          rainfall: $("rainfall").value,
+          hydrograph: $("hydrograph").value,
+          stage: $("stage").value,
+          run_length: $("runLength").value,
+          use_external_latest: useLive,
+          use_aware_latest: useLive
+        };
+        const response = await apiFetch("/api/nowcast/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Nowcast request failed.");
+        state.activeJobId = data.job.job_id;
+        renderJob(data.job);
+        await refreshJobs();
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        $("runBtn").disabled = false;
+        updateAwareRunControls();
+      }
+    }
+
+    async function handleNarrative(runNow = false) {
+      const narrative = $("narrative").value.trim();
+      if (!narrative) {
+        alert("Write a story or scenario message first.");
+        return;
+      }
+      $("interpretBtn").disabled = true;
+      $("runNarrativeBtn").disabled = true;
+      try {
+        const response = await apiFetch("/api/nowcast/story", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ story: narrative, run: runNow, use_gpt: true })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Story conversion failed.");
+        renderInterpretation(data.interpretation || data.job?.narrative_interpretation, data.contract || data.job, data.forcing || data.job?.forcing_preview);
+        const interpretation = data.interpretation || data.job?.narrative_interpretation;
+        if (interpretation?.selection) {
+          applySelectionToDropdowns(interpretation.selection);
+        }
+        if (data.job) {
+          state.activeJobId = data.job.job_id;
+          renderJob(data.job);
+          await refreshJobs();
+        }
+      } catch (error) {
+        $("interpretationBox").innerHTML = `<strong>Story conversion</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+      } finally {
+        $("interpretBtn").disabled = false;
+        $("runNarrativeBtn").disabled = false;
+      }
+    }
+
+    function applySelectionToDropdowns(selection) {
+      const mapping = {
+        rainfall: "rainfall",
+        hydrograph: "hydrograph",
+        stage: "stage",
+        run_length: "runLength"
+      };
+      for (const [key, id] of Object.entries(mapping)) {
+        const select = $(id);
+        if (!selection[key]) continue;
+        const exists = Array.from(select.options).some((option) => option.value === selection[key]);
+        if (exists) {
+          select.value = selection[key];
+          select.dispatchEvent(new Event("change"));
+        }
+      }
+    }
+
+    function renderInterpretation(interpretation, contract, forcingPreview = null) {
+      const box = $("interpretationBox");
+      if (!interpretation) {
+        box.innerHTML = "<strong>Story conversion</strong>No run settings were returned.";
+        return;
+      }
+      const selection = interpretation.selection || {};
+      const custom = interpretation.custom || {};
+      const notes = interpretation.operator_notes || [];
+      const warnings = interpretation.warnings || [];
+      const preview = contract?.forcing || {};
+      const labels = contract?.labels || {};
+      const durationS = Number(contract?.duration_s || 0);
+      const expectedRuntimeS = Number(contract?.expected_runtime_seconds || 0);
+      const rows = [
+        ["Rain condition", labels.rainfall || selection.rainfall],
+        ["Rainfall depth", custom.target_rainfall_depth_mm ? `${Number(custom.target_rainfall_depth_mm).toFixed(1)} mm` : "-"],
+        ["Rainfall scale", custom.rainfall_scale ?? preview.rainfall_scale ?? "-"],
+        ["Budameru inflow", labels.hydrograph || selection.hydrograph],
+        ["Budameru scale", custom.budameru_flow_scale ?? preview.budameru_inflow_scale ?? "-"],
+        ["River/canal condition", labels.stage || readableStage(selection.stage)],
+        ["Forecast window", labels.run_length || selection.run_length],
+        ["Forecast duration", durationS ? fmtSeconds(durationS) : "-"],
+        ["Estimated run time", expectedRuntimeS ? fmtSeconds(expectedRuntimeS) : "-"]
+      ];
+      box.innerHTML = `
+        <strong>Story conversion</strong>
+        <div class="hint">Review confidence: ${escapeHtml(interpretation.confidence || "-")}. The dropdowns above have been updated to match this story.</div>
+        <table style="margin-top:8px;">
+          <tbody>
+            ${rows.map(([key, value]) => `<tr><th style="width:36%;">${escapeHtml(key)}</th><td>${escapeHtml(String(value ?? "-"))}</td></tr>`).join("")}
+          </tbody>
+        </table>
+        ${forcingPreview ? forcingPreviewHtml(forcingPreview) : ""}
+        ${notes.length ? `<div class="hint" style="margin-top:8px;">${notes.map(escapeHtml).join("<br>")}</div>` : ""}
+        ${warnings.length ? `<div class="hint" style="margin-top:8px;color:#991b1b;">${warnings.map(escapeHtml).join("<br>")}</div>` : ""}
+      `;
+    }
+
+    function forcingPreviewHtml(forcing) {
+      const outputs = forcing.outputs || {};
+      const rainfall = forcing.rainfall || {};
+      const budameru = forcing.budameru_model_input || forcing.budameru || {};
+      const stage = forcing.stage_controls || {};
+      const links = [
+        ["Rainfall hyetograph CSV", outputs.rainfall_timeseries_csv],
+        ["Model-input Budameru hydrograph CSV", outputs.budameru_model_input_timeseries_csv || outputs.budameru_inflow_timeseries_csv],
+        ["Source Budameru hydrograph CSV", outputs.budameru_inflow_timeseries_csv],
+        ["River/canal boundary CSV", outputs.stage_control_timeseries_csv],
+        ["Forcing manifest", outputs.forcing_manifest_json]
+      ].filter(([, href]) => href);
+      const previewHref = assetHref(outputs.forcing_preview_png);
+      const preview = previewHref
+        ? `<a href="${escapeHtml(previewHref)}" target="_blank" rel="noopener"><img src="${escapeHtml(previewHref)}" alt="Generated rainfall, Budameru and boundary forcing preview" style="width:100%;border:1px solid #cdd5e0;border-radius:8px;margin-top:10px;background:#fff;"></a>`
+        : "";
+      return `
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid #e5eaf2;">
+          <strong>Generated model inputs</strong>
+          <table style="margin-top:8px;">
+            <tbody>
+              <tr><th style="width:36%;">Rainfall depth</th><td>${escapeHtml(String(rainfall.compiled_depth_mm ?? "-"))} mm</td></tr>
+              <tr><th>Peak rainfall intensity</th><td>${escapeHtml(String(rainfall.max_intensity_mm_h ?? "-"))} mm/h</td></tr>
+              <tr><th>Rainfall timesteps</th><td>${escapeHtml(String(forcing.tables?.rainfall_hyetograph?.row_count ?? "-"))}</td></tr>
+              <tr><th>Budameru scale applied</th><td>${escapeHtml(String(budameru.applied_scale ?? "-"))}</td></tr>
+              <tr><th>Peak Budameru inflow to model</th><td>${escapeHtml(String(budameru.max_flow_m3_s ?? "-"))} m&sup3;/s</td></tr>
+              <tr><th>Budameru volume</th><td>${escapeHtml(String(budameru.volume_m3 ?? "-"))} m&sup3;</td></tr>
+              <tr><th>Boundary condition</th><td>${escapeHtml(readableStage(stage.state || "-"))}; ${escapeHtml(String(stage.stage_feature_count ?? "-"))} features</td></tr>
+            </tbody>
+          </table>
+          ${preview}
+          ${links.length ? `<div class="hint" style="margin-top:8px;">Full model-input numbers: ${links.map(([label, href]) => `<a href="${escapeHtml(assetHref(href))}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`).join(" | ")}</div>` : ""}
+          <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px;">
+            ${forcingTableHtml("Rainfall hyetograph preview", forcing.tables?.rainfall_hyetograph?.rows || [], ["time_h", "rainfall_intensity_mm_h"])}
+            ${forcingTableHtml("Budameru model-input hydrograph preview", forcing.tables?.budameru_model_hydrograph?.rows || [], ["time_h", "flow_m3_s"])}
+          </div>
+        </div>
+      `;
+    }
+
+    function forcingTableHtml(title, rows, keys) {
+      if (!rows.length) return "";
+      return `
+        <div>
+          <strong>${escapeHtml(title)}</strong>
+          <table style="margin-top:6px;">
+            <thead><tr>${keys.map((key) => `<th>${escapeHtml(key.replaceAll("_", " "))}</th>`).join("")}</tr></thead>
+            <tbody>
+              ${rows.slice(0, 8).map((row) => `<tr>${keys.map((key) => `<td>${escapeHtml(String(row[key] ?? "-"))}</td>`).join("")}</tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function humanizeConfirmation(value) {
+      const labels = {
+        unit_confirmed: "outflow units",
+        datum_confirmed: "official river/canal level datum",
+        boundary_mapping_confirmed: "which river/canal gauge controls each model edge",
+        enabled: "live river/canal feed enabled",
+        has_krishna_outflow: "Krishna outflow value available"
+      };
+      return labels[value] || String(value || "-").replaceAll("_", " ");
+    }
+
+    function readableStage(value) {
+      const labels = {
+        normal_stage: "Normal backwater condition",
+        elevated_stage: "Elevated backwater condition",
+        high_stage: "High backwater condition"
+      };
+      return labels[value] || value || "-";
+    }
+
+    function readableSource(value) {
+      const labels = {
+        api_outflow_proxy_boundary: "Krishna outflow proxy",
+        api_stage_boundary: "Official river/canal level feed",
+        rainfall_threshold_proxy: "Rainfall-based fallback",
+        recommendation: "Live data recommendation"
+      };
+      return labels[value] || cleanPhase(value || "-");
+    }
+
+    function renderAwareStatus(status) {
+      const latest = status.latest_snapshot || {};
+      if (latest.snapshot_id) state.awareSnapshot = latest;
+      const configured = status.token_configured ? "feed access is configured" : "feed access is not configured";
+      const scheduler = status.scheduler || {};
+      const runtime = status.scheduler_runtime || {};
+      const schedulerText = scheduler.enabled || runtime.enabled
+        ? ` Automatic check every ${Math.round((runtime.poll_seconds || Math.min(scheduler.rainfall_poll_minutes || 15, scheduler.stage_poll_minutes || 30) * 60) / 60)} min; last status: ${cleanPhase(runtime.last_status || "waiting")}.`
+        : " Manual fetch mode.";
+      const latestAny = status.latest_any_snapshot || {};
+      const snapshotText = latest.snapshot_id
+        ? ` Latest reviewed snapshot: ${latest.snapshot_id}${latest.dry_run ? " (request check only)" : ""}.`
+        : " No snapshot fetched yet.";
+      const dryNote = latestAny.snapshot_id && latestAny.dry_run && latestAny.snapshot_id !== latest.snapshot_id
+        ? ` Newest request-check plan ${latestAny.snapshot_id} is available, but live runs use the latest real snapshot.`
+        : "";
+      $("awareStatus").textContent = status.available
+        ? `Live feed ready; ${configured}.${schedulerText}${snapshotText}${dryNote}`
+        : `Live feed unavailable: ${status.error || "unknown error"}`;
+      if (latest.snapshot_id) renderAwareSnapshot(latest);
+      updateAwareRunControls(latest);
+    }
+
+    function renderAwareSnapshot(snapshot) {
+      state.awareSnapshot = snapshot;
+      const rec = snapshot.recommendation || {};
+      const readiness = snapshot.model_readiness_status || {};
+      const quality = snapshot.quality_report || {};
+      const stageGate = rec.stage_boundary_recommendation || quality.stage_gate || {};
+      const summaries = snapshot.summaries || {};
+      const cards = [
+        ["AWS observed", summaries.aws_observed],
+        ["ECMWF forecast", summaries.ecmwf_rainfall],
+        ["IMD radar alerts", summaries.imd_radar_alerts],
+        ["Reservoir", summaries.reservoir]
+      ];
+      const outputs = snapshot.outputs || {};
+      const outputLinks = [
+        ["Manifest", outputs.snapshot_manifest_json],
+        ["Normalized CSV", outputs.normalized_timeseries_csv],
+        ["Data quality note", outputs.quality_report_json],
+        ["Run readiness note", outputs.model_readiness_status_json]
+      ].filter(([, href]) => href);
+      const blocked = stageGate.blocked_reasons || [];
+      const pending = stageGate.pending_confirmations || [];
+      const usable = awareSnapshotUsable(snapshot);
+      $("awareBox").innerHTML = `
+        <strong>Live Data Snapshot</strong>
+        <div class="hint mono">${escapeHtml(snapshot.snapshot_id || "-")}</div>
+        <table style="margin-top:8px;">
+          <tbody>
+            <tr><th>Ready to run</th><td>${readiness.run_ready || rec.run_ready ? "Yes" : "No"}</td></tr>
+            <tr><th>Rain adjustment</th><td>${rec.rainfall_scale_suggested ?? "-"}</td></tr>
+            <tr><th>River/canal source</th><td>${escapeHtml(readableSource(rec.stage_source || "-"))}</td></tr>
+            <tr><th>River/canal condition</th><td>${escapeHtml(readableStage(rec.stage_option_suggested || "-"))}</td></tr>
+            <tr><th>Boundary applied</th><td>${stageGate.usable_for_model ? "Yes" : "No"}</td></tr>
+            <tr><th>What this means</th><td>${escapeHtml(stageGate.reason || "-")}</td></tr>
+            <tr><th>Confidence</th><td>${escapeHtml(rec.confidence || "-")}</td></tr>
+            <tr><th>Run status</th><td>${usable ? "Ready for live data run" : (snapshot.dry_run ? "Data request check only" : "Not ready for nowcast inputs")}</td></tr>
+          </tbody>
+        </table>
+        <div class="feed-grid">
+          ${cards.map(([title, summary]) => {
+            const row = summary || {};
+            return `<div class="feed-card"><b>${escapeHtml(title)}</b>Status: ${escapeHtml(row.status || "-")}<br>Records: ${row.records ?? 0}<br>Target: ${row.target_records ?? 0}</div>`;
+          }).join("")}
+        </div>
+        ${pending.length ? `<div class="hint" style="margin-top:8px;">Official confirmation still needed for: ${pending.map(humanizeConfirmation).map(escapeHtml).join(", ")}</div>` : ""}
+        ${blocked.length ? `<div class="hint" style="margin-top:8px;">Boundary data not applied because: ${blocked.map(humanizeConfirmation).map(escapeHtml).join(", ")}</div>` : ""}
+        ${outputLinks.length ? `<div class="hint" style="margin-top:8px;">Review files: ${outputLinks.map(([label, href]) => `<a href="${escapeHtml(assetHref(href))}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`).join(" | ")}</div>` : ""}
+        ${rec.operator_note ? `<div class="hint" style="margin-top:8px;">${escapeHtml(rec.operator_note)}</div>` : ""}
+      `;
+      updateAwareRunControls(snapshot);
+    }
+
+    async function fetchAwareSnapshot(dryRun) {
+      $("awareDryBtn").disabled = true;
+      $("awareFetchBtn").disabled = true;
+      $("awareBox").innerHTML = `<strong>Live Data Snapshot</strong>${dryRun ? "Building feed request check..." : "Calling live rainfall, reservoir/outflow and alert feeds..."}`;
+      try {
+        const response = await apiFetch("/api/external/fetch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dry_run: dryRun })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Live data fetch failed.");
+        renderAwareSnapshot(data.snapshot || {});
+        if (!dryRun && awareSnapshotUsable(data.snapshot || {})) {
+          $("useAwareLatest").checked = true;
+        }
+      } catch (error) {
+        $("awareBox").innerHTML = `<strong>Live Data Snapshot</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+        updateAwareRunControls();
+      } finally {
+        $("awareDryBtn").disabled = false;
+        $("awareFetchBtn").disabled = false;
+        updateAwareRunControls();
+      }
+    }
+
+    async function refreshActive() {
+      if (!state.activeJobId) return;
+      const response = await apiFetch(`/api/nowcast/job/${encodeURIComponent(state.activeJobId)}`);
+      if (!response.ok) return;
+      const data = await response.json();
+      renderJob(data.job);
+      await refreshJobs(false);
+    }
+
+    async function refreshJobs(activateLatest = true) {
+      const response = await apiFetch("/api/nowcast/jobs?limit=20");
+      if (!response.ok) return;
+      const data = await response.json();
+      const jobs = data.jobs || [];
+      if (activateLatest && !state.activeJobId && jobs.length) {
+        state.activeJobId = jobs[0].job_id;
+        renderJob(jobs[0]);
+      }
+      renderJobsTable(jobs);
+    }
+
+    function renderJob(job) {
+      if (!job) return;
+      const labels = job.labels || {};
+      const name = [labels.rainfall, labels.hydrograph, labels.stage, labels.run_length, labels.external_forcing].filter(Boolean).join(" | ");
+      $("activeName").textContent = name || "Nowcast job";
+      $("activeId").textContent = job.job_id || "";
+      const pill = $("activeStatus");
+      pill.textContent = job.status || "unknown";
+      pill.className = `pill ${job.status || ""}`;
+      $("elapsed").textContent = fmtSeconds(job.elapsed_seconds);
+      $("eta").textContent = job.status === "completed" ? "0s" : fmtSeconds(job.eta_seconds);
+      $("modelClock").textContent = fmtSeconds(job.model_clock_s_estimate);
+      $("phase").textContent = cleanPhase(job.phase);
+      const expected = Math.max(Number(job.expected_runtime_seconds || 1), 1);
+      const elapsed = Math.max(Number(job.elapsed_seconds || 0), 0);
+      let pct = Math.min(98, Math.round((elapsed / expected) * 100));
+      if (job.status === "completed") pct = 100;
+      if (job.status === "failed") pct = 100;
+      $("progressBar").style.width = `${pct}%`;
+      $("progressPct").textContent = `${pct}%`;
+      $("progressText").textContent = job.status === "completed" ? "Run complete" : cleanPhase(job.phase);
+      renderOutputs(job);
+    }
+
+    function renderOutputs(job) {
+      const outputs = job.outputs || {};
+      const quicklook = $("quicklook");
+      const outputBox = $("outputs");
+      outputBox.innerHTML = "";
+      const primaryMap = outputs.animation_poster_png || outputs.professional_map_png || outputs.boundary_summary_png || outputs.quicklook_png;
+      if (primaryMap && job.status === "completed") {
+        const mapLabel = outputs.animation_poster_png ? "Boundary-aware nowcast map and scenario readout" : "Nowcast flood map";
+        const mapHref = assetHref(primaryMap);
+        quicklook.innerHTML = `<a href="${escapeHtml(mapHref)}" target="_blank" rel="noopener"><img alt="${mapLabel}"></a>`;
+        setImageFromEndpoint(quicklook.querySelector("img"), mapHref);
+      } else if (job.status === "failed") {
+        quicklook.innerHTML = `<div class="empty">Run failed.<br>${job.error || "Check server logs for details."}</div>`;
+      } else {
+        quicklook.innerHTML = `<div class="empty">Run is ${cleanPhase(job.phase)}. The boundary-aware map will appear after completion.</div>`;
+      }
+      const labels = {
+        forcing_manifest_json: "Input details",
+        rainfall_timeseries_csv: "Rainfall input",
+        budameru_inflow_timeseries_csv: "Budameru inflow input",
+        stage_control_timeseries_csv: "River/canal input",
+        forcing_preview_png: "Input preview",
+        run_manifest_json: "Run details",
+        max_depth_tif: "Max depth raster",
+        max_velocity_tif: "Max velocity raster",
+        persistence_minutes_tif: "Persistence raster",
+        time_to_flooding_minutes_tif: "Time to flooding raster",
+        mass_balance_csv: "Mass balance",
+        evolution_summary_csv: "Evolution summary",
+        ward_summary_csv: "Ward summary",
+        road_exposure_summary_csv: "Road exposure",
+        ward_road_exposure_summary_csv: "Ward-road exposure",
+        pipe_nodes_csv: "Storm-drain nodes",
+        pipe_links_csv: "Storm-drain links",
+        animation_poster_png: "Boundary map",
+        animation_gif: "Flood animation",
+        animation_summary_json: "Animation summary"
+      };
+      for (const [key, label] of Object.entries(labels)) {
+        if (!outputs[key]) continue;
+        const link = document.createElement("a");
+        link.href = assetHref(outputs[key]);
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = label;
+        outputBox.appendChild(link);
+      }
+    }
+
+    function renderJobsTable(jobs) {
+      const body = $("jobsBody");
+      body.innerHTML = "";
+      if (!jobs.length) {
+        body.innerHTML = `<tr><td colspan="5" class="empty">No jobs have been submitted from this server yet.</td></tr>`;
+        return;
+      }
+      for (const job of jobs) {
+        const tr = document.createElement("tr");
+        const labels = job.labels || {};
+        const outputs = job.outputs || {};
+        tr.innerHTML = `
+          <td class="mono">${job.created_utc || ""}</td>
+          <td><button class="secondary" data-job="${job.job_id}" type="button">Open</button><div class="hint mono">${job.job_id}</div></td>
+          <td>${[labels.rainfall, labels.hydrograph, labels.stage, labels.run_length, labels.external_forcing].filter(Boolean).join("<br>")}</td>
+          <td><span class="pill ${job.status || ""}">${job.status || ""}</span><div class="hint">${cleanPhase(job.phase)}</div></td>
+          <td>${(outputs.animation_poster_png || outputs.quicklook_png) ? `<a href="${escapeHtml(assetHref(outputs.animation_poster_png || outputs.quicklook_png))}" target="_blank" rel="noopener">${outputs.animation_poster_png ? "Boundary map" : "Quicklook"}</a>` : "-"}</td>
+        `;
+        body.appendChild(tr);
+      }
+      body.querySelectorAll("button[data-job]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          state.activeJobId = button.getAttribute("data-job");
+          await refreshActive();
+        });
+      });
+    }
+
+    function renderAssistantStatus(assistant) {
+      const modeText = assistant.hybrid_mode
+        ? "Expanded Answer mode is active on the server. Local FloodAstra evidence stays first; outside context is added only when needed."
+        : "Verified Evidence mode is active. Answers use approved local FloodAstra outputs.";
+      $("assistantStatus").textContent = modeText;
+    }
+
+    function setAssistantMode(mode) {
+      state.assistantMode = mode === "hybrid" ? "hybrid" : "verified";
+      $("modeVerified").classList.toggle("active", state.assistantMode === "verified");
+      $("modeHybrid").classList.toggle("active", state.assistantMode === "hybrid");
+    }
+
+    function appendAssistantMessage(role, html) {
+      const box = $("assistantMessages");
+      const node = document.createElement("div");
+      node.className = `message ${role}`;
+      node.innerHTML = html;
+      box.appendChild(node);
+      box.scrollTop = box.scrollHeight;
+      return node;
+    }
+
+    function sourcesHtml(data) {
+      const local = data.sources || [];
+      const web = data.web_sources || [];
+      const notes = data.notes || [];
+      const parts = [];
+      if (local.length) {
+        parts.push(`<div><strong>Local evidence</strong>: ${local.slice(0, 6).map((source) => {
+          const title = escapeHtml(source.title || source.type || "source");
+          return source.href ? `<a href="${escapeHtml(assetHref(source.href))}" target="_blank" rel="noopener">${title}</a>` : title;
+        }).join(", ")}</div>`);
+      }
+      if (web.length) {
+        parts.push(`<div><strong>Web citations</strong>: ${web.slice(0, 6).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener">${escapeHtml(source.title || source.url)}</a>`).join(", ")}</div>`);
+      }
+      if (notes.length) {
+        parts.push(`<div><strong>Notes</strong>: ${notes.map(escapeHtml).join(" ")}</div>`);
+      }
+      return parts.length ? `<div class="source-block">${parts.join("")}</div>` : "";
+    }
+
+    async function askAssistant(promptText = "") {
+      const question = (promptText || $("assistantQuestion").value).trim();
+      if (!question) {
+        alert("Enter a question first.");
+        return;
+      }
+      $("assistantQuestion").value = "";
+      $("assistantAskBtn").disabled = true;
+      appendAssistantMessage("user", escapeHtml(question));
+      const pending = appendAssistantMessage("assistant", `<strong>FloodAstra</strong> Checking local evidence${state.assistantMode === "hybrid" ? " and adding outside context only if needed" : ""}...`);
+      try {
+        const response = await apiFetch("/api/assistant/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question,
+            mode: state.assistantMode,
+            history: state.assistantHistory.slice(-8)
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Assistant request failed.");
+        const modeLabel = data.used_web ? "Expanded + web" : (data.mode === "hybrid" ? "Expanded" : "Verified");
+        pending.innerHTML = `<strong>FloodAstra · ${escapeHtml(modeLabel)}</strong>${escapeHtml(data.answer || "No answer returned.")}${sourcesHtml(data)}`;
+        state.assistantHistory.push({ role: "user", content: question });
+        state.assistantHistory.push({ role: "assistant", content: data.answer || "" });
+        state.assistantHistory = state.assistantHistory.slice(-10);
+      } catch (error) {
+        pending.innerHTML = `<strong>FloodAstra</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+      } finally {
+        $("assistantAskBtn").disabled = false;
+      }
+    }
+
+    function clearAssistant() {
+      state.assistantHistory = [];
+      $("assistantMessages").innerHTML = `<div class="message assistant"><strong>FloodAstra</strong>Ask a Vijayawada nowcast or preparedness question. I will use the latest local run evidence first.</div>`;
+    }
+
+    function setScenarioMessage(text) {
+      $("narrative").value = text || "";
+      $("narrative").focus();
+      $("scenarioChat").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function applyScenarioPromptFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const text = params.get("scenario_prompt");
+      if (text) setScenarioMessage(text);
+    }
+
+    setApiBase(initialApiBase());
+    const auth = initialApiAuth();
+    setApiAuth(auth.user, auth.password);
+    $("apiSaveBtn").addEventListener("click", () => {
+      setApiBase($("apiBaseInput").value, true);
+      setApiAuth($("apiUserInput").value, $("apiPasswordInput").value, true);
+      loadOptions()
+        .then(() => refreshJobs(true))
+        .catch((error) => {
+          setBadge(false, "Server not reachable");
+          $("physicsNote").textContent = error.message;
+        });
+    });
+    $("apiResetBtn").addEventListener("click", () => {
+      setApiBase("", true);
+      setApiAuth("", "", true);
+      setBadge(false, "Endpoint needed");
+      $("physicsNote").textContent = "Set a FloodAstra API endpoint to enable chat, live data and nowcast runs.";
+    });
+    $("runBtn").addEventListener("click", () => startRun());
+    $("awareRunBtn").addEventListener("click", () => startRun({ useLive: true }));
+    $("refreshBtn").addEventListener("click", () => refreshJobs(true));
+    $("awareDryBtn").addEventListener("click", () => fetchAwareSnapshot(true));
+    $("awareFetchBtn").addEventListener("click", () => fetchAwareSnapshot(false));
+    $("interpretBtn").addEventListener("click", () => handleNarrative(false));
+    $("runNarrativeBtn").addEventListener("click", () => handleNarrative(true));
+    $("modeVerified").addEventListener("click", () => setAssistantMode("verified"));
+    $("modeHybrid").addEventListener("click", () => setAssistantMode("hybrid"));
+    $("assistantAskBtn").addEventListener("click", () => askAssistant());
+    $("assistantClearBtn").addEventListener("click", clearAssistant);
+    $("assistantQuestion").addEventListener("keydown", (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+        askAssistant();
+      }
+    });
+    document.querySelectorAll("[data-prompt]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const text = button.getAttribute("data-prompt") || "";
+        if (text.toLowerCase().startsWith("use hybrid mode")) setAssistantMode("hybrid");
+        askAssistant(text);
+      });
+    });
+    document.querySelectorAll("[data-scenario-prompt]").forEach((button) => {
+      button.addEventListener("click", () => setScenarioMessage(button.getAttribute("data-scenario-prompt") || ""));
+    });
+
+    loadOptions()
+      .then(() => {
+        applyScenarioPromptFromUrl();
+        return refreshJobs(true);
+      })
+      .catch((error) => {
+        setBadge(false, "Server not reachable");
+        $("physicsNote").textContent = error.message;
+      });
+    setInterval(refreshActive, 5000);
+  </script>
 </body>
 </html>

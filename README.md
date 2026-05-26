@@ -12,8 +12,9 @@ Do not open `index.html` from the GitHub file viewer if you want the interactive
 
 ## Contents
 
-- `index.html` - stakeholder-facing multi-tab DSS.
-- `nowcast.html` - latest FloodAstra Vijayawada nowcast and chat runner. It needs the FloodAstra API server for chat, live data and model-run submission.
+- `index.html` - canonical stakeholder-facing Vijayawada FloodReSQ Live DSS. This is the one public link to share.
+- `map_dashboard.html` - supporting layer-rich map dashboard opened from the live DSS when detailed map review is needed.
+- `nowcast.html` - backward-compatible redirect to `index.html` for older links.
 - `assets/config.js` - optional deployment-time API endpoint setting for GitHub Pages or other static hosting.
 - `assets/branding/floodresq.png` - FloodReSQ logo used in the dashboard header.
 - `assets/maps/` - map layers, result overlays, forcing plots and review graphics.
@@ -23,9 +24,9 @@ Do not open `index.html` from the GitHub file viewer if you want the interactive
 
 ## GitHub Pages
 
-This repository is published from the `main` branch root. The site entrypoint is `index.html`.
+This repository is published from the `main` branch root. The single public entrypoint is `index.html`.
 
-For GitHub Pages, `index.html` remains fully static. `nowcast.html` can be opened from the dashboard, but chat and run controls require a reachable FloodAstra backend. Set `window.FLOODASTRA_VIJAYAWADA_API_BASE` in `assets/config.js` to the HTTPS backend URL, or pass `?api=https://backend.example.com/` while testing. If the backend is password-protected, use the connection box on `nowcast.html` or set the optional user/password variables in `assets/config.js` on the deployment server only.
+For GitHub Pages, `index.html` serves the latest live DSS shell. Chat and run controls require a reachable FloodAstra backend. Set `window.FLOODASTRA_VIJAYAWADA_API_BASE` in `assets/config.js` to the HTTPS backend URL, or pass `?api=https://backend.example.com/` while testing. If the backend is password-protected, use the connection box on the live DSS or set the optional user/password variables in `assets/config.js` on the deployment server only.
 
 For same-machine review, run the backend and open the local page:
 
@@ -34,4 +35,4 @@ cd /Users/mirlab/Documents/FloodAstra
 python3 -m floodastra.vijayawada_nowcast_server --project-root /Users/mirlab/Documents/FloodAstra/projects/vijayawada_rtgs --host 127.0.0.1 --port 8788
 ```
 
-Then use `http://127.0.0.1:8788/` for the live runner, or open `nowcast.html?api=http://127.0.0.1:8788/` from this static bundle.
+Then use `http://127.0.0.1:8788/` for the live runner, or open `index.html?api=http://127.0.0.1:8788/` from this static bundle.

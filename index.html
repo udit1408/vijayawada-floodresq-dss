@@ -913,6 +913,13 @@
         localStorage.setItem(API_BASE_STORAGE_KEY, fromUrl);
         return fromUrl;
       }
+      if (window.location.hostname === "vijayawada.airesqclimsols.com") {
+        const stored = String(localStorage.getItem(API_BASE_STORAGE_KEY) || "");
+        if (stored.includes("trycloudflare.com") || stored.includes("broadcasting-trout-age-companion")) {
+          localStorage.removeItem(API_BASE_STORAGE_KEY);
+        }
+        return normalizeApiBase(window.location.origin);
+      }
       const fromStorage = normalizeApiBase(localStorage.getItem(API_BASE_STORAGE_KEY));
       if (fromStorage) return fromStorage;
       const fromConfig = normalizeApiBase(window.FLOODASTRA_VIJAYAWADA_API_BASE);

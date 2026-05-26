@@ -120,6 +120,16 @@ window.VJ_DSS_DATA = {
       "swatch": "#7c2d12"
     },
     {
+      "key": "budameru_breach_susceptibility",
+      "title": "Budameru breach susceptibility",
+      "image": "assets/maps/budameru_breach_susceptibility.png?v=20260504062612",
+      "kind": "image",
+      "default_on": true,
+      "group": "Water system",
+      "description": "Budameru breach-susceptibility review layer for boundary and inflow-risk context.",
+      "swatch": "#be123c"
+    },
+    {
       "key": "pumps_outfalls",
       "title": "Pumps, outfalls and exchange points",
       "image": "assets/maps/styled/pumps_outfalls_styled.png?v=20260504062612",

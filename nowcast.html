@@ -1,0 +1,1667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vijayawada FloodReSQ Nowcast</title>
+  <script src="assets/config.js?v=20260526_chat_tunnel"></script>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #627083;
+      --line: #d7dde6;
+      --panel: #ffffff;
+      --soft: #f5f7fa;
+      --accent: #0f766e;
+      --accent-2: #1d4ed8;
+      --warn: #b45309;
+      --bad: #b91c1c;
+      --good: #047857;
+      --shadow: 0 12px 36px rgba(23, 32, 51, 0.11);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eef2f6;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 22px 30px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .brand-head {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+    }
+
+    .brand-logo {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      border: 1px solid #d9e2e8;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(20, 33, 43, 0.08);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.2vw, 34px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 900px;
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #b7d7d2;
+      background: #edfdfa;
+      color: #075f57;
+      font-weight: 700;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #c6cfda;
+      background: #ffffff;
+      color: #184076;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 22px 30px 34px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 16px 18px;
+      font-size: 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-body { padding: 18px; }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #253248;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #c6cfda;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    select {
+      min-height: 42px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .hint {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      min-height: 42px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      color: white;
+      background: var(--accent);
+    }
+
+    button.secondary {
+      color: #1f2a44;
+      background: #e9eef5;
+      border: 1px solid #cdd5e0;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .status-card {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .metric .value {
+      margin-top: 5px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .progress-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fbfcfe;
+      margin-bottom: 16px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 9px;
+    }
+
+    .progress {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #dce3ec;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.25s ease;
+    }
+
+    .job-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: #e8eef8;
+      color: #243b6b;
+    }
+
+    .pill.completed { background: #e7f8ef; color: var(--good); }
+    .pill.failed { background: #fdecec; color: var(--bad); }
+    .pill.running { background: #fff6e7; color: var(--warn); }
+
+    .quicklook {
+      width: 100%;
+      min-height: 380px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      overflow: hidden;
+    }
+
+    .quicklook img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 30px;
+      line-height: 1.5;
+    }
+
+    .outputs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .outputs a {
+      display: block;
+      padding: 11px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: #184076;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 10px 9px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #344158;
+      background: #f7f9fc;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    tr:hover td { background: #fbfcfe; }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+
+    .notice {
+      margin-top: 14px;
+      padding: 12px 13px;
+      border-radius: 8px;
+      border: 1px solid #cfd9e7;
+      background: #f8fbff;
+      color: #344158;
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .endpoint-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+      align-items: end;
+      margin-top: 10px;
+    }
+
+    .endpoint-row input {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid #c6cfda;
+      border-radius: 6px;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .endpoint-auth-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .endpoint-auth-row label {
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .endpoint-auth-row input {
+      width: 100%;
+      min-height: 38px;
+      margin-top: 5px;
+      padding: 8px 10px;
+      border: 1px solid #c6cfda;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    .notice.good {
+      border-color: #a7f3d0;
+      background: #ecfdf5;
+    }
+
+    .notice.warn {
+      border-color: #fed7aa;
+      background: #fff7ed;
+    }
+
+    .interpretation {
+      margin-top: 12px;
+      padding: 12px 13px;
+      border-radius: 8px;
+      border: 1px solid #cdd5e0;
+      background: #ffffff;
+      color: #344158;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .interpretation strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .inline-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-top: 10px;
+      color: #253248;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .inline-check input {
+      width: 16px;
+      height: 16px;
+      margin-top: 1px;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .feed-card {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfe;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .feed-card b {
+      display: block;
+      color: #253248;
+      margin-bottom: 3px;
+    }
+
+    .assistant-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .assistant-intro {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+    }
+
+    .assistant-intro .kicker {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .assistant-intro h3 {
+      margin: 7px 0 8px;
+      font-size: 24px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .assistant-intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      max-width: 760px;
+    }
+
+    .mode-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 0;
+    }
+
+    .mode-button {
+      min-height: 34px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #c6cfda;
+      background: #ffffff;
+      color: #1f2a44;
+      font-size: 13px;
+    }
+
+    .mode-button.active {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+      box-shadow: inset 0 0 0 1px rgba(22, 101, 52, 0.08);
+    }
+
+    .assistant-status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .assistant-box {
+      display: flex;
+      flex-direction: column;
+      min-height: 420px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .chat-log {
+      flex: 1;
+      min-height: 250px;
+      max-height: 520px;
+      overflow: auto;
+      padding: 14px;
+      background: #f8fafc;
+    }
+
+    .message {
+      max-width: 92%;
+      margin: 0 0 12px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #263247;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .message.user {
+      margin-left: auto;
+      color: #062f2b;
+      background: #e6fffb;
+      border-color: #a7e6dc;
+    }
+
+    .message.assistant strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+
+    .source-block {
+      margin-top: 9px;
+      padding-top: 8px;
+      border-top: 1px solid #e5eaf2;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: normal;
+    }
+
+    .source-block a {
+      color: #184076;
+      font-weight: 800;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+
+    .source-block strong {
+      display: inline;
+      margin: 0;
+    }
+
+    .chat-form {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .chat-form textarea {
+      min-height: 88px;
+    }
+
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .prompt-chip {
+      min-height: 32px;
+      padding: 7px 10px;
+      border: 1px solid #cdd5e0;
+      border-radius: 999px;
+      color: #1f2a44;
+      background: #f4f7fb;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .assistant-hero { grid-template-columns: 1fr; }
+      .feed-grid { grid-template-columns: 1fr; }
+      .status-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .outputs { grid-template-columns: 1fr; }
+      header, main { padding-left: 16px; padding-right: 16px; }
+      .topline { align-items: flex-start; flex-direction: column; }
+      .header-actions { justify-content: flex-start; }
+      .endpoint-row { grid-template-columns: 1fr; }
+      .endpoint-auth-row { grid-template-columns: 1fr; }
+      .brand-head { grid-template-columns: 60px minmax(0, 1fr); }
+      .brand-logo { width: 60px; height: 60px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topline">
+      <div class="brand-head">
+        <img class="brand-logo" src="assets/branding/floodresq.png" alt="FloodReSQ logo">
+        <div>
+          <h1>Vijayawada FloodReSQ Nowcast</h1>
+          <p class="subtitle">Choose the expected rain, Budameru inflow and river/canal backwater condition. The server prepares the inputs, runs the city flood model and returns maps, tables and animations here.</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a class="link-button" href="index.html">Open Map Dashboard</a>
+        <div class="badge" id="serverBadge">Checking server</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="panel">
+        <h2>Run Setup</h2>
+        <div class="panel-body">
+          <div class="notice" id="apiConfigNotice">
+            <strong>Connection</strong>
+            <p class="hint" id="apiBaseHint">Checking FloodAstra server endpoint.</p>
+            <div class="endpoint-row">
+              <input id="apiBaseInput" type="url" placeholder="https://your-floodastra-backend.example.com">
+              <button id="apiSaveBtn" class="secondary" type="button">Use Endpoint</button>
+              <button id="apiResetBtn" class="secondary" type="button">Reset</button>
+            </div>
+            <div class="endpoint-auth-row">
+              <label for="apiUserInput">Backend user
+                <input id="apiUserInput" autocomplete="username" placeholder="Optional">
+              </label>
+              <label for="apiPasswordInput">Backend password
+                <input id="apiPasswordInput" type="password" autocomplete="current-password" placeholder="Optional">
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="rainfall">Rainfall condition</label>
+            <select id="rainfall"></select>
+            <p class="hint" id="rainfallHint"></p>
+          </div>
+          <div class="field">
+            <label for="hydrograph">Budameru inflow</label>
+            <select id="hydrograph"></select>
+            <p class="hint" id="hydrographHint"></p>
+          </div>
+          <div class="field">
+            <label for="stage">River/canal backwater</label>
+            <select id="stage"></select>
+            <p class="hint" id="stageHint"></p>
+          </div>
+          <div class="field">
+            <label for="runLength">Forecast window</label>
+            <select id="runLength"></select>
+            <p class="hint" id="runLengthHint"></p>
+          </div>
+          <div class="button-row">
+            <button id="runBtn" type="button">Run Nowcast</button>
+            <button id="refreshBtn" class="secondary" type="button">Refresh Runs</button>
+          </div>
+          <div class="notice" id="physicsNote">Model setup will load from the server.</div>
+          <div class="notice" id="awarePanel">
+            <strong>Live rain and river/canal data</strong>
+            <p class="hint" id="awareStatus">Checking live rain and river/canal data feed.</p>
+            <label class="inline-check" for="useAwareLatest">
+              <input id="useAwareLatest" type="checkbox">
+              <span>Use the latest reviewed live rain and river/canal snapshot for the next run.</span>
+            </label>
+            <div class="button-row">
+              <button id="awareDryBtn" class="secondary" type="button">Check Data Request</button>
+              <button id="awareFetchBtn" class="secondary" type="button">Fetch Latest Data</button>
+              <button id="awareRunBtn" type="button" disabled>Run With Live Data</button>
+            </div>
+            <div class="interpretation" id="awareBox">
+              <strong>Live Data Snapshot</strong>
+              No live snapshot loaded yet.
+            </div>
+          </div>
+          <div class="notice" id="scenarioChat">
+            <strong>Story to Run</strong>
+            <p class="hint" id="narrativeHint">Write a short story of the expected flood situation. FloodAstra converts it into rainfall, Budameru inflow, river/canal condition and forecast-window numbers before any run starts.</p>
+            <div class="prompt-chips" aria-label="Scenario examples">
+              <button class="prompt-chip" type="button" data-scenario-prompt="Story: It is evening in Vijayawada. Rain is expected to intensify for several hours, Budameru is carrying a strong inflow, and Krishna/canal levels are high enough to slow drainage. Run a quick 10 minute check first.">Story quick check</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run a quick 10 minute check with severe rain, high river/canal backwater and Budameru peak inflow.">Severe quick check</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run a full 6 hour forecast with 80 mm rain over the active window, Budameru at 60 percent and elevated river/canal backwater.">80 mm + Budameru 60%</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run no local rain with normal river/canal condition and Budameru lower inflow for a quick 10 minute check.">No rain boundary check</button>
+              <button class="prompt-chip" type="button" data-scenario-prompt="Run the standard heavy rain case with high river/canal backwater for the full 6 hour forecast window.">Standard full run</button>
+            </div>
+            <div class="field" style="margin-top:12px;">
+              <label for="narrative">Story or scenario message</label>
+              <textarea id="narrative" placeholder="Example: Story: rain increases in the evening, Budameru is at 60 percent of peak, river/canal levels are elevated, and we need a full 6 hour forecast."></textarea>
+            </div>
+            <div class="button-row">
+              <button id="interpretBtn" class="secondary" type="button">Convert Story</button>
+              <button id="runNarrativeBtn" type="button">Convert Story and Run</button>
+            </div>
+          </div>
+          <div class="interpretation" id="interpretationBox">
+            <strong>Story conversion</strong>
+            No story converted yet.
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Active Run</h2>
+        <div class="panel-body">
+          <div class="job-title">
+            <div>
+              <strong id="activeName">No active job selected</strong>
+              <div class="hint mono" id="activeId"></div>
+            </div>
+            <span class="pill" id="activeStatus">idle</span>
+          </div>
+
+          <div class="status-card">
+            <div class="metric">
+              <div class="label">Elapsed</div>
+              <div class="value" id="elapsed">-</div>
+            </div>
+            <div class="metric">
+              <div class="label">ETA</div>
+              <div class="value" id="eta">-</div>
+            </div>
+            <div class="metric">
+              <div class="label">Forecast Time Covered</div>
+              <div class="value" id="modelClock">-</div>
+            </div>
+            <div class="metric">
+              <div class="label">Current Step</div>
+              <div class="value" id="phase">-</div>
+            </div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span id="progressText">Waiting for run</span>
+              <span id="progressPct">0%</span>
+            </div>
+            <div class="progress"><div class="bar" id="progressBar"></div></div>
+          </div>
+
+          <div class="quicklook" id="quicklook">
+            <div class="empty">Run a nowcast to show the boundary-aware flood map here.</div>
+          </div>
+          <div class="outputs" id="outputs"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" style="margin-top:18px;">
+      <h2>Your FloodAstra Vijayawada</h2>
+      <div class="panel-body">
+        <div class="assistant-hero">
+          <div class="assistant-intro">
+            <div class="kicker">FloodAstra query desk</div>
+            <h3>Your city. Your prompts. Responses tied to FloodAstra evidence.</h3>
+            <p>Ask about latest nowcast results, worst wards, road/locality exposure, pipe surcharge, layers, runtime, Budameru context, or what should be checked first. Verified Evidence mode uses only approved local FloodAstra outputs. Expanded Answer mode keeps local evidence first and can add outside context only when the question needs it.</p>
+            <div class="mode-row" role="group" aria-label="Assistant mode">
+              <button class="mode-button active" id="modeVerified" type="button">Verified Evidence</button>
+              <button class="mode-button" id="modeHybrid" type="button">Expanded Answer</button>
+            </div>
+            <div class="assistant-status" id="assistantStatus">Assistant status will load from the server.</div>
+            <div class="prompt-chips">
+              <button class="prompt-chip" type="button" data-prompt="Which wards are worst in the latest Vijayawada run?">Worst wards</button>
+              <button class="prompt-chip" type="button" data-prompt="Which roads or localities should be checked first?">Field checks</button>
+              <button class="prompt-chip" type="button" data-prompt="Explain pipe surcharge and backflow in simple words.">Backflow</button>
+              <button class="prompt-chip" type="button" data-prompt="Use hybrid mode: what is the public historical context of Budameru flooding in Vijayawada?">Budameru context</button>
+            </div>
+          </div>
+          <div class="assistant-box">
+            <div class="chat-log" id="assistantMessages">
+              <div class="message assistant"><strong>FloodAstra</strong>Ask a Vijayawada nowcast or preparedness question. I will use the latest local run evidence first.</div>
+            </div>
+            <div class="chat-form">
+              <label for="assistantQuestion">Ask FloodAstra</label>
+              <textarea id="assistantQuestion" placeholder="Example: What is happening near the worst road exposure locations, and what should the field team check first?"></textarea>
+              <div class="button-row">
+                <button id="assistantAskBtn" type="button">Ask</button>
+                <button id="assistantClearBtn" class="secondary" type="button">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px;">
+      <h2>Recent Jobs</h2>
+      <div class="panel-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Created</th>
+              <th>Run</th>
+              <th>Selections</th>
+              <th>Status</th>
+              <th>Outputs</th>
+            </tr>
+          </thead>
+          <tbody id="jobsBody">
+            <tr><td colspan="5" class="empty">No jobs loaded yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const LIVE_RUNNER_URL = "http://127.0.0.1:8788/";
+    const API_BASE_STORAGE_KEY = "floodastra:vijayawada:apiBase";
+    const API_USER_STORAGE_KEY = "floodastra:vijayawada:apiUser";
+    const API_PASSWORD_STORAGE_KEY = "floodastra:vijayawada:apiPassword";
+    if (window.location.protocol === "file:") {
+      const target = new URL(LIVE_RUNNER_URL);
+      target.search = window.location.search;
+      target.hash = window.location.hash;
+      document.body.insertAdjacentHTML("afterbegin", `
+        <div style="position:fixed;inset:14px auto auto 14px;z-index:9999;max-width:520px;padding:14px 16px;border:1px solid #fed7aa;border-radius:8px;background:#fff7ed;color:#7c2d12;font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.12);">
+          <strong style="display:block;margin-bottom:4px;">Open through the FloodAstra server</strong>
+          This page was opened as a local file, so the nowcast API cannot be reached. Redirecting to
+          <a href="${target.href}" style="color:#0f766e;font-weight:800;">${target.href}</a>.
+        </div>
+      `);
+      window.location.replace(target.href);
+    }
+    const state = { options: null, activeJobId: null, assistantMode: "verified", assistantHistory: [], awareSnapshot: null, apiBase: "", apiUser: "", apiPassword: "" };
+    const $ = (id) => document.getElementById(id);
+    function normalizeApiBase(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      try {
+        const url = new URL(raw, window.location.href);
+        url.hash = "";
+        url.search = "";
+        return url.toString().replace(/\/+$/, "/");
+      } catch (_) {
+        return "";
+      }
+    }
+    function initialApiBase() {
+      const params = new URLSearchParams(window.location.search);
+      const fromUrl = normalizeApiBase(params.get("api"));
+      if (fromUrl) {
+        localStorage.setItem(API_BASE_STORAGE_KEY, fromUrl);
+        return fromUrl;
+      }
+      const fromStorage = normalizeApiBase(localStorage.getItem(API_BASE_STORAGE_KEY));
+      if (fromStorage) return fromStorage;
+      const fromConfig = normalizeApiBase(window.FLOODASTRA_VIJAYAWADA_API_BASE);
+      if (fromConfig) return fromConfig;
+      if (window.location.hostname.endsWith("github.io")) return "";
+      return normalizeApiBase(window.location.origin);
+    }
+    function setApiBase(value, persist = false) {
+      state.apiBase = normalizeApiBase(value);
+      if (persist) {
+        if (state.apiBase) localStorage.setItem(API_BASE_STORAGE_KEY, state.apiBase);
+        else localStorage.removeItem(API_BASE_STORAGE_KEY);
+      }
+      const input = $("apiBaseInput");
+      if (input) input.value = state.apiBase;
+      const hint = $("apiBaseHint");
+      if (hint) {
+        hint.textContent = state.apiBase
+          ? `Using FloodAstra API endpoint: ${state.apiBase}`
+          : "Set the FloodAstra API endpoint to enable chat, live data and nowcast runs from this public page.";
+      }
+    }
+    function initialApiAuth() {
+      const params = new URLSearchParams(window.location.search);
+      const urlUser = String(params.get("api_user") || "").trim();
+      const urlPassword = String(params.get("api_password") || "").trim();
+      if (urlUser || urlPassword) return { user: urlUser, password: urlPassword };
+      return {
+        user: String(localStorage.getItem(API_USER_STORAGE_KEY) || window.FLOODASTRA_VIJAYAWADA_API_USER || "").trim(),
+        password: String(localStorage.getItem(API_PASSWORD_STORAGE_KEY) || window.FLOODASTRA_VIJAYAWADA_API_PASSWORD || "").trim()
+      };
+    }
+    function setApiAuth(user, password, persist = false) {
+      state.apiUser = String(user || "").trim();
+      state.apiPassword = String(password || "").trim();
+      const userInput = $("apiUserInput");
+      const passwordInput = $("apiPasswordInput");
+      if (userInput) userInput.value = state.apiUser;
+      if (passwordInput) passwordInput.value = state.apiPassword;
+      if (persist) {
+        if (state.apiUser) localStorage.setItem(API_USER_STORAGE_KEY, state.apiUser);
+        else localStorage.removeItem(API_USER_STORAGE_KEY);
+        if (state.apiPassword) localStorage.setItem(API_PASSWORD_STORAGE_KEY, state.apiPassword);
+        else localStorage.removeItem(API_PASSWORD_STORAGE_KEY);
+      }
+    }
+    function apiUrl(path) {
+      if (!state.apiBase) {
+        throw new Error("Set the FloodAstra API endpoint first. For local testing use http://127.0.0.1:8788/; for public access use the HTTPS backend/tunnel URL.");
+      }
+      return new URL(path, state.apiBase).toString();
+    }
+    function apiFetch(path, options = {}) {
+      const request = { ...options };
+      const headers = new Headers(request.headers || {});
+      if (state.apiUser || state.apiPassword) {
+        headers.set("Authorization", `Basic ${btoa(`${state.apiUser}:${state.apiPassword}`)}`);
+      }
+      request.headers = headers;
+      return fetch(apiUrl(path), request);
+    }
+    async function setImageFromEndpoint(img, href) {
+      if (!img || !href) return;
+      if (!state.apiUser && !state.apiPassword) {
+        img.src = href;
+        return;
+      }
+      try {
+        const response = await apiFetch(href, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Image request failed with status ${response.status}`);
+        const blob = await response.blob();
+        img.src = URL.createObjectURL(blob);
+      } catch (error) {
+        img.alt = `${img.alt || "Image"} could not be loaded: ${error.message}`;
+      }
+    }
+    function assetHref(href) {
+      const raw = String(href || "").trim();
+      if (!raw) return "";
+      if (/^(https?:|data:|blob:|mailto:)/i.test(raw)) return raw;
+      if (!state.apiBase) return raw;
+      return new URL(raw, state.apiBase).toString();
+    }
+
+    function fmtSeconds(value) {
+      if (value === null || value === undefined || value === "" || Number.isNaN(Number(value))) return "-";
+      const s = Math.max(0, Math.round(Number(value)));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return m > 0 ? `${m}m ${String(r).padStart(2, "0")}s` : `${r}s`;
+    }
+
+    function cleanPhase(value) {
+      return String(value || "-").replaceAll("_", " ");
+    }
+
+    function setBadge(ok, text) {
+      const badge = $("serverBadge");
+      badge.textContent = text;
+      badge.style.background = ok ? "#edfdfa" : "#fdecec";
+      badge.style.borderColor = ok ? "#b7d7d2" : "#f3b8b8";
+      badge.style.color = ok ? "#075f57" : "#991b1b";
+    }
+
+    function setSelect(selectId, hintId, items, selectedId) {
+      const select = $(selectId);
+      select.innerHTML = "";
+      for (const item of items) {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.label;
+        select.appendChild(option);
+      }
+      select.value = selectedId;
+      const updateHint = () => {
+        const item = items.find((row) => row.id === select.value);
+        $(hintId).textContent = item ? item.description : "";
+      };
+      select.addEventListener("change", updateHint);
+      updateHint();
+    }
+
+    async function loadOptions() {
+      const response = await apiFetch("/api/nowcast/options");
+      if (!response.ok) throw new Error(await response.text());
+      const options = await response.json();
+      state.options = options;
+      setSelect("rainfall", "rainfallHint", options.rainfall_scenarios, options.defaults.rainfall);
+      setSelect("hydrograph", "hydrographHint", options.hydrograph_scenarios, options.defaults.hydrograph);
+      setSelect("stage", "stageHint", options.stage_scenarios, options.defaults.stage);
+      setSelect("runLength", "runLengthHint", options.run_lengths, options.defaults.run_length);
+      $("physicsNote").textContent = "City rainfall, Budameru inflow, river/canal level, terrain and storm-drain exchange are checked together. Live river/outflow data choose the best available normal, elevated or high backwater condition.";
+      const parser = options.narrative_parser || {};
+      $("narrativeHint").textContent = parser.expanded_parser_available
+        ? "Expanded story conversion is active on the server. The converted numbers are shown before launch."
+        : "Rule-based story conversion is active. The operator can still review and edit the selected run settings before launch.";
+      renderAssistantStatus(options.assistant || {});
+      renderAwareStatus(options.external_data || options.aware_api || {});
+      setBadge(true, "Local server connected");
+    }
+
+    function awareSnapshotUsable(snapshot = state.awareSnapshot) {
+      if (!snapshot || snapshot.dry_run) return false;
+      const rec = snapshot.recommendation || {};
+      const readiness = snapshot.model_readiness_status || {};
+      return !!(readiness.run_ready || rec.run_ready);
+    }
+
+    function updateAwareRunControls(snapshot = state.awareSnapshot) {
+      const usable = awareSnapshotUsable(snapshot);
+      $("useAwareLatest").disabled = !usable;
+      $("awareRunBtn").disabled = !usable;
+      $("awarePanel").classList.toggle("good", usable);
+      $("awarePanel").classList.toggle("warn", !usable);
+      if (!usable) $("useAwareLatest").checked = false;
+    }
+
+    async function startRun(options = {}) {
+      $("runBtn").disabled = true;
+      $("awareRunBtn").disabled = true;
+      try {
+        const useLive = !!options.useLive || $("useAwareLatest").checked;
+        if (useLive && !awareSnapshotUsable()) {
+          throw new Error("No usable live rain or river/canal snapshot is loaded. Click Fetch Latest Data first, then run with live data.");
+        }
+        const payload = {
+          rainfall: $("rainfall").value,
+          hydrograph: $("hydrograph").value,
+          stage: $("stage").value,
+          run_length: $("runLength").value,
+          use_external_latest: useLive,
+          use_aware_latest: useLive
+        };
+        const response = await apiFetch("/api/nowcast/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Nowcast request failed.");
+        state.activeJobId = data.job.job_id;
+        renderJob(data.job);
+        await refreshJobs();
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        $("runBtn").disabled = false;
+        updateAwareRunControls();
+      }
+    }
+
+    async function handleNarrative(runNow = false) {
+      const narrative = $("narrative").value.trim();
+      if (!narrative) {
+        alert("Write a story or scenario message first.");
+        return;
+      }
+      $("interpretBtn").disabled = true;
+      $("runNarrativeBtn").disabled = true;
+      try {
+        const response = await apiFetch("/api/nowcast/story", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ story: narrative, run: runNow, use_gpt: true })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Story conversion failed.");
+        renderInterpretation(data.interpretation || data.job?.narrative_interpretation, data.contract || data.job, data.forcing || data.job?.forcing_preview);
+        const interpretation = data.interpretation || data.job?.narrative_interpretation;
+        if (interpretation?.selection) {
+          applySelectionToDropdowns(interpretation.selection);
+        }
+        if (data.job) {
+          state.activeJobId = data.job.job_id;
+          renderJob(data.job);
+          await refreshJobs();
+        }
+      } catch (error) {
+        $("interpretationBox").innerHTML = `<strong>Story conversion</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+      } finally {
+        $("interpretBtn").disabled = false;
+        $("runNarrativeBtn").disabled = false;
+      }
+    }
+
+    function applySelectionToDropdowns(selection) {
+      const mapping = {
+        rainfall: "rainfall",
+        hydrograph: "hydrograph",
+        stage: "stage",
+        run_length: "runLength"
+      };
+      for (const [key, id] of Object.entries(mapping)) {
+        const select = $(id);
+        if (!selection[key]) continue;
+        const exists = Array.from(select.options).some((option) => option.value === selection[key]);
+        if (exists) {
+          select.value = selection[key];
+          select.dispatchEvent(new Event("change"));
+        }
+      }
+    }
+
+    function renderInterpretation(interpretation, contract, forcingPreview = null) {
+      const box = $("interpretationBox");
+      if (!interpretation) {
+        box.innerHTML = "<strong>Story conversion</strong>No run settings were returned.";
+        return;
+      }
+      const selection = interpretation.selection || {};
+      const custom = interpretation.custom || {};
+      const notes = interpretation.operator_notes || [];
+      const warnings = interpretation.warnings || [];
+      const preview = contract?.forcing || {};
+      const labels = contract?.labels || {};
+      const durationS = Number(contract?.duration_s || 0);
+      const expectedRuntimeS = Number(contract?.expected_runtime_seconds || 0);
+      const rows = [
+        ["Rain condition", labels.rainfall || selection.rainfall],
+        ["Rainfall depth", custom.target_rainfall_depth_mm ? `${Number(custom.target_rainfall_depth_mm).toFixed(1)} mm` : "-"],
+        ["Rainfall scale", custom.rainfall_scale ?? preview.rainfall_scale ?? "-"],
+        ["Budameru inflow", labels.hydrograph || selection.hydrograph],
+        ["Budameru scale", custom.budameru_flow_scale ?? preview.budameru_inflow_scale ?? "-"],
+        ["River/canal condition", labels.stage || readableStage(selection.stage)],
+        ["Forecast window", labels.run_length || selection.run_length],
+        ["Forecast duration", durationS ? fmtSeconds(durationS) : "-"],
+        ["Estimated run time", expectedRuntimeS ? fmtSeconds(expectedRuntimeS) : "-"]
+      ];
+      box.innerHTML = `
+        <strong>Story conversion</strong>
+        <div class="hint">Review confidence: ${escapeHtml(interpretation.confidence || "-")}. The dropdowns above have been updated to match this story.</div>
+        <table style="margin-top:8px;">
+          <tbody>
+            ${rows.map(([key, value]) => `<tr><th style="width:36%;">${escapeHtml(key)}</th><td>${escapeHtml(String(value ?? "-"))}</td></tr>`).join("")}
+          </tbody>
+        </table>
+        ${forcingPreview ? forcingPreviewHtml(forcingPreview) : ""}
+        ${notes.length ? `<div class="hint" style="margin-top:8px;">${notes.map(escapeHtml).join("<br>")}</div>` : ""}
+        ${warnings.length ? `<div class="hint" style="margin-top:8px;color:#991b1b;">${warnings.map(escapeHtml).join("<br>")}</div>` : ""}
+      `;
+    }
+
+    function forcingPreviewHtml(forcing) {
+      const outputs = forcing.outputs || {};
+      const rainfall = forcing.rainfall || {};
+      const budameru = forcing.budameru_model_input || forcing.budameru || {};
+      const stage = forcing.stage_controls || {};
+      const links = [
+        ["Rainfall hyetograph CSV", outputs.rainfall_timeseries_csv],
+        ["Model-input Budameru hydrograph CSV", outputs.budameru_model_input_timeseries_csv || outputs.budameru_inflow_timeseries_csv],
+        ["Source Budameru hydrograph CSV", outputs.budameru_inflow_timeseries_csv],
+        ["River/canal boundary CSV", outputs.stage_control_timeseries_csv],
+        ["Forcing manifest", outputs.forcing_manifest_json]
+      ].filter(([, href]) => href);
+      const previewHref = assetHref(outputs.forcing_preview_png);
+      const preview = previewHref
+        ? `<a href="${escapeHtml(previewHref)}" target="_blank" rel="noopener"><img src="${escapeHtml(previewHref)}" alt="Generated rainfall, Budameru and boundary forcing preview" style="width:100%;border:1px solid #cdd5e0;border-radius:8px;margin-top:10px;background:#fff;"></a>`
+        : "";
+      return `
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid #e5eaf2;">
+          <strong>Generated model inputs</strong>
+          <table style="margin-top:8px;">
+            <tbody>
+              <tr><th style="width:36%;">Rainfall depth</th><td>${escapeHtml(String(rainfall.compiled_depth_mm ?? "-"))} mm</td></tr>
+              <tr><th>Peak rainfall intensity</th><td>${escapeHtml(String(rainfall.max_intensity_mm_h ?? "-"))} mm/h</td></tr>
+              <tr><th>Rainfall timesteps</th><td>${escapeHtml(String(forcing.tables?.rainfall_hyetograph?.row_count ?? "-"))}</td></tr>
+              <tr><th>Budameru scale applied</th><td>${escapeHtml(String(budameru.applied_scale ?? "-"))}</td></tr>
+              <tr><th>Peak Budameru inflow to model</th><td>${escapeHtml(String(budameru.max_flow_m3_s ?? "-"))} m&sup3;/s</td></tr>
+              <tr><th>Budameru volume</th><td>${escapeHtml(String(budameru.volume_m3 ?? "-"))} m&sup3;</td></tr>
+              <tr><th>Boundary condition</th><td>${escapeHtml(readableStage(stage.state || "-"))}; ${escapeHtml(String(stage.stage_feature_count ?? "-"))} features</td></tr>
+            </tbody>
+          </table>
+          ${preview}
+          ${links.length ? `<div class="hint" style="margin-top:8px;">Full model-input numbers: ${links.map(([label, href]) => `<a href="${escapeHtml(assetHref(href))}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`).join(" | ")}</div>` : ""}
+          <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px;">
+            ${forcingTableHtml("Rainfall hyetograph preview", forcing.tables?.rainfall_hyetograph?.rows || [], ["time_h", "rainfall_intensity_mm_h"])}
+            ${forcingTableHtml("Budameru model-input hydrograph preview", forcing.tables?.budameru_model_hydrograph?.rows || [], ["time_h", "flow_m3_s"])}
+          </div>
+        </div>
+      `;
+    }
+
+    function forcingTableHtml(title, rows, keys) {
+      if (!rows.length) return "";
+      return `
+        <div>
+          <strong>${escapeHtml(title)}</strong>
+          <table style="margin-top:6px;">
+            <thead><tr>${keys.map((key) => `<th>${escapeHtml(key.replaceAll("_", " "))}</th>`).join("")}</tr></thead>
+            <tbody>
+              ${rows.slice(0, 8).map((row) => `<tr>${keys.map((key) => `<td>${escapeHtml(String(row[key] ?? "-"))}</td>`).join("")}</tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function humanizeConfirmation(value) {
+      const labels = {
+        unit_confirmed: "outflow units",
+        datum_confirmed: "official river/canal level datum",
+        boundary_mapping_confirmed: "which river/canal gauge controls each model edge",
+        enabled: "live river/canal feed enabled",
+        has_krishna_outflow: "Krishna outflow value available"
+      };
+      return labels[value] || String(value || "-").replaceAll("_", " ");
+    }
+
+    function readableStage(value) {
+      const labels = {
+        normal_stage: "Normal backwater condition",
+        elevated_stage: "Elevated backwater condition",
+        high_stage: "High backwater condition"
+      };
+      return labels[value] || value || "-";
+    }
+
+    function readableSource(value) {
+      const labels = {
+        api_outflow_proxy_boundary: "Krishna outflow proxy",
+        api_stage_boundary: "Official river/canal level feed",
+        rainfall_threshold_proxy: "Rainfall-based fallback",
+        recommendation: "Live data recommendation"
+      };
+      return labels[value] || cleanPhase(value || "-");
+    }
+
+    function renderAwareStatus(status) {
+      const latest = status.latest_snapshot || {};
+      if (latest.snapshot_id) state.awareSnapshot = latest;
+      const configured = status.token_configured ? "feed access is configured" : "feed access is not configured";
+      const scheduler = status.scheduler || {};
+      const runtime = status.scheduler_runtime || {};
+      const schedulerText = scheduler.enabled || runtime.enabled
+        ? ` Automatic check every ${Math.round((runtime.poll_seconds || Math.min(scheduler.rainfall_poll_minutes || 15, scheduler.stage_poll_minutes || 30) * 60) / 60)} min; last status: ${cleanPhase(runtime.last_status || "waiting")}.`
+        : " Manual fetch mode.";
+      const latestAny = status.latest_any_snapshot || {};
+      const snapshotText = latest.snapshot_id
+        ? ` Latest reviewed snapshot: ${latest.snapshot_id}${latest.dry_run ? " (request check only)" : ""}.`
+        : " No snapshot fetched yet.";
+      const dryNote = latestAny.snapshot_id && latestAny.dry_run && latestAny.snapshot_id !== latest.snapshot_id
+        ? ` Newest request-check plan ${latestAny.snapshot_id} is available, but live runs use the latest real snapshot.`
+        : "";
+      $("awareStatus").textContent = status.available
+        ? `Live feed ready; ${configured}.${schedulerText}${snapshotText}${dryNote}`
+        : `Live feed unavailable: ${status.error || "unknown error"}`;
+      if (latest.snapshot_id) renderAwareSnapshot(latest);
+      updateAwareRunControls(latest);
+    }
+
+    function renderAwareSnapshot(snapshot) {
+      state.awareSnapshot = snapshot;
+      const rec = snapshot.recommendation || {};
+      const readiness = snapshot.model_readiness_status || {};
+      const quality = snapshot.quality_report || {};
+      const stageGate = rec.stage_boundary_recommendation || quality.stage_gate || {};
+      const summaries = snapshot.summaries || {};
+      const cards = [
+        ["AWS observed", summaries.aws_observed],
+        ["ECMWF forecast", summaries.ecmwf_rainfall],
+        ["IMD radar alerts", summaries.imd_radar_alerts],
+        ["Reservoir", summaries.reservoir]
+      ];
+      const outputs = snapshot.outputs || {};
+      const outputLinks = [
+        ["Manifest", outputs.snapshot_manifest_json],
+        ["Normalized CSV", outputs.normalized_timeseries_csv],
+        ["Data quality note", outputs.quality_report_json],
+        ["Run readiness note", outputs.model_readiness_status_json]
+      ].filter(([, href]) => href);
+      const blocked = stageGate.blocked_reasons || [];
+      const pending = stageGate.pending_confirmations || [];
+      const usable = awareSnapshotUsable(snapshot);
+      $("awareBox").innerHTML = `
+        <strong>Live Data Snapshot</strong>
+        <div class="hint mono">${escapeHtml(snapshot.snapshot_id || "-")}</div>
+        <table style="margin-top:8px;">
+          <tbody>
+            <tr><th>Ready to run</th><td>${readiness.run_ready || rec.run_ready ? "Yes" : "No"}</td></tr>
+            <tr><th>Rain adjustment</th><td>${rec.rainfall_scale_suggested ?? "-"}</td></tr>
+            <tr><th>River/canal source</th><td>${escapeHtml(readableSource(rec.stage_source || "-"))}</td></tr>
+            <tr><th>River/canal condition</th><td>${escapeHtml(readableStage(rec.stage_option_suggested || "-"))}</td></tr>
+            <tr><th>Boundary applied</th><td>${stageGate.usable_for_model ? "Yes" : "No"}</td></tr>
+            <tr><th>What this means</th><td>${escapeHtml(stageGate.reason || "-")}</td></tr>
+            <tr><th>Confidence</th><td>${escapeHtml(rec.confidence || "-")}</td></tr>
+            <tr><th>Run status</th><td>${usable ? "Ready for live data run" : (snapshot.dry_run ? "Data request check only" : "Not ready for nowcast inputs")}</td></tr>
+          </tbody>
+        </table>
+        <div class="feed-grid">
+          ${cards.map(([title, summary]) => {
+            const row = summary || {};
+            return `<div class="feed-card"><b>${escapeHtml(title)}</b>Status: ${escapeHtml(row.status || "-")}<br>Records: ${row.records ?? 0}<br>Target: ${row.target_records ?? 0}</div>`;
+          }).join("")}
+        </div>
+        ${pending.length ? `<div class="hint" style="margin-top:8px;">Official confirmation still needed for: ${pending.map(humanizeConfirmation).map(escapeHtml).join(", ")}</div>` : ""}
+        ${blocked.length ? `<div class="hint" style="margin-top:8px;">Boundary data not applied because: ${blocked.map(humanizeConfirmation).map(escapeHtml).join(", ")}</div>` : ""}
+        ${outputLinks.length ? `<div class="hint" style="margin-top:8px;">Review files: ${outputLinks.map(([label, href]) => `<a href="${escapeHtml(assetHref(href))}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`).join(" | ")}</div>` : ""}
+        ${rec.operator_note ? `<div class="hint" style="margin-top:8px;">${escapeHtml(rec.operator_note)}</div>` : ""}
+      `;
+      updateAwareRunControls(snapshot);
+    }
+
+    async function fetchAwareSnapshot(dryRun) {
+      $("awareDryBtn").disabled = true;
+      $("awareFetchBtn").disabled = true;
+      $("awareBox").innerHTML = `<strong>Live Data Snapshot</strong>${dryRun ? "Building feed request check..." : "Calling live rainfall, reservoir/outflow and alert feeds..."}`;
+      try {
+        const response = await apiFetch("/api/external/fetch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dry_run: dryRun })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Live data fetch failed.");
+        renderAwareSnapshot(data.snapshot || {});
+        if (!dryRun && awareSnapshotUsable(data.snapshot || {})) {
+          $("useAwareLatest").checked = true;
+        }
+      } catch (error) {
+        $("awareBox").innerHTML = `<strong>Live Data Snapshot</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+        updateAwareRunControls();
+      } finally {
+        $("awareDryBtn").disabled = false;
+        $("awareFetchBtn").disabled = false;
+        updateAwareRunControls();
+      }
+    }
+
+    async function refreshActive() {
+      if (!state.activeJobId) return;
+      const response = await apiFetch(`/api/nowcast/job/${encodeURIComponent(state.activeJobId)}`);
+      if (!response.ok) return;
+      const data = await response.json();
+      renderJob(data.job);
+      await refreshJobs(false);
+    }
+
+    async function refreshJobs(activateLatest = true) {
+      const response = await apiFetch("/api/nowcast/jobs?limit=20");
+      if (!response.ok) return;
+      const data = await response.json();
+      const jobs = data.jobs || [];
+      if (activateLatest && !state.activeJobId && jobs.length) {
+        state.activeJobId = jobs[0].job_id;
+        renderJob(jobs[0]);
+      }
+      renderJobsTable(jobs);
+    }
+
+    function renderJob(job) {
+      if (!job) return;
+      const labels = job.labels || {};
+      const name = [labels.rainfall, labels.hydrograph, labels.stage, labels.run_length, labels.external_forcing].filter(Boolean).join(" | ");
+      $("activeName").textContent = name || "Nowcast job";
+      $("activeId").textContent = job.job_id || "";
+      const pill = $("activeStatus");
+      pill.textContent = job.status || "unknown";
+      pill.className = `pill ${job.status || ""}`;
+      $("elapsed").textContent = fmtSeconds(job.elapsed_seconds);
+      $("eta").textContent = job.status === "completed" ? "0s" : fmtSeconds(job.eta_seconds);
+      $("modelClock").textContent = fmtSeconds(job.model_clock_s_estimate);
+      $("phase").textContent = cleanPhase(job.phase);
+      const expected = Math.max(Number(job.expected_runtime_seconds || 1), 1);
+      const elapsed = Math.max(Number(job.elapsed_seconds || 0), 0);
+      let pct = Math.min(98, Math.round((elapsed / expected) * 100));
+      if (job.status === "completed") pct = 100;
+      if (job.status === "failed") pct = 100;
+      $("progressBar").style.width = `${pct}%`;
+      $("progressPct").textContent = `${pct}%`;
+      $("progressText").textContent = job.status === "completed" ? "Run complete" : cleanPhase(job.phase);
+      renderOutputs(job);
+    }
+
+    function renderOutputs(job) {
+      const outputs = job.outputs || {};
+      const quicklook = $("quicklook");
+      const outputBox = $("outputs");
+      outputBox.innerHTML = "";
+      const primaryMap = outputs.animation_poster_png || outputs.professional_map_png || outputs.boundary_summary_png || outputs.quicklook_png;
+      if (primaryMap && job.status === "completed") {
+        const mapLabel = outputs.animation_poster_png ? "Boundary-aware nowcast map and scenario readout" : "Nowcast flood map";
+        const mapHref = assetHref(primaryMap);
+        quicklook.innerHTML = `<a href="${escapeHtml(mapHref)}" target="_blank" rel="noopener"><img alt="${mapLabel}"></a>`;
+        setImageFromEndpoint(quicklook.querySelector("img"), mapHref);
+      } else if (job.status === "failed") {
+        quicklook.innerHTML = `<div class="empty">Run failed.<br>${job.error || "Check server logs for details."}</div>`;
+      } else {
+        quicklook.innerHTML = `<div class="empty">Run is ${cleanPhase(job.phase)}. The boundary-aware map will appear after completion.</div>`;
+      }
+      const labels = {
+        forcing_manifest_json: "Input details",
+        rainfall_timeseries_csv: "Rainfall input",
+        budameru_inflow_timeseries_csv: "Budameru inflow input",
+        stage_control_timeseries_csv: "River/canal input",
+        forcing_preview_png: "Input preview",
+        run_manifest_json: "Run details",
+        max_depth_tif: "Max depth raster",
+        max_velocity_tif: "Max velocity raster",
+        persistence_minutes_tif: "Persistence raster",
+        time_to_flooding_minutes_tif: "Time to flooding raster",
+        mass_balance_csv: "Mass balance",
+        evolution_summary_csv: "Evolution summary",
+        ward_summary_csv: "Ward summary",
+        road_exposure_summary_csv: "Road exposure",
+        ward_road_exposure_summary_csv: "Ward-road exposure",
+        pipe_nodes_csv: "Storm-drain nodes",
+        pipe_links_csv: "Storm-drain links",
+        animation_poster_png: "Boundary map",
+        animation_gif: "Flood animation",
+        animation_summary_json: "Animation summary"
+      };
+      for (const [key, label] of Object.entries(labels)) {
+        if (!outputs[key]) continue;
+        const link = document.createElement("a");
+        link.href = assetHref(outputs[key]);
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = label;
+        outputBox.appendChild(link);
+      }
+    }
+
+    function renderJobsTable(jobs) {
+      const body = $("jobsBody");
+      body.innerHTML = "";
+      if (!jobs.length) {
+        body.innerHTML = `<tr><td colspan="5" class="empty">No jobs have been submitted from this server yet.</td></tr>`;
+        return;
+      }
+      for (const job of jobs) {
+        const tr = document.createElement("tr");
+        const labels = job.labels || {};
+        const outputs = job.outputs || {};
+        tr.innerHTML = `
+          <td class="mono">${job.created_utc || ""}</td>
+          <td><button class="secondary" data-job="${job.job_id}" type="button">Open</button><div class="hint mono">${job.job_id}</div></td>
+          <td>${[labels.rainfall, labels.hydrograph, labels.stage, labels.run_length, labels.external_forcing].filter(Boolean).join("<br>")}</td>
+          <td><span class="pill ${job.status || ""}">${job.status || ""}</span><div class="hint">${cleanPhase(job.phase)}</div></td>
+          <td>${(outputs.animation_poster_png || outputs.quicklook_png) ? `<a href="${escapeHtml(assetHref(outputs.animation_poster_png || outputs.quicklook_png))}" target="_blank" rel="noopener">${outputs.animation_poster_png ? "Boundary map" : "Quicklook"}</a>` : "-"}</td>
+        `;
+        body.appendChild(tr);
+      }
+      body.querySelectorAll("button[data-job]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          state.activeJobId = button.getAttribute("data-job");
+          await refreshActive();
+        });
+      });
+    }
+
+    function renderAssistantStatus(assistant) {
+      const modeText = assistant.hybrid_mode
+        ? "Expanded Answer mode is active on the server. Local FloodAstra evidence stays first; outside context is added only when needed."
+        : "Verified Evidence mode is active. Answers use approved local FloodAstra outputs.";
+      $("assistantStatus").textContent = modeText;
+    }
+
+    function setAssistantMode(mode) {
+      state.assistantMode = mode === "hybrid" ? "hybrid" : "verified";
+      $("modeVerified").classList.toggle("active", state.assistantMode === "verified");
+      $("modeHybrid").classList.toggle("active", state.assistantMode === "hybrid");
+    }
+
+    function appendAssistantMessage(role, html) {
+      const box = $("assistantMessages");
+      const node = document.createElement("div");
+      node.className = `message ${role}`;
+      node.innerHTML = html;
+      box.appendChild(node);
+      box.scrollTop = box.scrollHeight;
+      return node;
+    }
+
+    function sourcesHtml(data) {
+      const local = data.sources || [];
+      const web = data.web_sources || [];
+      const notes = data.notes || [];
+      const parts = [];
+      if (local.length) {
+        parts.push(`<div><strong>Local evidence</strong>: ${local.slice(0, 6).map((source) => {
+          const title = escapeHtml(source.title || source.type || "source");
+          return source.href ? `<a href="${escapeHtml(assetHref(source.href))}" target="_blank" rel="noopener">${title}</a>` : title;
+        }).join(", ")}</div>`);
+      }
+      if (web.length) {
+        parts.push(`<div><strong>Web citations</strong>: ${web.slice(0, 6).map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener">${escapeHtml(source.title || source.url)}</a>`).join(", ")}</div>`);
+      }
+      if (notes.length) {
+        parts.push(`<div><strong>Notes</strong>: ${notes.map(escapeHtml).join(" ")}</div>`);
+      }
+      return parts.length ? `<div class="source-block">${parts.join("")}</div>` : "";
+    }
+
+    async function askAssistant(promptText = "") {
+      const question = (promptText || $("assistantQuestion").value).trim();
+      if (!question) {
+        alert("Enter a question first.");
+        return;
+      }
+      $("assistantQuestion").value = "";
+      $("assistantAskBtn").disabled = true;
+      appendAssistantMessage("user", escapeHtml(question));
+      const pending = appendAssistantMessage("assistant", `<strong>FloodAstra</strong> Checking local evidence${state.assistantMode === "hybrid" ? " and adding outside context only if needed" : ""}...`);
+      try {
+        const response = await apiFetch("/api/assistant/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question,
+            mode: state.assistantMode,
+            history: state.assistantHistory.slice(-8)
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Assistant request failed.");
+        const modeLabel = data.used_web ? "Expanded + web" : (data.mode === "hybrid" ? "Expanded" : "Verified");
+        pending.innerHTML = `<strong>FloodAstra · ${escapeHtml(modeLabel)}</strong>${escapeHtml(data.answer || "No answer returned.")}${sourcesHtml(data)}`;
+        state.assistantHistory.push({ role: "user", content: question });
+        state.assistantHistory.push({ role: "assistant", content: data.answer || "" });
+        state.assistantHistory = state.assistantHistory.slice(-10);
+      } catch (error) {
+        pending.innerHTML = `<strong>FloodAstra</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+      } finally {
+        $("assistantAskBtn").disabled = false;
+      }
+    }
+
+    function clearAssistant() {
+      state.assistantHistory = [];
+      $("assistantMessages").innerHTML = `<div class="message assistant"><strong>FloodAstra</strong>Ask a Vijayawada nowcast or preparedness question. I will use the latest local run evidence first.</div>`;
+    }
+
+    function setScenarioMessage(text) {
+      $("narrative").value = text || "";
+      $("narrative").focus();
+      $("scenarioChat").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function applyScenarioPromptFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const text = params.get("scenario_prompt");
+      if (text) setScenarioMessage(text);
+    }
+
+    setApiBase(initialApiBase());
+    const auth = initialApiAuth();
+    setApiAuth(auth.user, auth.password);
+    $("apiSaveBtn").addEventListener("click", () => {
+      setApiBase($("apiBaseInput").value, true);
+      setApiAuth($("apiUserInput").value, $("apiPasswordInput").value, true);
+      loadOptions()
+        .then(() => refreshJobs(true))
+        .catch((error) => {
+          setBadge(false, "Server not reachable");
+          $("physicsNote").textContent = error.message;
+        });
+    });
+    $("apiResetBtn").addEventListener("click", () => {
+      setApiBase("", true);
+      setApiAuth("", "", true);
+      setBadge(false, "Endpoint needed");
+      $("physicsNote").textContent = "Set a FloodAstra API endpoint to enable chat, live data and nowcast runs.";
+    });
+    $("runBtn").addEventListener("click", () => startRun());
+    $("awareRunBtn").addEventListener("click", () => startRun({ useLive: true }));
+    $("refreshBtn").addEventListener("click", () => refreshJobs(true));
+    $("awareDryBtn").addEventListener("click", () => fetchAwareSnapshot(true));
+    $("awareFetchBtn").addEventListener("click", () => fetchAwareSnapshot(false));
+    $("interpretBtn").addEventListener("click", () => handleNarrative(false));
+    $("runNarrativeBtn").addEventListener("click", () => handleNarrative(true));
+    $("modeVerified").addEventListener("click", () => setAssistantMode("verified"));
+    $("modeHybrid").addEventListener("click", () => setAssistantMode("hybrid"));
+    $("assistantAskBtn").addEventListener("click", () => askAssistant());
+    $("assistantClearBtn").addEventListener("click", clearAssistant);
+    $("assistantQuestion").addEventListener("keydown", (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+        askAssistant();
+      }
+    });
+    document.querySelectorAll("[data-prompt]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const text = button.getAttribute("data-prompt") || "";
+        if (text.toLowerCase().startsWith("use hybrid mode")) setAssistantMode("hybrid");
+        askAssistant(text);
+      });
+    });
+    document.querySelectorAll("[data-scenario-prompt]").forEach((button) => {
+      button.addEventListener("click", () => setScenarioMessage(button.getAttribute("data-scenario-prompt") || ""));
+    });
+
+    loadOptions()
+      .then(() => {
+        applyScenarioPromptFromUrl();
+        return refreshJobs(true);
+      })
+      .catch((error) => {
+        setBadge(false, "Server not reachable");
+        $("physicsNote").textContent = error.message;
+      });
+    setInterval(refreshActive, 5000);
+  </script>
+</body>
+</html>

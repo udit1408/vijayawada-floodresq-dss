@@ -1,0 +1,3 @@
+This branch is the GitHub Pages deployment branch for the Vijayawada FloodReSQ Live DSS.
+Canonical public entrypoint: index.html
+Generated from main branch live DSS build.

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vijayawada FloodReSQ Layer Dashboard</title>
+<script src="assets/config.js?v=20260526_chat_tunnel"></script>
 <script src="assets/site_data.js?v=20260504062612"></script>
 <script src="assets/cursor_probe.js?v=20260504062612"></script>
 <style>
@@ -138,6 +139,34 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
 .link-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
 .link-grid a { display:block; min-height:42px; padding:9px 10px; border:1px solid var(--line); border-radius:7px; background:#fff; font-weight:850; }
 .schema-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.purpose-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.purpose-item { border:1px solid #dbe3ea; border-radius:7px; background:#f8fbfd; padding:9px 10px; }
+.purpose-item b { display:block; color:#14212b; margin-bottom:3px; }
+.purpose-item span { display:block; color:#526170; font-size:12px; line-height:1.35; }
+.assistant-layout { display:grid; grid-template-columns:minmax(320px,.72fr) minmax(0,1.28fr); gap:14px; align-items:stretch; }
+.assistant-intro { background:linear-gradient(135deg,#eef9f7,#ffffff); border:1px solid #cfe4df; border-radius:8px; padding:16px; }
+.assistant-intro .kicker { color:#087f73; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:0; margin-bottom:7px; }
+.assistant-intro h3 { margin:0 0 8px; font-size:clamp(21px,2.4vw,34px); line-height:1.08; }
+.assistant-intro p { color:#40505d; line-height:1.48; }
+.mode-row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 10px; }
+.mode-button { border:1px solid #cbd8e3; border-radius:7px; background:#fff; color:#20303c; padding:8px 10px; font-weight:900; cursor:pointer; }
+.mode-button.active { background:#087f73; border-color:#087f73; color:#fff; box-shadow:0 0 0 3px rgba(8,127,115,.12); }
+.assistant-status { border:1px solid #cbd8e3; border-radius:7px; background:#fff; padding:9px 10px; color:#40505d; font-size:13px; line-height:1.35; }
+.prompt-chips { display:flex; gap:7px; flex-wrap:wrap; margin-top:12px; }
+.prompt-chip { border:1px solid #cbd8e3; border-radius:999px; background:#fff; color:#20303c; padding:7px 10px; font-size:12px; font-weight:850; cursor:pointer; }
+.assistant-box { display:grid; grid-template-rows:minmax(360px,1fr) auto; min-height:560px; border:1px solid var(--line); border-radius:8px; background:#fff; overflow:hidden; box-shadow:0 8px 24px rgba(20,33,43,.05); }
+.chat-log { padding:14px; overflow:auto; background:#f8fbfc; display:flex; flex-direction:column; gap:10px; }
+.message { border:1px solid #dbe3ea; border-radius:8px; padding:10px 11px; line-height:1.45; white-space:pre-wrap; }
+.message.user { align-self:flex-end; max-width:84%; background:#e5f3f1; border-color:#9ccdc7; }
+.message.assistant { align-self:flex-start; max-width:92%; background:#fff; }
+.message.assistant strong { display:block; color:#075e55; margin-bottom:4px; }
+.chat-form { border-top:1px solid var(--line); padding:12px; background:#fff; display:grid; gap:8px; }
+.chat-form label { font-size:12px; color:#31414d; font-weight:900; }
+.chat-form textarea { width:100%; min-height:92px; resize:vertical; border:1px solid #cbd8e3; border-radius:7px; padding:9px 10px; font:inherit; }
+.button-row { display:flex; gap:8px; flex-wrap:wrap; }
+.button-row button { border:0; border-radius:7px; background:#087f73; color:#fff; padding:9px 12px; font-weight:900; cursor:pointer; }
+.button-row button.secondary { background:#eef3f6; color:#20303c; border:1px solid #cbd8e3; }
+.source-block { margin-top:8px; border-top:1px solid #e1e8ee; padding-top:8px; color:#526170; font-size:12px; line-height:1.45; white-space:normal; }
 .poc-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:12px; }
 .poc-card { border:1px solid #dbe3ea; border-radius:8px; background:#fff; padding:13px; }
 .poc-card h3 { margin:0 0 8px; font-size:16px; }
@@ -147,7 +176,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
 .poc-callout { border-left:4px solid var(--teal); background:#eef7f5; padding:12px 13px; border-radius:7px; color:#253542; line-height:1.45; }
 .tag-list { display:flex; flex-wrap:wrap; gap:6px; }
 .tag { border:1px solid #cbd8e3; background:#f8fbfd; border-radius:999px; padding:5px 8px; font-size:12px; color:#253542; }
-@media (max-width:1050px) { .map-layout,.overview-layout,.grid-2,.media-grid,.animation-dashboard,.hydro-layout,.schema-grid,.poc-grid { grid-template-columns:1fr; } .controls { max-height:none; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .topbar { grid-template-columns:1fr; } .status { justify-content:flex-start; } }
+@media (max-width:1050px) { .map-layout,.overview-layout,.grid-2,.media-grid,.animation-dashboard,.hydro-layout,.schema-grid,.poc-grid,.purpose-grid,.assistant-layout { grid-template-columns:1fr; } .controls { max-height:none; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .topbar { grid-template-columns:1fr; } .status { justify-content:flex-start; } }
 @media (max-width:640px) { .brand-head { grid-template-columns:54px minmax(0,1fr); } .brand-logo { width:54px; height:54px; } }
 @media (max-width:640px) { .metric-grid,.link-grid,.animation-tools,.animation-kpis { grid-template-columns:1fr; } .shell { padding:12px; } }
 </style>
@@ -159,7 +188,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
       <img class="brand-logo" src="assets/branding/floodresq.png" alt="FloodReSQ logo">
       <div>
         <h1>Vijayawada FloodReSQ Layer Dashboard</h1>
-        <div class="subtitle">Layer-rich map view for the latest Vijayawada FloodReSQ release. The canonical live DSS, chat and GPU run controls are available from the main link.</div>
+        <div class="subtitle">Layer-rich map view for the latest Vijayawada FloodReSQ release. The full DSS now includes map audit layers, scenario comparison, animations and an embedded evidence-grounded query desk.</div>
       </div>
     </div>
     <div class="status">
@@ -176,8 +205,9 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
     <button class="tab-btn" data-tab="map">Interactive Map</button>
     <button class="tab-btn" data-tab="forcing">Hydrographs</button>
     <button class="tab-btn" data-tab="animation">Animation</button>
-    <button class="tab-btn" data-tab="scenarios">Scenario Library</button>
-    <button class="tab-btn" data-tab="poc">Model Scope</button>
+    <button class="tab-btn" data-tab="scenarios">Scenario Comparison</button>
+    <button class="tab-btn" data-tab="assistant">Ask FloodAstra</button>
+    <button class="tab-btn" data-tab="poc">Scope & QA</button>
   </nav>
 
   <section id="overview" class="tab-panel active">
@@ -185,7 +215,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
       <div class="metric"><span>Scenarios</span><b>18</b><small>current reviewed run set</small></div>
       <div class="metric"><span>Duration</span><b>12 h</b><small>15-minute reporting interval</small></div>
       <div class="metric"><span>Review Status</span><b>Complete</b><small>18-scenario layer package</small></div>
-      <div class="metric"><span>Max Depth</span><b>5.81 m</b><small>maximum-depth envelope</small></div>
+      <div class="metric"><span>Max Depth</span><b>5.81 m</b><small>highest value across reviewed scenarios</small></div>
       <div class="metric"><span>Peak Wet Area</span><b>5,128 ha</b><small>0.05 m depth threshold</small></div>
     </div>
     <div class="overview-layout">
@@ -216,10 +246,10 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
         <div class="control-block">
           <h3>Layer Controls</h3>
           <details open><summary>Flood results</summary>
-                <label class="layer-row" title="Maximum depth envelope from all 18 scenarios.">
+                <label class="layer-row" title="Audit-only aggregate of maximum depth across all scenarios. Prefer selected scenario maps for decisions.">
                   <input type="checkbox" data-overview-layer="scenario_envelope" >
                   <span class="swatch" style="background:#2563eb"></span>
-                  <span>Scenario max-depth envelope</span>
+                  <span>Aggregate envelope (audit only)</span>
                 </label></details><details open><summary>Administrative</summary>
                 <label class="layer-row" title="Municipal boundary and 71 revenue wards.">
                   <input type="checkbox" data-overview-layer="administrative" checked>
@@ -454,12 +484,19 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
         <p>The current dashboard packages all available model inputs and outputs into one review surface: river and Budameru water bodies, major canals, drainage, pumps, building footprints, roads, terrain readiness, Manning roughness, infiltration capacity, building obstruction, boundary-condition targets and flood hotspots.</p>
         <p>The current run set uses historical hourly rainfall hyetographs plus Budameru inflow and river/canal antecedent sensitivity. Each completed scenario is available as a map toggle, with hydrographs, flood response, context layers and animation available in the same review package.</p>
         <div class="tag-list">
-          <span class="tag">Layer toggles</span><span class="tag">Cursor coordinate readout</span><span class="tag">Depth, extent, velocity</span><span class="tag">Hydrograph panels</span><span class="tag">Animation frame review</span><span class="tag">Model scope</span>
+          <span class="tag">Layer toggles</span><span class="tag">Cursor coordinate readout</span><span class="tag">Depth, extent, velocity</span><span class="tag">Hydrograph panels</span><span class="tag">Animation frame review</span><span class="tag">Evidence chat</span>
         </div>
       </div>
       <div class="panel">
-        <h2>Envelope Snapshot</h2>
-        <img class="media" src="assets/maps/scenario_envelope_overlay.png?v=20260504062612" alt="Maximum flood depth envelope">
+        <h2>Tab Purpose Audit</h2>
+        <div class="purpose-grid">
+          <div class="purpose-item"><b>Overview</b><span>Turn on the operational layer stack and see the city-scale flood context.</span></div>
+          <div class="purpose-item"><b>Interactive Map</b><span>Inspect a selected scenario with depth, extent, velocity and cursor values.</span></div>
+          <div class="purpose-item"><b>Hydrographs</b><span>Check rainfall, Budameru inflow and river/canal stage assumptions before interpreting maps.</span></div>
+          <div class="purpose-item"><b>Animation</b><span>Review where flooding appears, expands, peaks and drains through time.</span></div>
+          <div class="purpose-item"><b>Scenario Comparison</b><span>Compare completed runs by rainfall, backwater state, Budameru inflow, depth, wet area and volume.</span></div>
+          <div class="purpose-item"><b>Ask FloodAstra</b><span>Ask questions tied to local model evidence and the latest GPU nowcast server.</span></div>
+        </div>
       </div>
     </div>
   </section>
@@ -478,10 +515,10 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
         <div class="control-block">
           <h3>Layer Controls</h3>
           <details open><summary>Flood results</summary>
-                <label class="layer-row" title="Maximum depth envelope from all 18 scenarios.">
+                <label class="layer-row" title="Audit-only aggregate of maximum depth across all scenarios. Prefer selected scenario maps for decisions.">
                   <input type="checkbox" data-layer="scenario_envelope" >
                   <span class="swatch" style="background:#2563eb"></span>
-                  <span>Scenario max-depth envelope</span>
+                  <span>Aggregate envelope (audit only)</span>
                 </label></details><details open><summary>Administrative</summary>
                 <label class="layer-row" title="Municipal boundary and 71 revenue wards.">
                   <input type="checkbox" data-layer="administrative" checked>
@@ -802,8 +839,8 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
 
   <section id="scenarios" class="tab-panel">
     <div class="panel">
-      <h2>Scenario Library</h2>
-      <p>Each completed scenario is available as depth, wet-extent and velocity overlays. Future hyetograph and hydrograph ensembles can be appended to this same selector without changing the stakeholder workflow.</p>
+      <h2>Scenario Comparison</h2>
+      <p>This tab exists for comparing the completed runs numerically. Use it to see how rainfall family, river/canal state and Budameru inflow scaling change depth, wet area and stored surface water.</p>
       <div class="table-wrap"><table><thead><tr><th>Scenario</th><th>Duration</th><th>Profile</th><th>Max depth</th><th>Wet area</th><th>Final volume</th></tr></thead><tbody>
         <tr>
           <td>Observed Aug 2024 rainfall | Elevated river/canal state | Budameru inflow 60% | 77 mm rainfall</td>
@@ -952,9 +989,43 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
     </div>
   </section>
 
+  <section id="assistant" class="tab-panel">
+    <div class="assistant-layout">
+      <div class="assistant-intro">
+        <div class="kicker">FloodAstra query desk</div>
+        <h3>Ask questions against the current Vijayawada model evidence.</h3>
+        <p>Use this tab when the map raises a question: worst wards, road exposure, Budameru contribution, drainage checks, scenario comparison, or what a field team should inspect first.</p>
+        <div class="mode-row" role="group" aria-label="Assistant mode">
+          <button class="mode-button active" id="modeVerified" type="button">Verified Evidence</button>
+          <button class="mode-button" id="modeHybrid" type="button">Expanded Answer</button>
+        </div>
+        <div class="assistant-status" id="assistantStatus">Checking FloodAstra assistant status.</div>
+        <div class="prompt-chips">
+          <button class="prompt-chip" type="button" data-prompt="Which Vijayawada wards or zones are most critical in the current model evidence?">Worst zones</button>
+          <button class="prompt-chip" type="button" data-prompt="Which roads, drains or pump/outfall locations should field teams check first?">Field checks</button>
+          <button class="prompt-chip" type="button" data-prompt="Explain the Budameru, river/canal backwater and rainfall contribution in simple operational terms.">Flood drivers</button>
+          <button class="prompt-chip" type="button" data-prompt="Use hybrid mode: give simple historical context for Budameru flooding in Vijayawada, while keeping model evidence first.">Hybrid context</button>
+        </div>
+      </div>
+      <div class="assistant-box">
+        <div class="chat-log" id="assistantMessages">
+          <div class="message assistant"><strong>FloodAstra</strong>Ask a Vijayawada map, scenario or preparedness question. I will use local model evidence first.</div>
+        </div>
+        <div class="chat-form">
+          <label for="assistantQuestion">Ask FloodAstra</label>
+          <textarea id="assistantQuestion" placeholder="Example: For the selected high-Budameru scenario, what should the field team check first?"></textarea>
+          <div class="button-row">
+            <button id="assistantAskBtn" type="button">Ask</button>
+            <button id="assistantClearBtn" class="secondary" type="button">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="poc" class="tab-panel">
     <div class="panel">
-      <h2>Model Scope</h2>
+      <h2>Scope & QA</h2>
       <p class="poc-callout">This review build demonstrates how a Vijayawada flood decision-support workflow can combine local hydraulic context, public-domain rainfall and boundary forcing, adaptive FloodRESQ scenario outputs, and operational review layers in one stakeholder-facing interface. The FloodRESQ solvers are designed in-house by IIT Gandhinagar MIR Lab.</p>
       <div class="poc-grid">
         <div class="poc-card">
@@ -988,7 +1059,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
           <li>Use Interactive Map for depth, extent and velocity overlays with cursor readout for location, approximate depth, velocity and wet duration.</li>
           <li>Use Hydrographs to understand rainfall, Budameru inflow, river/canal target stages and flood-response timing.</li>
           <li>Use Animation to review ingress and egress across the modeled event window.</li>
-          <li>Use Scenario Library to compare the completed scenario envelope across rainfall and antecedent-condition combinations.</li>
+          <li>Use Scenario Comparison to compare completed runs by rainfall, river/canal state, Budameru inflow, depth, wet area and final volume.</li>
         </ul>
       </div>
     </div>
@@ -1014,6 +1085,125 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
   const cursorGrids = window.VJ_CURSOR_GRIDS || null;
   const transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
   let playTimer = null;
+  const assistantState = { mode: 'verified', history: [], apiBase: initialApiBase() };
+  function $(id) { return document.getElementById(id); }
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+  function normalizeApiBase(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+      const url = new URL(raw, window.location.href);
+      url.hash = '';
+      url.search = '';
+      return url.toString().replace(/\/+$/, '/');
+    } catch (_) {
+      return '';
+    }
+  }
+  function initialApiBase() {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = normalizeApiBase(params.get('api'));
+    if (fromUrl) return fromUrl;
+    if (window.location.hostname === 'vijayawada.airesqclimsols.com') return normalizeApiBase(window.location.origin);
+    const fromConfig = normalizeApiBase(window.FLOODASTRA_VIJAYAWADA_API_BASE);
+    if (fromConfig) return fromConfig;
+    if (window.location.hostname.endsWith('github.io')) return '';
+    return normalizeApiBase(window.location.origin);
+  }
+  function apiUrl(path) {
+    if (!assistantState.apiBase) throw new Error('Open this page through the FloodAstra server to use chat.');
+    return new URL(path, assistantState.apiBase).toString();
+  }
+  function assetHref(href) {
+    const raw = String(href || '').trim();
+    if (!raw) return '';
+    if (/^(https?:|data:|blob:|mailto:)/i.test(raw)) return raw;
+    if (!assistantState.apiBase) return raw;
+    return new URL(raw, assistantState.apiBase).toString();
+  }
+  function setAssistantMode(mode) {
+    assistantState.mode = mode === 'hybrid' ? 'hybrid' : 'verified';
+    $('modeVerified')?.classList.toggle('active', assistantState.mode === 'verified');
+    $('modeHybrid')?.classList.toggle('active', assistantState.mode === 'hybrid');
+  }
+  function appendAssistantMessage(role, html) {
+    const box = $('assistantMessages');
+    if (!box) return null;
+    const node = document.createElement('div');
+    node.className = `message ${role}`;
+    node.innerHTML = html;
+    box.appendChild(node);
+    box.scrollTop = box.scrollHeight;
+    return node;
+  }
+  function sourcesHtml(payload) {
+    const local = payload.sources || [];
+    const web = payload.web_sources || [];
+    const notes = payload.notes || [];
+    const parts = [];
+    if (local.length) {
+      parts.push(`<div><strong>Local evidence</strong>: ${local.slice(0, 6).map(source => {
+        const title = escapeHtml(source.title || source.type || 'source');
+        return source.href ? `<a href="${escapeHtml(assetHref(source.href))}" target="_blank" rel="noopener">${title}</a>` : title;
+      }).join(', ')}</div>`);
+    }
+    if (web.length) {
+      parts.push(`<div><strong>Web citations</strong>: ${web.slice(0, 6).map(source => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener">${escapeHtml(source.title || source.url)}</a>`).join(', ')}</div>`);
+    }
+    if (notes.length) parts.push(`<div><strong>Notes</strong>: ${notes.map(escapeHtml).join(' ')}</div>`);
+    return parts.length ? `<div class="source-block">${parts.join('')}</div>` : '';
+  }
+  async function loadAssistantStatus() {
+    const status = $('assistantStatus');
+    if (!status) return;
+    try {
+      const response = await fetch(apiUrl('/api/assistant/health'));
+      const payload = await response.json();
+      status.textContent = payload.hybrid_mode
+        ? 'Verified and Expanded Answer modes are active. Local FloodAstra evidence stays first.'
+        : 'Verified Evidence mode is active. Answers use approved local FloodAstra outputs.';
+    } catch (error) {
+      status.textContent = error.message;
+    }
+  }
+  async function askAssistant(promptText = '') {
+    const input = $('assistantQuestion');
+    const question = String(promptText || input?.value || '').trim();
+    if (!question) {
+      alert('Enter a question first.');
+      return;
+    }
+    if (input) input.value = '';
+    const askBtn = $('assistantAskBtn');
+    if (askBtn) askBtn.disabled = true;
+    appendAssistantMessage('user', escapeHtml(question));
+    const pending = appendAssistantMessage('assistant', `<strong>FloodAstra</strong>Checking local model evidence${assistantState.mode === 'hybrid' ? ' and adding outside context only if needed' : ''}...`);
+    try {
+      const response = await fetch(apiUrl('/api/assistant/chat'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, mode: assistantState.mode, history: assistantState.history.slice(-8) })
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Assistant request failed.');
+      const modeLabel = payload.used_web ? 'Expanded + web' : (payload.mode === 'hybrid' ? 'Expanded' : 'Verified');
+      if (pending) pending.innerHTML = `<strong>FloodAstra · ${escapeHtml(modeLabel)}</strong>${escapeHtml(payload.answer || 'No answer returned.')}${sourcesHtml(payload)}`;
+      assistantState.history.push({ role: 'user', content: question });
+      assistantState.history.push({ role: 'assistant', content: payload.answer || '' });
+      assistantState.history = assistantState.history.slice(-10);
+    } catch (error) {
+      if (pending) pending.innerHTML = `<strong>FloodAstra</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+    } finally {
+      if (askBtn) askBtn.disabled = false;
+    }
+  }
+  function clearAssistant() {
+    assistantState.history = [];
+    const box = $('assistantMessages');
+    if (box) box.innerHTML = `<div class="message assistant"><strong>FloodAstra</strong>Ask a Vijayawada map, scenario or preparedness question. I will use local model evidence first.</div>`;
+  }
 
   document.querySelectorAll('img').forEach(img => {
     img.addEventListener('error', () => {
@@ -1204,7 +1394,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
       'infiltration_capacity', 'conditioned_hydraulic_terrain'
     ],
     all: [
-      'scenario_envelope', 'administrative', 'roads', 'buildings_tum_gba',
+      'administrative', 'roads', 'buildings_tum_gba',
       'green_open_space', 'lulc_proxy', 'drainage', 'manholes', 'waterbodies',
       'canals_budameru', 'flow_arrows', 'budameru_breach_susceptibility',
       'pumps_outfalls', 'pump_connectors', 'mesh_refinement', 'domain_continuity',
@@ -1365,6 +1555,22 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
   }
   preloadAnimationFrames(animationScenarioSelect.value);
   setFrame(0);
+  $('modeVerified')?.addEventListener('click', () => setAssistantMode('verified'));
+  $('modeHybrid')?.addEventListener('click', () => setAssistantMode('hybrid'));
+  $('assistantAskBtn')?.addEventListener('click', () => askAssistant());
+  $('assistantClearBtn')?.addEventListener('click', clearAssistant);
+  $('assistantQuestion')?.addEventListener('keydown', event => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') askAssistant();
+  });
+  document.querySelectorAll('[data-prompt]').forEach(button => {
+    button.addEventListener('click', () => {
+      const text = button.getAttribute('data-prompt') || '';
+      if (text.toLowerCase().startsWith('use hybrid mode')) setAssistantMode('hybrid');
+      askAssistant(text);
+    });
+  });
+  setAssistantMode('verified');
+  loadAssistantStatus();
 
 })();
 </script>

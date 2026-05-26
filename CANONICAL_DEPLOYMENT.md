@@ -1,10 +1,14 @@
 # Canonical Vijayawada FloodReSQ DSS Deployment
 
-Last verified: 2026-05-26 17:15 IST
+Last verified: 2026-05-26 22:02 IST
 
 ## Link To Share
 
 https://vijayawada.airesqclimsols.com/
+
+Direct full layer DSS:
+
+https://vijayawada.airesqclimsols.com/map_dashboard.html
 
 ## What This Link Serves
 
@@ -12,7 +16,7 @@ https://vijayawada.airesqclimsols.com/
 - FloodAstra nowcast backend from the office Mac.
 - Verified and hybrid assistant modes.
 - GPU-backed nowcast run controls.
-- Supporting layer dashboard through the in-page map button.
+- Supporting full layer DSS through the in-page map button and the direct URL above.
 
 ## Verification Endpoints
 

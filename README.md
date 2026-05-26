@@ -9,6 +9,10 @@ Current canonical stakeholder link:
 
 https://vijayawada.airesqclimsols.com/
 
+Direct full layer DSS:
+
+https://vijayawada.airesqclimsols.com/map_dashboard.html
+
 This link is served by the FloodAstra nowcast backend on the office Mac through the persistent Cloudflare tunnel. It is the only link currently verified to open the latest DSS and connect to chat, live-data checks, and GPU-backed nowcast runs.
 
 Do not use the old GitHub Pages URL for stakeholder review until it is re-verified. GitHub Pages is currently treated as a static fallback, not the canonical deployment.

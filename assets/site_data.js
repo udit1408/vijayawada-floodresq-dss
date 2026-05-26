@@ -111,12 +111,12 @@ window.VJ_DSS_DATA = {
     },
     {
       "key": "flow_arrows",
-      "title": "Identified flow-direction arrows",
-      "image": "assets/maps/flow_arrows_identified.svg?v=20260526_identified_arrows",
+      "title": "Major flow arrows (direction of flow)",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260526_major_flow_arrows",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
-      "description": "Identified review arrows for Krishna, Budameru and canal flow direction.",
+      "description": "Major river and canal flow arrows from the identified review layer; arrow heads mark the direction of flow.",
       "swatch": "#b45309"
     },
     {

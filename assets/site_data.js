@@ -112,11 +112,11 @@ window.VJ_DSS_DATA = {
     {
       "key": "flow_arrows",
       "title": "Major flow arrows (direction of flow)",
-      "image": "assets/maps/flow_arrows_identified.svg?v=20260526_major_flow_arrows",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260526_osm_krishna_flow",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
-      "description": "Major river and canal flow arrows from the identified review layer; arrow heads mark the direction of flow.",
+      "description": "Major flow arrows: Krishna reach arrows are OSM-derived from Krishna river/water geometry; canal arrows use identified OSM/canal review alignments. Arrow heads mark direction of flow.",
       "swatch": "#b45309"
     },
     {

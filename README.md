@@ -26,6 +26,7 @@ Do not open `index.html` from the GitHub file viewer if you want the interactive
 ## GitHub Pages
 
 This repository is published from the `main` branch root. The single public entrypoint is `index.html`.
+Deployment is handled by `.github/workflows/pages.yml` so the public URL is rebuilt from the latest `main` commit.
 
 For GitHub Pages, `index.html` serves the latest live DSS shell. Chat and run controls require a reachable FloodAstra backend. Set `window.FLOODASTRA_VIJAYAWADA_API_BASE` in `assets/config.js` to the HTTPS backend URL, or pass `?api=https://backend.example.com/` while testing. If the backend is password-protected, use the connection box on the live DSS or set the optional user/password variables in `assets/config.js` on the deployment server only.
 

@@ -55,13 +55,10 @@ h1 { margin:0 0 6px; font-size:clamp(26px,3.2vw,42px); line-height:1.05; letter-
 .overview-inspector { max-height:650px; overflow:auto; }
 .overview-inspector .legend { position:static; margin-bottom:10px; }
 .mini-media { width:100%; max-height:220px; object-fit:contain; border:1px solid var(--line); border-radius:7px; background:#fff; display:block; margin:8px 0 12px; }
-.bounded-review-card { margin:14px 0; padding:0; overflow:hidden; }
-.bounded-review-head { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px; border-bottom:1px solid var(--line); background:#fbfdfd; }
-.bounded-review-head h2 { margin:0 0 4px; }
-.bounded-review-head p { max-width:920px; margin:0; }
 .bounded-review-link { display:inline-flex; align-items:center; justify-content:center; min-height:38px; padding:8px 12px; border:1px solid #77b9b0; border-radius:7px; background:#087f73; color:#fff; font-weight:850; text-decoration:none; white-space:nowrap; }
 .bounded-review-link:hover { background:#075e55; text-decoration:none; }
-.bounded-review-frame { display:block; width:100%; height:min(70vh,720px); min-height:520px; border:0; background:#eaf1f4; }
+.audit-link-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:8px 0 14px; }
+.audit-link-row .bounded-review-link { min-height:34px; font-size:12px; padding:7px 10px; }
 .controls { background:#fff; border:1px solid var(--line); border-radius:8px; padding:13px; max-height:calc(100vh - 130px); overflow:auto; box-shadow:0 8px 24px rgba(20,33,43,.05); }
 .control-block { border-top:1px solid #e7edf2; padding-top:12px; margin-top:12px; }
 .control-block:first-child { border-top:0; padding-top:0; margin-top:0; }
@@ -190,7 +187,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
 .poc-callout { border-left:4px solid var(--teal); background:#eef7f5; padding:12px 13px; border-radius:7px; color:#253542; line-height:1.45; }
 .tag-list { display:flex; flex-wrap:wrap; gap:6px; }
 .tag { border:1px solid #cbd8e3; background:#f8fbfd; border-radius:999px; padding:5px 8px; font-size:12px; color:#253542; }
-@media (max-width:1050px) { .map-layout,.overview-layout,.grid-2,.media-grid,.animation-dashboard,.hydro-layout,.schema-grid,.poc-grid,.purpose-grid,.assistant-layout,.bounded-review-head { grid-template-columns:1fr; } .controls { max-height:none; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .topbar { grid-template-columns:1fr; } .status { justify-content:flex-start; } .bounded-review-link { width:100%; } }
+@media (max-width:1050px) { .map-layout,.overview-layout,.grid-2,.media-grid,.animation-dashboard,.hydro-layout,.schema-grid,.poc-grid,.purpose-grid,.assistant-layout { grid-template-columns:1fr; } .controls { max-height:none; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .topbar { grid-template-columns:1fr; } .status { justify-content:flex-start; } .bounded-review-link { width:100%; } }
 @media (max-width:640px) { .brand-head { grid-template-columns:48px minmax(0,1fr); gap:10px; } .brand-logo { width:48px; height:48px; } h1 { font-size:24px; line-height:1.08; } .subtitle { font-size:14px; } .status { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; } .pill { justify-content:center; min-width:0; font-size:11px; text-align:center; white-space:normal; } .tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .tab-btn { width:100%; text-align:center; white-space:normal; } }
 @media (max-width:640px) { .metric-grid,.link-grid,.animation-tools,.animation-kpis { grid-template-columns:1fr; } .shell { padding:12px; } }
 </style>
@@ -231,16 +228,6 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
       <div class="metric"><span>Review Status</span><b>Complete</b><small>18-scenario layer package</small></div>
       <div class="metric"><span>Max Depth</span><b>5.81 m</b><small>highest value across reviewed scenarios</small></div>
       <div class="metric"><span>Peak Wet Area</span><b>5,128 ha</b><small>0.05 m depth threshold</small></div>
-    </div>
-    <div class="panel bounded-review-card">
-      <div class="bounded-review-head">
-        <div>
-          <h2>May 24 Bounded Hydro-Network Review</h2>
-          <p>Toggleable review map clipped to the Vijayawada DSS extent: municipal boundary, wards, Krishna and Budameru water bodies, canals, path-following waterway arrows, DEM terrain arrows, pumps, outfalls and control sections. Hover any visible asset for stakeholder-ready details; click for the full attribute table.</p>
-        </div>
-        <a class="bounded-review-link" href="assets/review_layers_bounded/index.html?v=20260527_osm_riverline_v4" target="_blank" rel="noopener">Open full-screen bounded viewer</a>
-      </div>
-      <iframe class="bounded-review-frame" src="assets/review_layers_bounded/index.html?v=20260527_osm_riverline_v4" title="May 24 bounded hydro-network review viewer" loading="eager"></iframe>
     </div>
     <div class="overview-layout">
       <aside class="controls">
@@ -504,8 +491,11 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
           <span class="swatch" style="background:#dc2626"></span>
           <span>RTGS AWARE flood hotspots and NRSC inflow boundary</span>
         </div></div>
-        <h3>FDir Waterway Direction Arrows</h3>
-        <p class="hint">The visible arrow toggle uses the directed FDir reference layer clipped to the DSS canvas: Krishna reach, Budameru river/canal, Eluru, Ryves and Krishna Eastern canal directions. These are review-network direction arrows, not terrain-surface-flow arrows.</p>
+        <h3>Direction Arrow Layers</h3>
+        <p class="hint">Waterway flow arrows and terrain downslope arrows are DSS map layers. Turn them on or off from Water system in Layer Controls.</p>
+        <div class="audit-link-row">
+          <a class="bounded-review-link" href="assets/review_layers_bounded/index.html?v=20260527_osm_riverline_v4" target="_blank" rel="noopener">Open layer audit viewer</a>
+        </div>
         <h3>River and Canal Conditions</h3>
         <img class="mini-media" src="assets/maps/boundary_conditions_stage_profiles.png?v=20260504062612" alt="Boundary condition stage profiles">
         <object class="mini-media" data="assets/maps/boundary_hydrographs.svg?v=20260504062612" type="image/svg+xml" aria-label="Boundary hydrographs"></object>

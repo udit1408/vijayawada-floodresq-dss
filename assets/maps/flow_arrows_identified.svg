@@ -231,50 +231,50 @@
       <path class="fdir-shadow" d="M 243.0 1329.0 L 264.5 1345.3 L 290.9 1388.7 L 298.4 1444.7"/>
       <path class="fdir-shaft" d="M 243.0 1329.0 L 264.5 1345.3 L 290.9 1388.7 L 298.4 1444.7" stroke="#0284c7" marker-end="url(#head-reservoir)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-001: Krishna River branch 2.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 411.5 1415.3 L 481.6 1508.9 L 505.4 1527.9"/>
-      <path class="fdir-shadow" d="M 411.5 1415.3 L 481.6 1508.9 L 505.4 1527.9"/>
-      <path class="fdir-shaft" d="M 411.5 1415.3 L 481.6 1508.9 L 505.4 1527.9" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-001: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 352.4 1412.8 L 447.4 1470.9"/>
+      <path class="fdir-shadow" d="M 352.4 1412.8 L 447.4 1470.9"/>
+      <path class="fdir-shaft" d="M 352.4 1412.8 L 447.4 1470.9" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-002: Krishna River branch 2.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 517.1 1537.2 L 632.5 1628.9"/>
-      <path class="fdir-shadow" d="M 517.1 1537.2 L 632.5 1628.9"/>
-      <path class="fdir-shaft" d="M 517.1 1537.2 L 632.5 1628.9" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-002: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 472.7 1491.9 L 555.7 1566.1"/>
+      <path class="fdir-shadow" d="M 472.7 1491.9 L 555.7 1566.1"/>
+      <path class="fdir-shaft" d="M 472.7 1491.9 L 555.7 1566.1" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-003: Krishna River branch 2.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 644.2 1638.2 L 686.4 1671.7 L 770.9 1711.8"/>
-      <path class="fdir-shadow" d="M 644.2 1638.2 L 686.4 1671.7 L 770.9 1711.8"/>
-      <path class="fdir-shaft" d="M 644.2 1638.2 L 686.4 1671.7 L 770.9 1711.8" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-003: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 580.3 1588.1 L 639.2 1640.7 L 664.6 1660.8"/>
+      <path class="fdir-shadow" d="M 580.3 1588.1 L 639.2 1640.7 L 664.6 1660.8"/>
+      <path class="fdir-shaft" d="M 580.3 1588.1 L 639.2 1640.7 L 664.6 1660.8" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-004: Krishna River branch 2.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 784.4 1718.2 L 851.1 1749.8 L 921.1 1772.6"/>
-      <path class="fdir-shadow" d="M 784.4 1718.2 L 851.1 1749.8 L 921.1 1772.6"/>
-      <path class="fdir-shaft" d="M 784.4 1718.2 L 851.1 1749.8 L 921.1 1772.6" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-004: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 690.4 1681.3 L 708.1 1695.2 L 766.5 1762.2"/>
+      <path class="fdir-shadow" d="M 690.4 1681.3 L 708.1 1695.2 L 766.5 1762.2"/>
+      <path class="fdir-shaft" d="M 690.4 1681.3 L 708.1 1695.2 L 766.5 1762.2" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-005: Krishna River branch 2.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 935.3 1777.2 L 1075.4 1822.9"/>
-      <path class="fdir-shadow" d="M 935.3 1777.2 L 1075.4 1822.9"/>
-      <path class="fdir-shaft" d="M 935.3 1777.2 L 1075.4 1822.9" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-005: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 788.2 1787.0 L 861.4 1871.0"/>
+      <path class="fdir-shadow" d="M 788.2 1787.0 L 861.4 1871.0"/>
+      <path class="fdir-shaft" d="M 788.2 1787.0 L 861.4 1871.0" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-006: Krishna River branch 2.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 1089.6 1827.6 L 1229.8 1873.2"/>
-      <path class="fdir-shadow" d="M 1089.6 1827.6 L 1229.8 1873.2"/>
-      <path class="fdir-shaft" d="M 1089.6 1827.6 L 1229.8 1873.2" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-006: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 5.8 1109.4 L 80.9 1162.1 L 95.1 1175.7"/>
+      <path class="fdir-shadow" d="M 5.8 1109.4 L 80.9 1162.1 L 95.1 1175.7"/>
+      <path class="fdir-shaft" d="M 5.8 1109.4 L 80.9 1162.1 L 95.1 1175.7" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-007: Krishna River branch 3.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 2.6 1048.5 L 73.5 1177.8"/>
-      <path class="fdir-shadow" d="M 2.6 1048.5 L 73.5 1177.8"/>
-      <path class="fdir-shaft" d="M 2.6 1048.5 L 73.5 1177.8" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-007: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 113.8 1193.8 L 193.9 1271.2"/>
+      <path class="fdir-shadow" d="M 113.8 1193.8 L 193.9 1271.2"/>
+      <path class="fdir-shaft" d="M 113.8 1193.8 L 193.9 1271.2" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-008: Krishna River branch 3.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 133.2 1238.8 L 233.8 1327.9 L 232.2 1340.8"/>
-      <path class="fdir-shadow" d="M 133.2 1238.8 L 233.8 1327.9 L 232.2 1340.8"/>
-      <path class="fdir-shaft" d="M 133.2 1238.8 L 233.8 1327.9 L 232.2 1340.8" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-008: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 212.7 1289.3 L 292.3 1366.2"/>
+      <path class="fdir-shadow" d="M 212.7 1289.3 L 292.3 1366.2"/>
+      <path class="fdir-shaft" d="M 212.7 1289.3 L 292.3 1366.2" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>    <g class="fdir-arrow river">
-      <title>KRS-009: Krishna River branch 3.1. Direction: west / northwest to east / southeast along the mapped Krishna waterbody branch.</title>
-      <path class="fdir-halo" d="M 173.1 1378.8 L 228.9 1461.7 L 270.8 1483.9"/>
-      <path class="fdir-shadow" d="M 173.1 1378.8 L 228.9 1461.7 L 270.8 1483.9"/>
-      <path class="fdir-shaft" d="M 173.1 1378.8 L 228.9 1461.7 L 270.8 1483.9" stroke="#0369a1" marker-end="url(#head-river)"/>
+      <title>KRS-009: Krishna River. Direction: upstream west / northwest to downstream east / southeast along mapped Krishna river line.</title>
+      <path class="fdir-halo" d="M 1242.9 1864.2 L 1244.4 1867.7 L 1244.3 1872.5 L 1244.6 1874.9 L 1244.9 1876.2 L 1245.8 1877.4 L 1248.2 1879.2 L 1248.5 1880.8 L 1249.0 1882.5 L 1250.1 1883.9 L 1251.0 1886.2 L 1251.4 1887.7 L 1251.4 1889.2 L 1250.7 1890.0 L 1248.9 1890.3 L 1248.5 1891.5 L 1249.0 1892.8 L 1249.7 1893.6 L 1250.7 1894.4 L 1252.5 1895.8 L 1255.2 1897.2 L 1260.6 1903.6 L 1265.6 1906.6 L 1270.3 1910.4 L 1273.4 1911.6 L 1275.0 1913.0 L 1278.3 1913.3 L 1282.9 1914.9 L 1284.8 1915.9 L 1284.8 1916.0"/>
+      <path class="fdir-shadow" d="M 1242.9 1864.2 L 1244.4 1867.7 L 1244.3 1872.5 L 1244.6 1874.9 L 1244.9 1876.2 L 1245.8 1877.4 L 1248.2 1879.2 L 1248.5 1880.8 L 1249.0 1882.5 L 1250.1 1883.9 L 1251.0 1886.2 L 1251.4 1887.7 L 1251.4 1889.2 L 1250.7 1890.0 L 1248.9 1890.3 L 1248.5 1891.5 L 1249.0 1892.8 L 1249.7 1893.6 L 1250.7 1894.4 L 1252.5 1895.8 L 1255.2 1897.2 L 1260.6 1903.6 L 1265.6 1906.6 L 1270.3 1910.4 L 1273.4 1911.6 L 1275.0 1913.0 L 1278.3 1913.3 L 1282.9 1914.9 L 1284.8 1915.9 L 1284.8 1916.0"/>
+      <path class="fdir-shaft" d="M 1242.9 1864.2 L 1244.4 1867.7 L 1244.3 1872.5 L 1244.6 1874.9 L 1244.9 1876.2 L 1245.8 1877.4 L 1248.2 1879.2 L 1248.5 1880.8 L 1249.0 1882.5 L 1250.1 1883.9 L 1251.0 1886.2 L 1251.4 1887.7 L 1251.4 1889.2 L 1250.7 1890.0 L 1248.9 1890.3 L 1248.5 1891.5 L 1249.0 1892.8 L 1249.7 1893.6 L 1250.7 1894.4 L 1252.5 1895.8 L 1255.2 1897.2 L 1260.6 1903.6 L 1265.6 1906.6 L 1270.3 1910.4 L 1273.4 1911.6 L 1275.0 1913.0 L 1278.3 1913.3 L 1282.9 1914.9 L 1284.8 1915.9 L 1284.8 1916.0" stroke="#0369a1" marker-end="url(#head-river)"/>
     </g>
   </g>
 </svg>

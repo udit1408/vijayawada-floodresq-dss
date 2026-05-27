@@ -41,6 +41,7 @@ TERRAIN_SVG_OUT = ROOT / "assets" / "maps" / "terrain_flow_arrows.svg"
 MANIFEST_OUT = ROOT / "assets" / "reference" / "fdir_source_manifest.json"
 
 KRISHNA_OSM_WATER = DSS_DEV / "derived" / "osm_water" / "krishna_river_osm_water.geojson"
+KRISHNA_OSM_WATERWAY_LINES = ROOT / "assets" / "reference" / "krishna_river_osm_waterways.geojson"
 MAJOR_CANALS_OSM = DSS_DEV / "derived" / "osm_canals" / "major_canals_osm.geojson"
 BUDAMERU_OSM = DSS_DEV / "derived" / "osm_budameru" / "budameru_osm_waterways.geojson"
 BASEREVIEW_LAYERS = ROOT.parent / "basemap_review" / "layers"
@@ -114,6 +115,18 @@ def orient_west_to_east(line: LineString) -> LineString:
         return line
     start, end = coords[0], coords[-1]
     if (end[0], end[1]) < (start[0], start[1]):
+        return LineString(list(reversed(coords)))
+    return line
+
+
+def orient_along_axis(line: LineString, axis: tuple[float, float]) -> LineString:
+    coords = list(line.coords)
+    if len(coords) < 2:
+        return line
+    ax, ay = axis
+    start_projection = coords[0][0] * ax + coords[0][1] * ay
+    end_projection = coords[-1][0] * ax + coords[-1][1] * ay
+    if end_projection < start_projection:
         return LineString(list(reversed(coords)))
     return line
 
@@ -271,31 +284,66 @@ def build_waterway_arrows() -> gpd.GeoDataFrame:
 
     krishna = gpd.read_file(KRISHNA_OSM_WATER).to_crs("EPSG:32644")
     krishna = gpd.clip(krishna, DOMAIN)
-    for geom_index, geometry in enumerate(krishna.geometry, start=1):
-        for part_index, poly in enumerate(polygon_parts(geometry), start=1):
-            if poly.area < 120000:
-                continue
-            centerline = bank_midline_centerline(poly)
-            if centerline is None:
-                continue
-            add_arrow_records(
-                records,
-                centerline,
-                prefix="KRS",
-                feature_name=f"Krishna River branch {geom_index}.{part_index}",
-                feature_type="river",
-                source_layer="krishna_river_osm_water",
-                flow_direction="west / northwest to east / southeast along the mapped Krishna waterbody branch",
-                direction_basis=(
-                    "Path follows a bank-midline centreline derived from the OSM Krishna river-water polygon; "
-                    "this replaces the older polygon-slice display."
-                ),
-                confidence="review",
-                spacing_m=1400,
-                length_m=900,
-            )
-
     water_reference = krishna.geometry.union_all()
+    krishna_line_used = False
+    if KRISHNA_OSM_WATERWAY_LINES.exists():
+        krishna_lines = gpd.read_file(KRISHNA_OSM_WATERWAY_LINES)
+        if krishna_lines.crs is None:
+            krishna_lines = krishna_lines.set_crs("EPSG:4326")
+        krishna_lines = krishna_lines.to_crs("EPSG:32644")
+        krishna_clip = water_reference.buffer(140).intersection(DOMAIN)
+        for _, row in krishna_lines.iterrows():
+            name = clean_name(row.get("name"), row.get("source_name"), fallback="Krishna River")
+            if name.lower() in {"krishna", "krishna river candidate"}:
+                name = "Krishna River"
+            for path in line_parts(row.geometry):
+                clipped = path.intersection(krishna_clip)
+                for part in line_parts(clipped):
+                    if part.length < 150:
+                        continue
+                    oriented = orient_along_axis(part, (1.0, -0.70))
+                    add_arrow_records(
+                        records,
+                        oriented,
+                        prefix="KRS",
+                        feature_name=name,
+                        feature_type="river",
+                        source_layer="krishna_river_osm_waterways",
+                        flow_direction="upstream west / northwest to downstream east / southeast along mapped Krishna river line",
+                        direction_basis=(
+                            "Path follows OSM waterway=river LineString geometry clipped to the Krishna river-water polygon; "
+                            "polygon bank-midline is used only when this line source is unavailable."
+                        ),
+                        confidence="review",
+                        spacing_m=1050,
+                        length_m=680,
+                    )
+                    krishna_line_used = True
+
+    if not krishna_line_used:
+        for geom_index, geometry in enumerate(krishna.geometry, start=1):
+            for part_index, poly in enumerate(polygon_parts(geometry), start=1):
+                if poly.area < 120000:
+                    continue
+                centerline = bank_midline_centerline(poly)
+                if centerline is None:
+                    continue
+                add_arrow_records(
+                    records,
+                    centerline,
+                    prefix="KRS",
+                    feature_name=f"Krishna River branch {geom_index}.{part_index}",
+                    feature_type="river",
+                    source_layer="krishna_river_osm_water",
+                    flow_direction="west / northwest to east / southeast along the mapped Krishna waterbody branch",
+                    direction_basis=(
+                        "Fallback path follows a bank-midline centreline derived from the OSM Krishna river-water polygon; "
+                        "use only when mapped river-line geometry is unavailable."
+                    ),
+                    confidence="review",
+                    spacing_m=1400,
+                    length_m=900,
+                )
     for layer_name, feature_name, feature_type, source_file in [
         ("reservoir", "Krishna reservoir / Prakasam backwater reach", "reservoir", BASEREVIEW_LAYERS / "reservoir.js"),
         ("budameru_canal", "Budameru Canal", "budameru_canal", BASEREVIEW_LAYERS / "budameru_canal.js"),
@@ -556,18 +604,19 @@ def main() -> None:
     TERRAIN_SVG_OUT.write_text(render_terrain_svg(terrain_arrows), encoding="utf-8")
 
     manifest = {
-        "build": "20260527_path_following_waterway_and_terrain_arrows",
+        "build": "20260527_osm_riverline_waterway_and_terrain_arrows",
         "waterway_arrow_count": int(len(water_arrows)),
         "terrain_arrow_count": int(len(terrain_arrows)),
         "waterway_sources": {
             "krishna": str(KRISHNA_OSM_WATER.relative_to(VIJAYAWADA_ROOT)),
+            "krishna_waterway_lines": str(KRISHNA_OSM_WATERWAY_LINES.relative_to(ROOT)),
             "major_canals": str(MAJOR_CANALS_OSM.relative_to(VIJAYAWADA_ROOT)),
             "budameru": str(BUDAMERU_OSM.relative_to(VIJAYAWADA_ROOT)),
             "reservoir_and_budameru_polygons": str((ROOT.parent / "basemap_review" / "layers").relative_to(VIJAYAWADA_ROOT)),
         },
         "terrain_source": str(TERRAIN_RASTER.relative_to(VIJAYAWADA_ROOT)),
         "note": (
-            "Krishna arrows follow bank-midline centrelines derived from OSM river-water polygons; "
+            "Krishna arrows follow OSM waterway=river line geometry clipped to the OSM river-water polygon; "
             "terrain arrows are local DEM/DTM downslope indicators and are displayed separately."
         ),
     }

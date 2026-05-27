@@ -1,0 +1,30 @@
+{
+  "generated_utc": "2026-05-27T05:01:20Z",
+  "source": "OpenStreetMap via Overpass API",
+  "query": "[out:json][timeout:60];\n(\n  way[\"waterway\"=\"river\"](16.4179801,80.5265517,16.6443062,80.7442779);\n);\nout geom;\n",
+  "filter": "waterway=river lines excluding named Budameru/Kondaveedu, clipped to OSM Krishna river-water polygon buffered by 140 m and the Vijayawada DSS domain",
+  "raw_overpass_json": "/Users/mirlab/Documents/Vijaywada/final_htmls_to_review/rtgs_aware_multitab_dss/assets/reference/krishna_river_osm_waterways_raw_overpass.json",
+  "geojson": "/Users/mirlab/Documents/Vijaywada/final_htmls_to_review/rtgs_aware_multitab_dss/assets/reference/krishna_river_osm_waterways.geojson",
+  "feature_count": 3,
+  "total_length_m": 7902.7,
+  "features": [
+    {
+      "osm_id": 204418076,
+      "name": "Krishna River",
+      "part_index": 1,
+      "length_m": 5035.7
+    },
+    {
+      "osm_id": 987791356,
+      "name": "Krishna River",
+      "part_index": 1,
+      "length_m": 2397.62
+    },
+    {
+      "osm_id": 1321429473,
+      "name": "Krishna River",
+      "part_index": 1,
+      "length_m": 469.38
+    }
+  ]
+}

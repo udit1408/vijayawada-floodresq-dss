@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1916" viewBox="0 0 1700 1916" role="img" aria-label="Vijayawada terrain downslope arrows">
   <defs>
-    <marker id="terrain-head" markerUnits="userSpaceOnUse" viewBox="0 0 34 24" refX="30" refY="12" markerWidth="34" markerHeight="24" orient="auto">
-      <path d="M2 4 L30 12 L2 20 L10 12 Z" fill="#4c1d95" stroke="#ffffff" stroke-width="2.3" stroke-linejoin="round"/>
+    <marker id="terrain-head" markerUnits="userSpaceOnUse" viewBox="0 0 22 16" refX="20" refY="8" markerWidth="22" markerHeight="16" orient="auto">
+      <path d="M2 3 L20 8 L2 13 L7 8 Z" fill="#4c1d95" stroke="#ffffff" stroke-width="1.45" stroke-linejoin="round"/>
     </marker>
     <style>
-      .terrain-halo { fill:none; stroke:#ffffff; stroke-width:9; stroke-linecap:round; stroke-linejoin:round; opacity:0.82; }
-      .terrain-shaft { fill:none; stroke:#4c1d95; stroke-width:4.4; stroke-linecap:round; stroke-linejoin:round; opacity:0.88; }
+      .terrain-halo { fill:none; stroke:#ffffff; stroke-width:5.8; stroke-linecap:round; stroke-linejoin:round; opacity:0.68; }
+      .terrain-shaft { fill:none; stroke:#4c1d95; stroke-width:2.7; stroke-linecap:round; stroke-linejoin:round; opacity:0.72; }
     </style>
   </defs>
   <desc>Local DEM/DTM downslope arrows from conditioned hydraulic terrain.</desc>

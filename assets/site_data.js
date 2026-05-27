@@ -112,7 +112,7 @@ window.VJ_DSS_DATA = {
     {
       "key": "flow_arrows",
       "title": "Waterway flow arrows",
-      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_path_arrows_v2",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_bank_midline_v3",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
@@ -122,7 +122,7 @@ window.VJ_DSS_DATA = {
     {
       "key": "terrain_flow_arrows",
       "title": "Terrain downslope arrows",
-      "image": "assets/maps/terrain_flow_arrows.svg?v=20260527_path_arrows_v2",
+      "image": "assets/maps/terrain_flow_arrows.svg?v=20260527_bank_midline_v3",
       "kind": "image",
       "default_on": true,
       "group": "Terrain / physics",

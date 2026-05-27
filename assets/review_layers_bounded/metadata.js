@@ -1,7 +1,7 @@
 window.VJ_BOUNDED_REVIEW_BUILD = {
   "title": "Vijayawada Bounded Hydro-Network Review",
   "layer_count": 13,
-  "feature_count": 853,
+  "feature_count": 856,
   "clip_bounds_wgs84": [
     80.58668528724874,
     16.47812214137254,
@@ -93,8 +93,8 @@ window.VJ_BOUNDED_REVIEW_META = {
     "defaultVisible": true,
     "weight": 3.8,
     "fillOpacity": 0.0,
-    "sourceFeatureCount": 46,
-    "featureCount": 46
+    "sourceFeatureCount": 49,
+    "featureCount": 49
   },
   "terrain_flow_direction_arrows": {
     "key": "terrain_flow_direction_arrows",

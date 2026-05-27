@@ -1,6 +1,6 @@
 {
   "build": "20260527_path_following_waterway_and_terrain_arrows",
-  "waterway_arrow_count": 46,
+  "waterway_arrow_count": 49,
   "terrain_arrow_count": 118,
   "waterway_sources": {
     "krishna": "dss_dev/derived/osm_water/krishna_river_osm_water.geojson",
@@ -9,5 +9,5 @@
     "reservoir_and_budameru_polygons": "final_htmls_to_review/basemap_review/layers"
   },
   "terrain_source": "final_htmls_to_review/physics_layers_v0/conditioned_hydraulic_terrain_20m.tif",
-  "note": "Krishna arrows follow centreline proxies derived from OSM river-water polygons; terrain arrows are local DEM/DTM downslope indicators and are displayed separately."
+  "note": "Krishna arrows follow bank-midline centrelines derived from OSM river-water polygons; terrain arrows are local DEM/DTM downslope indicators and are displayed separately."
 }

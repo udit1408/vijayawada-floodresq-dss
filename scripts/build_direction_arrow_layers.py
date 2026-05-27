@@ -2,7 +2,7 @@
 """Build path-following waterway arrows and DEM downslope terrain arrows.
 
 This replaces the earlier Krishna display arrows that were generated from
-horizontal polygon slices. Krishna arrows are now drawn on a centreline proxy
+horizontal polygon slices. Krishna arrows are now drawn on a bank-midline centreline
 derived from OSM river-water polygons, while canal and Budameru arrows follow
 mapped OSM line geometry. Terrain arrows are generated separately from the
 conditioned hydraulic terrain, so waterway FDir and surface downslope evidence
@@ -129,44 +129,71 @@ def orient_from_nearest_water(line: LineString, water_geometry) -> LineString:
     return line
 
 
-def polygon_centerline_proxy(poly, station_spacing_m: float = 180.0) -> LineString | None:
-    """Approximate a waterbody centreline using vertical cross-section midpoints."""
-    minx, miny, maxx, maxy = poly.bounds
-    if maxx - minx < station_spacing_m * 1.5:
+def smooth_path(line: LineString, *, sample_spacing_m: float = 160.0, smoothing: float = 600000.0) -> LineString:
+    coords = np.asarray(line.coords, dtype=float)
+    if len(coords) < 4:
+        return line
+    try:
+        k = min(3, len(coords) - 1)
+        tck, _ = splprep([coords[:, 0], coords[:, 1]], s=smoothing, k=k)
+        sample_count = max(8, int(line.length / sample_spacing_m))
+        samples = np.linspace(0, 1, sample_count)
+        xs, ys = splev(samples, tck)
+        return LineString(list(zip(xs, ys))).simplify(55, preserve_topology=False)
+    except Exception:
+        return line.simplify(80, preserve_topology=False)
+
+
+def bank_midline_centerline(poly, samples: int = 70) -> LineString | None:
+    """Approximate a river centreline by averaging the two opposite banks.
+
+    The earlier algorithm used vertical/horizontal slices through the polygon,
+    which is not a valid way to draw direction arrows for the curved Krishna
+    branches. This method identifies upstream/downstream ends along the reviewed
+    NW-to-SE Krishna direction, splits the exterior ring into two bank paths, and
+    averages corresponding points on those banks.
+    """
+    if poly.area < 50000:
         return None
 
-    points: list[tuple[float, float]] = []
-    for x in np.arange(minx + station_spacing_m / 2, maxx, station_spacing_m):
-        probe = LineString([(x, miny - 3000), (x, maxy + 3000)])
-        segments = line_parts(poly.intersection(probe))
-        if not segments:
-            continue
-        segment = max(segments, key=lambda item: item.length)
-        if segment.length < 25:
-            continue
-        midpoint = segment.interpolate(0.5, normalized=True)
-        points.append((midpoint.x, midpoint.y))
-
-    if len(points) < 2:
+    coords = np.asarray(poly.exterior.coords[:-1], dtype=float)
+    if len(coords) < 8:
         return None
 
-    cleaned = [np.array(points[0])]
-    for point in np.array(points[1:]):
-        if np.linalg.norm(point - cleaned[-1]) < 1200 or len(cleaned) < 3:
-            cleaned.append(point)
-    coords = np.array(cleaned)
+    flow_axis = np.array([1.0, -0.45])
+    projection = coords[:, 0] * flow_axis[0] + coords[:, 1] * flow_axis[1]
+    upstream_index = int(np.argmin(projection))
+    downstream_index = int(np.argmax(projection))
 
-    if len(coords) >= 4:
-        try:
-            k = min(3, len(coords) - 1)
-            tck, _ = splprep([coords[:, 0], coords[:, 1]], s=len(coords) * 18000, k=k)
-            samples = np.linspace(0, 1, max(18, int(LineString(coords).length / 180)))
-            xs, ys = splev(samples, tck)
-            coords = np.column_stack([xs, ys])
-        except Exception:
-            pass
+    if upstream_index < downstream_index:
+        bank_a = coords[upstream_index : downstream_index + 1]
+        bank_b = np.vstack([coords[downstream_index:], coords[: upstream_index + 1]])[::-1]
+    else:
+        bank_a = np.vstack([coords[upstream_index:], coords[: downstream_index + 1]])
+        bank_b = coords[downstream_index : upstream_index + 1][::-1]
 
-    line = LineString(coords.tolist()).simplify(35, preserve_topology=False)
+    if len(bank_a) < 2 or len(bank_b) < 2:
+        return None
+
+    def resample(path: np.ndarray) -> np.ndarray:
+        bank_line = LineString(path.tolist())
+        if bank_line.length <= 0:
+            return np.empty((0, 2))
+        fractions = np.linspace(0, 1, samples)
+        return np.array(
+            [
+                (bank_line.interpolate(float(fraction) * bank_line.length).x, bank_line.interpolate(float(fraction) * bank_line.length).y)
+                for fraction in fractions
+            ]
+        )
+
+    bank_a_samples = resample(bank_a)
+    bank_b_samples = resample(bank_b)
+    if len(bank_a_samples) == 0 or len(bank_b_samples) == 0:
+        return None
+
+    midline = LineString(((bank_a_samples + bank_b_samples) / 2.0).tolist())
+    line = smooth_path(midline)
     if line.length < 250:
         return None
     return orient_west_to_east(line)
@@ -248,7 +275,7 @@ def build_waterway_arrows() -> gpd.GeoDataFrame:
         for part_index, poly in enumerate(polygon_parts(geometry), start=1):
             if poly.area < 120000:
                 continue
-            centerline = polygon_centerline_proxy(poly)
+            centerline = bank_midline_centerline(poly)
             if centerline is None:
                 continue
             add_arrow_records(
@@ -260,8 +287,8 @@ def build_waterway_arrows() -> gpd.GeoDataFrame:
                 source_layer="krishna_river_osm_water",
                 flow_direction="west / northwest to east / southeast along the mapped Krishna waterbody branch",
                 direction_basis=(
-                    "Path follows a centreline proxy derived from OSM Krishna river-water polygon cross-section "
-                    "midpoints; this replaces the older horizontal polygon-slice display."
+                    "Path follows a bank-midline centreline derived from the OSM Krishna river-water polygon; "
+                    "this replaces the older polygon-slice display."
                 ),
                 confidence="review",
                 spacing_m=1400,
@@ -281,7 +308,7 @@ def build_waterway_arrows() -> gpd.GeoDataFrame:
             for poly in polygon_parts(geometry):
                 if poly.area < 70000:
                     continue
-                centerline = polygon_centerline_proxy(poly, station_spacing_m=160)
+                centerline = bank_midline_centerline(poly)
                 if centerline is None:
                     continue
                 add_arrow_records(
@@ -292,7 +319,7 @@ def build_waterway_arrows() -> gpd.GeoDataFrame:
                     feature_type=feature_type,
                     source_layer=layer_name,
                     flow_direction="reviewed west-to-east / downstream display direction through Vijayawada",
-                    direction_basis="Path follows a centreline proxy derived from mapped waterbody polygon cross-section midpoints.",
+                    direction_basis="Path follows a bank-midline centreline derived from mapped waterbody polygon banks.",
                     confidence="review",
                     spacing_m=1350,
                     length_m=820,
@@ -540,7 +567,7 @@ def main() -> None:
         },
         "terrain_source": str(TERRAIN_RASTER.relative_to(VIJAYAWADA_ROOT)),
         "note": (
-            "Krishna arrows follow centreline proxies derived from OSM river-water polygons; "
+            "Krishna arrows follow bank-midline centrelines derived from OSM river-water polygons; "
             "terrain arrows are local DEM/DTM downslope indicators and are displayed separately."
         ),
     }

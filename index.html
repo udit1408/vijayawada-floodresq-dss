@@ -22,6 +22,12 @@
 
     * { box-sizing: border-box; }
 
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       margin: 0;
       color: var(--ink);
@@ -45,6 +51,7 @@
       gap: 18px;
       max-width: 1440px;
       margin: 0 auto;
+      min-width: 0;
     }
 
     .brand-head {
@@ -52,6 +59,7 @@
       grid-template-columns: 76px minmax(0, 1fr);
       gap: 14px;
       align-items: center;
+      min-width: 0;
     }
 
     .brand-logo {
@@ -99,6 +107,7 @@
       gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-end;
+      min-width: 0;
     }
 
     .link-button {
@@ -128,6 +137,7 @@
       grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
       gap: 18px;
       align-items: start;
+      min-width: 0;
     }
 
     .panel {
@@ -135,6 +145,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
+      min-width: 0;
     }
 
     .panel h2 {
@@ -144,7 +155,11 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .panel-body { padding: 18px; }
+    .panel-body {
+      padding: 18px;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
 
     .field { margin-bottom: 16px; }
 
@@ -157,8 +172,11 @@
     }
 
     select,
+    input,
     textarea {
       width: 100%;
+      min-width: 0;
+      max-width: 100%;
       padding: 9px 12px;
       color: var(--ink);
       background: #fff;
@@ -201,6 +219,7 @@
       cursor: pointer;
       color: white;
       background: var(--accent);
+      max-width: 100%;
     }
 
     button.secondary {
@@ -226,6 +245,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcfe;
+      min-width: 0;
     }
 
     .metric .label {
@@ -375,6 +395,7 @@
       color: #344158;
       font-size: 13px;
       line-height: 1.42;
+      min-width: 0;
     }
 
     .endpoint-row {
@@ -496,6 +517,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcfe;
+      min-width: 0;
     }
 
     .assistant-intro .kicker {
@@ -560,6 +582,7 @@
       border-radius: 8px;
       background: #ffffff;
       overflow: hidden;
+      min-width: 0;
     }
 
     .chat-log {
@@ -660,6 +683,41 @@
       .endpoint-auth-row { grid-template-columns: 1fr; }
       .brand-head { grid-template-columns: 60px minmax(0, 1fr); }
       .brand-logo { width: 60px; height: 60px; }
+      .button-row > button,
+      .endpoint-row > button {
+        flex: 1 1 150px;
+      }
+      .panel-body > table {
+        table-layout: fixed;
+        white-space: normal;
+        max-width: 100%;
+      }
+      .panel-body > table th,
+      .panel-body > table td {
+        overflow-wrap: anywhere;
+      }
+    }
+
+    @media (max-width: 520px) {
+      header, main { padding-left: 12px; padding-right: 12px; }
+      .brand-head {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 10px;
+      }
+      .brand-logo { width: 48px; height: 48px; }
+      .subtitle { font-size: 13px; }
+      .panel h2 { padding: 14px; }
+      .panel-body { padding: 14px; }
+      .status-card { grid-template-columns: 1fr; }
+      .button-row > button,
+      .endpoint-row > button,
+      .link-button,
+      .badge {
+        width: 100%;
+      }
+      .message {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -981,6 +1039,30 @@
       request.headers = headers;
       return fetch(apiUrl(path), request);
     }
+    function cleanServerMessage(message, fallback = "Could not reach the FloodAstra API. Check that the endpoint and backend service are active.") {
+      const raw = String(message || "").trim();
+      if (!raw) return fallback;
+      if (/<\/?[a-z][\s\S]*>/i.test(raw)) {
+        const code = raw.match(/Error code:\s*(\d+)/i)?.[1] || raw.match(/<h1>\s*([^<]+)\s*<\/h1>/i)?.[1];
+        return code ? `${fallback} Server response: ${code}.` : fallback;
+      }
+      if (raw.length > 260) return `${raw.slice(0, 257)}...`;
+      return raw;
+    }
+    async function readJsonResponse(response, fallback) {
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (_) {
+        if (!response.ok) throw new Error(cleanServerMessage(text, fallback));
+        throw new Error(cleanServerMessage(text, "The FloodAstra API returned a response that this page could not read."));
+      }
+      if (!response.ok) {
+        throw new Error(cleanServerMessage(data.error || data.detail || text, fallback));
+      }
+      return data || {};
+    }
     async function setImageFromEndpoint(img, href) {
       if (!img || !href) return;
       if (!state.apiUser && !state.apiPassword) {
@@ -1044,8 +1126,7 @@
 
     async function loadOptions() {
       const response = await apiFetch("/api/nowcast/options");
-      if (!response.ok) throw new Error(await response.text());
-      const options = await response.json();
+      const options = await readJsonResponse(response, "FloodAstra API did not return the nowcast setup. Check that the backend route /api/nowcast/options is active.");
       state.options = options;
       setSelect("rainfall", "rainfallHint", options.rainfall_scenarios, options.defaults.rainfall);
       setSelect("hydrograph", "hydrographHint", options.hydrograph_scenarios, options.defaults.hydrograph);
@@ -1098,13 +1179,12 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Nowcast request failed.");
+        const data = await readJsonResponse(response, "Nowcast request failed.");
         state.activeJobId = data.job.job_id;
         renderJob(data.job);
         await refreshJobs();
       } catch (error) {
-        alert(error.message);
+        alert(cleanServerMessage(error.message, "Nowcast request failed."));
       } finally {
         $("runBtn").disabled = false;
         updateAwareRunControls();
@@ -1125,8 +1205,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ story: narrative, run: runNow, use_gpt: true })
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Story conversion failed.");
+        const data = await readJsonResponse(response, "Story conversion failed.");
         renderInterpretation(data.interpretation || data.job?.narrative_interpretation, data.contract || data.job, data.forcing || data.job?.forcing_preview);
         const interpretation = data.interpretation || data.job?.narrative_interpretation;
         if (interpretation?.selection) {
@@ -1138,7 +1217,7 @@
           await refreshJobs();
         }
       } catch (error) {
-        $("interpretationBox").innerHTML = `<strong>Story conversion</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+        $("interpretationBox").innerHTML = `<strong>Story conversion</strong><span style="color:#991b1b;">${escapeHtml(cleanServerMessage(error.message, "Story conversion failed."))}</span>`;
       } finally {
         $("interpretBtn").disabled = false;
         $("runNarrativeBtn").disabled = false;
@@ -1381,14 +1460,13 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ dry_run: dryRun })
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Live data fetch failed.");
+        const data = await readJsonResponse(response, "Live data fetch failed.");
         renderAwareSnapshot(data.snapshot || {});
         if (!dryRun && awareSnapshotUsable(data.snapshot || {})) {
           $("useAwareLatest").checked = true;
         }
       } catch (error) {
-        $("awareBox").innerHTML = `<strong>Live Data Snapshot</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+        $("awareBox").innerHTML = `<strong>Live Data Snapshot</strong><span style="color:#991b1b;">${escapeHtml(cleanServerMessage(error.message, "Live data fetch failed."))}</span>`;
         updateAwareRunControls();
       } finally {
         $("awareDryBtn").disabled = false;
@@ -1401,7 +1479,7 @@
       if (!state.activeJobId) return;
       const response = await apiFetch(`/api/nowcast/job/${encodeURIComponent(state.activeJobId)}`);
       if (!response.ok) return;
-      const data = await response.json();
+      const data = await readJsonResponse(response, "Could not load the selected nowcast job.");
       renderJob(data.job);
       await refreshJobs(false);
     }
@@ -1409,7 +1487,7 @@
     async function refreshJobs(activateLatest = true) {
       const response = await apiFetch("/api/nowcast/jobs?limit=20");
       if (!response.ok) return;
-      const data = await response.json();
+      const data = await readJsonResponse(response, "Could not load recent nowcast jobs.");
       const jobs = data.jobs || [];
       if (activateLatest && !state.activeJobId && jobs.length) {
         state.activeJobId = jobs[0].job_id;
@@ -1582,15 +1660,14 @@
             history: state.assistantHistory.slice(-8)
           })
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Assistant request failed.");
+        const data = await readJsonResponse(response, "Assistant request failed.");
         const modeLabel = data.used_web ? "Expanded + web" : (data.mode === "hybrid" ? "Expanded" : "Verified");
         pending.innerHTML = `<strong>FloodAstra · ${escapeHtml(modeLabel)}</strong>${escapeHtml(data.answer || "No answer returned.")}${sourcesHtml(data)}`;
         state.assistantHistory.push({ role: "user", content: question });
         state.assistantHistory.push({ role: "assistant", content: data.answer || "" });
         state.assistantHistory = state.assistantHistory.slice(-10);
       } catch (error) {
-        pending.innerHTML = `<strong>FloodAstra</strong><span style="color:#991b1b;">${escapeHtml(error.message)}</span>`;
+        pending.innerHTML = `<strong>FloodAstra</strong><span style="color:#991b1b;">${escapeHtml(cleanServerMessage(error.message, "Assistant request failed."))}</span>`;
       } finally {
         $("assistantAskBtn").disabled = false;
       }
@@ -1623,7 +1700,7 @@
         .then(() => refreshJobs(true))
         .catch((error) => {
           setBadge(false, "Server not reachable");
-          $("physicsNote").textContent = error.message;
+          $("physicsNote").textContent = cleanServerMessage(error.message);
         });
     });
     $("apiResetBtn").addEventListener("click", () => {
@@ -1666,7 +1743,7 @@
       })
       .catch((error) => {
         setBadge(false, "Server not reachable");
-        $("physicsNote").textContent = error.message;
+        $("physicsNote").textContent = cleanServerMessage(error.message);
       });
     setInterval(refreshActive, 5000);
   </script>

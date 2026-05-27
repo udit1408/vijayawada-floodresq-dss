@@ -127,6 +127,79 @@
       font-size: 12px;
       color: #31414d;
     }
+    .hover-card {
+      position: absolute;
+      z-index: 800;
+      left: 14px;
+      bottom: 56px;
+      width: min(360px, calc(100vw - 28px));
+      padding: 11px 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      color: #1d2b36;
+      pointer-events: none;
+    }
+    .hover-card h2 {
+      margin: 4px 0 7px;
+      font-size: 15px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+    .hover-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #556574;
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .hover-swatch {
+      width: 11px;
+      height: 11px;
+      border-radius: 3px;
+      border: 1px solid rgba(15, 23, 42, 0.18);
+      flex: 0 0 auto;
+    }
+    .hover-grid {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 4px 9px;
+      margin: 0;
+      font-size: 12px;
+    }
+    .hover-grid dt {
+      color: #667584;
+      margin: 0;
+    }
+    .hover-grid dd {
+      color: #14212b;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+    .hover-note {
+      margin: 8px 0 0;
+      color: #667584;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .asset-tooltip {
+      border: 1px solid rgba(20, 33, 43, 0.18);
+      border-radius: 7px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+      color: #14212b;
+      font-weight: 750;
+      line-height: 1.28;
+    }
+    .asset-tooltip .tooltip-layer {
+      display: block;
+      color: #607080;
+      font-size: 11px;
+      font-weight: 850;
+    }
     .leaflet-popup-content {
       margin: 10px 12px;
       min-width: 230px;
@@ -185,6 +258,9 @@
       .coordinate-readout {
         display: none;
       }
+      .hover-card {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -197,6 +273,11 @@
       <span class="review-pill">Loading layers</span>
     </div>
   </section>
+  <aside class="hover-card" id="hover-card" aria-live="polite">
+    <div class="hover-eyebrow"><span class="hover-swatch" style="background:#087f73"></span>Hover inspection</div>
+    <h2>Move cursor over a visible layer</h2>
+    <p class="hover-note">Hover any ward, water body, canal, pump, connector, arrow or control section. Click a feature for the full attribute table.</p>
+  </aside>
   <div class="coordinate-readout" id="coordinate-readout">Lat/Lon</div>
 
   <script src="../vendor/leaflet/leaflet.js"></script>
@@ -249,6 +330,7 @@
     const visibleBounds = L.latLngBounds([]);
     let loadedLayerCount = 0;
     let loadedFeatureCount = 0;
+    const hoverCard = document.getElementById("hover-card");
 
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, function(char) {
@@ -260,6 +342,108 @@
       const number = Number(value);
       if (!Number.isFinite(number)) return value;
       return number.toLocaleString(undefined, { maximumFractionDigits: digits });
+    }
+
+    const fieldLabels = {
+      REV_WRD_NO: "Ward",
+      TN_NAME: "Town",
+      DIS_NAME: "District",
+      MUN_AREA: "Area",
+      WN_NAME: "Water body",
+      WN_TYPE: "Type",
+      RES_NAME: "Reservoir",
+      source_name: "Mapped name",
+      canal_name: "Canal name",
+      waterway: "Waterway",
+      length_m: "Length",
+      feature_name: "Feature",
+      feature_type: "Type",
+      flow_direction: "Direction",
+      confidence: "Confidence",
+      DPS_ID: "Pump ID",
+      DPS_CAP: "Capacity",
+      dps_id: "Pump ID",
+      dps_cap: "Capacity",
+      locality: "Locality",
+      target_name: "Receiving water",
+      target_type: "Receiving type",
+      distance_m: "Distance",
+      distance_to_mapped_water_m: "Distance to water",
+      drain_id: "Drain ID",
+      depth_m: "Depth",
+      width_m: "Width",
+      invert_elev_m: "Invert elevation",
+      section_id: "Section ID",
+      section_length_m: "Section length",
+      review_status: "Review status",
+      source: "Source"
+    };
+    const preferredFields = [
+      "REV_WRD_NO", "TN_NAME", "DIS_NAME", "MUN_AREA",
+      "WN_NAME", "WN_TYPE", "RES_NAME",
+      "feature_name", "feature_type", "flow_direction", "confidence",
+      "source_name", "canal_name", "waterway", "length_m",
+      "DPS_ID", "DPS_CAP", "dps_id", "dps_cap", "locality",
+      "target_name", "target_type", "distance_m", "drain_id",
+      "distance_to_mapped_water_m", "depth_m", "width_m", "invert_elev_m",
+      "section_id", "section_length_m", "review_status", "source"
+    ];
+    const skippedFields = new Set(["_layer_label", "_bounded_to_dss_extent", "geometry"]);
+
+    function fieldLabel(key) {
+      return fieldLabels[key] || key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
+    function formatField(key, value) {
+      if (value === null || value === undefined || value === "") return "";
+      const numericValue = Number(value);
+      if (Number.isFinite(numericValue)) {
+        if (key === "MUN_AREA") return `${numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} sq km`;
+        if (key.toLowerCase().includes("cap")) return numericValue.toLocaleString(undefined, { maximumFractionDigits: 1 });
+        if (key.endsWith("_m") || key === "distance_m" || key === "length_m" || key === "section_length_m") {
+          return `${numericValue.toLocaleString(undefined, { maximumFractionDigits: numericValue >= 100 ? 0 : 1 })} m`;
+        }
+        return numericValue.toLocaleString(undefined, { maximumFractionDigits: 3 });
+      }
+      return String(value).replace(/_/g, " ");
+    }
+
+    function featureName(feature, meta) {
+      const props = feature.properties || {};
+      if (props.REV_WRD_NO) return `Revenue Ward ${props.REV_WRD_NO}`;
+      return props.feature_name || props.source_name || props.canal_name || props.WN_NAME || props.RES_NAME ||
+        props.locality || props.DPS_ID || props.dps_id || props.drain_id || props.section_id || props.arrow_id ||
+        props.TN_NAME || meta.label;
+    }
+
+    function featureRows(feature) {
+      const props = feature.properties || {};
+      const keys = [];
+      for (const key of preferredFields) {
+        if (props[key] !== null && props[key] !== undefined && props[key] !== "" && !keys.includes(key)) keys.push(key);
+      }
+      for (const key of Object.keys(props)) {
+        if (keys.length >= 6) break;
+        if (skippedFields.has(key) || key.startsWith("_") || keys.includes(key)) continue;
+        if (props[key] !== null && props[key] !== undefined && props[key] !== "") keys.push(key);
+      }
+      return keys.slice(0, 6).map((key) => [fieldLabel(key), formatField(key, props[key])]).filter((row) => row[1] !== "");
+    }
+
+    function tooltipHtml(feature, meta) {
+      const rows = featureRows(feature).slice(0, 2);
+      const summary = rows.map(([label, value]) => `${escapeHtml(label)}: ${escapeHtml(value)}`).join("<br>");
+      return `<span class="tooltip-layer">${escapeHtml(meta.label)}</span>${escapeHtml(featureName(feature, meta))}${summary ? `<br>${summary}` : ""}`;
+    }
+
+    function hoverCardHtml(feature, meta) {
+      const rows = featureRows(feature).map(([label, value]) => `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd>`).join("");
+      return `
+        <div class="hover-eyebrow"><span class="hover-swatch" style="background:${escapeHtml(meta.color)}"></span>${escapeHtml(meta.label)}</div>
+        <h2>${escapeHtml(featureName(feature, meta))}</h2>
+        ${rows ? `<dl class="hover-grid">${rows}</dl>` : ""}
+        <p class="hover-note">Hover updates this card. Click the feature for the full attribute table.</p>
+      `;
     }
 
     function popupHtml(feature, meta) {
@@ -289,7 +473,7 @@
       };
     }
 
-    function pointFor(meta, feature, latlng) {
+    function pointStyle(meta, feature) {
       const props = feature.properties || {};
       let radius = meta.key === "candidate_outfalls" ? 4.0 : 4.8;
       let fillColor = meta.color;
@@ -300,14 +484,63 @@
         fillColor = cap > 0 ? "#ea580c" : "#9ca3af";
         strokeColor = cap > 0 ? "#ffffff" : "#475569";
       }
-      return L.circleMarker(latlng, {
+      return {
         radius,
         color: strokeColor,
         weight: 1.1,
         opacity: 0.96,
         fillColor,
         fillOpacity: meta.fillOpacity || 0.86
-      });
+      };
+    }
+
+    function pointFor(meta, feature, latlng) {
+      return L.circleMarker(latlng, pointStyle(meta, feature));
+    }
+
+    function highlightFeature(layer, feature, meta) {
+      if (!layer.setStyle) return;
+      if (meta.geometry === "point") {
+        layer.setStyle({
+          radius: Math.max((layer.options.radius || 5) + 2, 7),
+          color: "#111827",
+          weight: 2.2,
+          opacity: 1,
+          fillOpacity: 1
+        });
+      } else {
+        layer.setStyle({
+          ...styleFor(meta),
+          color: "#111827",
+          weight: Math.max((meta.weight || 2) + 2, 4.5),
+          opacity: 1,
+          fillOpacity: meta.geometry === "polygon" ? Math.min((meta.fillOpacity || 0.1) + 0.11, 0.45) : 0
+        });
+      }
+      if (layer.bringToFront) layer.bringToFront();
+    }
+
+    function resetFeature(layer, feature, meta) {
+      if (!layer.setStyle) return;
+      if (meta.geometry === "point") {
+        layer.setStyle(pointStyle(meta, feature));
+      } else {
+        layer.setStyle(styleFor(meta));
+      }
+    }
+
+    function showHover(feature, meta) {
+      if (!hoverCard) return;
+      hoverCard.innerHTML = hoverCardHtml(feature, meta);
+    }
+
+    function clearHover() {
+      if (!hoverCard) return;
+      hoverCard.innerHTML = `
+        <div class="hover-eyebrow"><span class="hover-swatch" style="background:#087f73"></span>Hover inspection</div>
+        <h2>Move cursor over a visible layer</h2>
+        <p class="hover-note">Hover any ward, water body, canal, pump, connector, arrow or control section. Click a feature for the full attribute table.</p>
+      `;
     }
 
     function lineCoordinateSets(geometry) {
@@ -368,11 +601,23 @@
         pointToLayer: (feature, latlng) => pointFor(meta, feature, latlng),
         onEachFeature: (feature, itemLayer) => {
           itemLayer.bindPopup(popupHtml(feature, meta), { maxHeight: 340 });
-          const props = feature.properties || {};
-          const name = props.feature_name || props.source_name || props.name || props.WARD_NAME || props.arrow_id;
-          if (name && (meta.key === "waterbody_flow_direction_arrows" || meta.geometry === "point")) {
-            itemLayer.bindTooltip(String(name), { sticky: true, direction: "top", opacity: 0.92 });
-          }
+          itemLayer.bindTooltip(tooltipHtml(feature, meta), {
+            sticky: true,
+            direction: "top",
+            opacity: 0.96,
+            className: "asset-tooltip"
+          });
+          itemLayer.on({
+            mouseover: () => {
+              highlightFeature(itemLayer, feature, meta);
+              showHover(feature, meta);
+            },
+            mouseout: () => {
+              resetFeature(itemLayer, feature, meta);
+              clearHover();
+            },
+            click: () => showHover(feature, meta)
+          });
         }
       });
       if (key === "waterbody_flow_direction_arrows") {

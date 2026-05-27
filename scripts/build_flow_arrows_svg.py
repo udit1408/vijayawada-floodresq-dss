@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Build the bounded operational flow-direction arrow overlay.
+"""Build the dashboard FDir arrow overlay from the reference arrow layer.
 
-This is the dashboard-facing arrow layer, not the wide review atlas. The
-coordinates are registered to the 1700 x 1916 DSS map canvas so the arrows stay
-inside the operational overview and align with the static layer stack.
+The visible dashboard arrows are generated from the same directed GeoJSON used
+by the bounded review viewer. They are not terrain-gradient arrows and they are
+not hand-placed decoration; each SVG shaft follows a clipped FDir LineString.
 """
 
 from __future__ import annotations
@@ -11,237 +11,161 @@ from __future__ import annotations
 from html import escape
 from pathlib import Path
 
+import geopandas as gpd
+from shapely.geometry import LineString, box
+
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "assets" / "reference" / "waterbody_flow_direction_arrows.geojson"
 OUT = ROOT / "assets" / "maps" / "flow_arrows_identified.svg"
 
 W, H = 1700, 1916
+DSS_BOUNDS_UTM44N = (455909.1916, 1821868.8515, 466289.1916, 1833568.8515)
 
-
-ARROWS = [
-    {
-        "id": "KR-UP-01",
-        "name": "Krishna upper/northern branch",
-        "kind": "river upper-branch",
-        "color": "river",
-        "label": "Krishna upper branch",
-        "d": "M 38 1210 C 72 1222, 111 1242, 150 1262",
-    },
-    {
-        "id": "KR-UP-02",
-        "name": "Krishna upper/northern branch",
-        "kind": "river upper-branch",
-        "color": "river",
-        "d": "M 172 1268 C 211 1284, 254 1302, 306 1318",
-    },
-    {
-        "id": "KR-LOW-01",
-        "name": "Krishna lower/main branch",
-        "kind": "river lower-branch",
-        "color": "river",
-        "label": "Krishna lower/main branch",
-        "d": "M 30 1438 C 76 1464, 122 1492, 178 1518",
-    },
-    {
-        "id": "KR-LOW-02",
-        "name": "Krishna lower/main branch",
-        "kind": "river lower-branch",
-        "color": "river",
-        "d": "M 218 1538 C 278 1570, 344 1596, 422 1610",
-    },
-    {
-        "id": "KR-MAIN-01",
-        "name": "Krishna main city reach",
-        "kind": "river main-branch",
-        "color": "river",
-        "d": "M 535.1 1622.2 L 646.5 1622.2",
-    },
-    {
-        "id": "KR-MAIN-02",
-        "name": "Krishna main city reach",
-        "kind": "river main-branch",
-        "color": "river",
-        "d": "M 675.0 1622.2 L 790.0 1622.2",
-    },
-    {
-        "id": "KR-MAIN-03",
-        "name": "Krishna main city reach",
-        "kind": "river main-branch",
-        "color": "river",
-        "d": "M 818.0 1622.2 L 936.0 1622.2",
-    },
-    {
-        "id": "BD-CNL-01",
-        "name": "Budameru Canal",
-        "kind": "canal",
-        "color": "canal",
-        "d": "M 811.6 832.4 L 943.9 832.4",
-    },
-    {
-        "id": "BD-CNL-02",
-        "name": "Budameru Canal",
-        "kind": "canal",
-        "color": "canal",
-        "d": "M 1150.8 832.4 L 1283.1 832.4",
-    },
-    {
-        "id": "BD-CNL-03",
-        "name": "Budameru Canal",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 775.4 845.2 L 835.3 962.6",
-    },
-    {
-        "id": "BD-CNL-04",
-        "name": "Budameru Canal",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 1244.2 1026.3 L 1393.6 1059.0",
-    },
-    {
-        "id": "BD-RIV-01",
-        "name": "Budameru River",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 183.9 464.5 L 225.1 522.6",
-    },
-    {
-        "id": "BD-RIV-02",
-        "name": "Budameru River",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 284.6 573.4 L 348.4 601.5",
-    },
-    {
-        "id": "BD-RIV-03",
-        "name": "Budameru River",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 412.6 647.3 L 474.0 681.3",
-    },
-    {
-        "id": "ELU-01",
-        "name": "Eluru Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 795.5 1063.3 L 925.1 995.5",
-    },
-    {
-        "id": "ELU-02",
-        "name": "Eluru Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 1241.1 1037.9 L 1382.3 1073.4",
-    },
-    {
-        "id": "KEMC-01",
-        "name": "Krishna Eastern Main Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 343.7 1307.3 L 405.8 1306.0",
-    },
-]
-
-
-MARKERS = {
-    "river": ("#0369a1", "head-river"),
-    "canal": ("#b45309", "head-canal"),
-    "budameru": ("#0f766e", "head-budameru"),
-    "major": ("#92400e", "head-major"),
+COLORS = {
+    "river": "#0369a1",
+    "reservoir": "#0284c7",
+    "budameru": "#0f766e",
+    "canal": "#b45309",
+    "major": "#92400e",
 }
+
+
+def line_parts(geometry) -> list[LineString]:
+    if geometry is None or geometry.is_empty:
+        return []
+    if geometry.geom_type == "LineString":
+        return [geometry]
+    if geometry.geom_type == "MultiLineString":
+        return [part for part in geometry.geoms if not part.is_empty]
+    if geometry.geom_type == "GeometryCollection":
+        parts: list[LineString] = []
+        for item in geometry.geoms:
+            parts.extend(line_parts(item))
+        return parts
+    return []
+
+
+def kind_for(row) -> str:
+    feature_type = str(row.get("feature_type") or "").lower()
+    source_layer = str(row.get("source_layer") or "").lower()
+    if "river" in feature_type or "krishna" in source_layer:
+        return "river"
+    if "reservoir" in feature_type:
+        return "reservoir"
+    if "budameru" in feature_type:
+        return "budameru"
+    if "canal" in feature_type and "major" in feature_type:
+        return "major"
+    if "canal" in feature_type or "canal" in source_layer:
+        return "canal"
+    return "canal"
+
+
+def project_xy(x: float, y: float) -> tuple[float, float]:
+    minx, miny, maxx, maxy = DSS_BOUNDS_UTM44N
+    px = (x - minx) / (maxx - minx) * W
+    py = H - ((y - miny) / (maxy - miny) * H)
+    return px, py
+
+
+def path_for_line(line: LineString) -> str:
+    coords = list(line.coords)
+    projected = [project_xy(x, y) for x, y in coords]
+    commands = [f"M {projected[0][0]:.1f} {projected[0][1]:.1f}"]
+    commands.extend(f"L {x:.1f} {y:.1f}" for x, y in projected[1:])
+    return " ".join(commands)
 
 
 def marker(marker_id: str, color: str) -> str:
     return f"""
-    <marker id="{marker_id}" markerUnits="userSpaceOnUse" viewBox="0 0 28 28"
-      refX="25" refY="14" markerWidth="28" markerHeight="28" orient="auto">
-      <path d="M3 3 L25 14 L3 25 L8.2 14 Z" fill="{color}" stroke="#ffffff" stroke-width="2.6" stroke-linejoin="round"/>
+    <marker id="{marker_id}" markerUnits="userSpaceOnUse" viewBox="0 0 44 28"
+      refX="40" refY="14" markerWidth="44" markerHeight="28" orient="auto">
+      <path d="M2 3 L40 14 L2 25 L12 14 Z" fill="{color}" stroke="#ffffff" stroke-width="3.0" stroke-linejoin="round"/>
+      <path d="M2 3 L40 14 L2 25 L12 14 Z" fill="none" stroke="#0f172a" stroke-width="1.15" stroke-linejoin="round" opacity="0.42"/>
     </marker>"""
 
 
-def arrow_group(spec: dict[str, str]) -> str:
-    color, marker_id = MARKERS[spec["color"]]
-    title = (
-        f'{spec["id"]}: {spec["name"]}. Arrow head marks review flow '
-        "direction; verify with official hydraulic records before design use."
-    )
-    label_block = ""
-    if spec.get("label"):
-        is_upper_krishna = "upper" in spec["name"].lower()
-        label_y = "1188" if is_upper_krishna else "1588"
-        label_x = "42" if is_upper_krishna else "520"
-        text = escape(spec["label"])
-        label_block = f"""
-      <text class="flow-label halo-label" x="{label_x}" y="{label_y}">{text}</text>
-      <text class="flow-label fill-label" x="{label_x}" y="{label_y}">{text}</text>"""
+def arrow_group(row, line: LineString, index: int) -> str:
+    props = row.to_dict()
+    kind = kind_for(props)
+    color = COLORS[kind]
+    marker_id = f"head-{kind}"
+    path = path_for_line(line)
+    arrow_id = escape(str(props.get("arrow_id") or f"FDIR-{index:03d}"))
+    name = escape(str(props.get("feature_name") or "Mapped waterway"))
+    flow = escape(str(props.get("flow_direction") or "mapped flow direction"))
+    source_layer = escape(str(props.get("source_layer") or "mapped OSM/official layer"))
     return f"""
-    <g class="major-flow-arrow {escape(spec['kind'])}" data-arrow-id="{escape(spec['id'])}" data-name="{escape(spec['name'])}">
-      <title>{escape(title)}</title>
-      <path class="arrow-halo" d="{spec['d']}"/>
-      <path class="arrow-shadow" d="{spec['d']}"/>
-      <path class="arrow-shaft" d="{spec['d']}" stroke="{color}" marker-end="url(#{marker_id})"/>{label_block}
+    <g class="fdir-arrow {kind}" data-arrow-id="{arrow_id}" data-name="{name}" data-source-layer="{source_layer}">
+      <title>{arrow_id}: {name}. Direction: {flow}.</title>
+      <path class="fdir-halo" d="{path}"/>
+      <path class="fdir-shadow" d="{path}"/>
+      <path class="fdir-shaft" d="{path}" stroke="{color}" marker-end="url(#{marker_id})"/>
     </g>"""
 
 
 def build_svg() -> str:
-    marker_defs = "\n".join(marker(marker_id, color) for color, marker_id in MARKERS.values())
-    arrows = "\n".join(arrow_group(spec) for spec in ARROWS)
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Bounded Vijayawada river and canal flow arrows, including upper and lower Krishna branches">
+    if not SOURCE.exists():
+        raise FileNotFoundError(f"Missing FDir source layer: {SOURCE}")
+
+    gdf = gpd.read_file(SOURCE)
+    if gdf.crs is None:
+        gdf = gdf.set_crs("EPSG:4326")
+    gdf = gdf.to_crs("EPSG:32644")
+
+    domain = box(*DSS_BOUNDS_UTM44N)
+    gdf = gdf[gdf.intersects(domain)].copy()
+    gdf["geometry"] = gdf.geometry.intersection(domain)
+    gdf = gdf[gdf.geometry.notna() & ~gdf.geometry.is_empty].copy()
+    gdf["_kind"] = gdf.apply(kind_for, axis=1)
+    gdf["_sort_name"] = gdf.get("feature_name", "").astype(str)
+    gdf = gdf.sort_values(["_kind", "_sort_name", "arrow_id"])
+
+    marker_defs = "\n".join(marker(f"head-{kind}", color) for kind, color in COLORS.items())
+    arrows: list[str] = []
+    for index, (_, row) in enumerate(gdf.iterrows(), start=1):
+        for line in line_parts(row.geometry):
+            if line.length >= 1:
+                arrows.append(arrow_group(row, line, index))
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Vijayawada FDir waterway flow arrows">
   <defs>
 {marker_defs}
     <style>
-      .arrow-halo {{
+      .fdir-halo {{
         fill: none;
         stroke: #ffffff;
-        stroke-width: 15;
+        stroke-width: 16;
         stroke-linecap: round;
         stroke-linejoin: round;
-        opacity: 0.96;
+        opacity: 0.98;
       }}
-      .arrow-shadow {{
+      .fdir-shadow {{
         fill: none;
         stroke: #020617;
         stroke-width: 10;
         stroke-linecap: round;
         stroke-linejoin: round;
-        opacity: 0.20;
+        opacity: 0.28;
       }}
-      .arrow-shaft {{
+      .fdir-shaft {{
         fill: none;
-        stroke-width: 7.2;
+        stroke-width: 7.8;
         stroke-linecap: round;
         stroke-linejoin: round;
-        opacity: 0.98;
+        opacity: 0.99;
       }}
-      .river .arrow-shaft,
-      .upper-branch .arrow-shaft,
-      .lower-branch .arrow-shaft,
-      .main-branch .arrow-shaft {{
-        stroke-width: 8.2;
-      }}
-      .flow-label {{
-        font-family: Inter, Arial, Helvetica, sans-serif;
-        font-weight: 800;
-        font-size: 21px;
-        letter-spacing: 0;
-      }}
-      .halo-label {{
-        fill: none;
-        stroke: #ffffff;
-        stroke-width: 6px;
-        stroke-linejoin: round;
-        paint-order: stroke;
-        opacity: 0.96;
-      }}
-      .fill-label {{
-        fill: #075985;
-        stroke: none;
+      .river .fdir-shaft,
+      .reservoir .fdir-shaft {{
+        stroke-width: 9.2;
       }}
     </style>
   </defs>
+  <desc>FDir arrows generated from assets/reference/waterbody_flow_direction_arrows.geojson and clipped to the Vijayawada DSS canvas.</desc>
   <rect width="{W}" height="{H}" fill="none"/>
-  <g id="flow-direction-arrows" data-source="bounded_operational_canvas" data-feature-count="{len(ARROWS)}">
-{arrows}
+  <g id="fdir-flow-arrows" data-source="assets/reference/waterbody_flow_direction_arrows.geojson" data-feature-count="{len(arrows)}">
+{"".join(arrows)}
   </g>
 </svg>
 """

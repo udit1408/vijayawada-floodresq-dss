@@ -1,7 +1,7 @@
 window.VJ_BOUNDED_REVIEW_BUILD = {
   "title": "Vijayawada Bounded Hydro-Network Review",
   "layer_count": 12,
-  "feature_count": 699,
+  "feature_count": 705,
   "clip_bounds_wgs84": [
     80.58668528724874,
     16.47812214137254,
@@ -14,7 +14,8 @@ window.VJ_BOUNDED_REVIEW_BUILD = {
     466289.1916,
     1833568.8515
   ],
-  "source": "basemap_review May-24-style layer package, clipped to DSS canvas extent"
+  "source": "basemap_review May-24-style layer package, with FDir arrows from assets/reference/waterbody_flow_direction_arrows.geojson, clipped to DSS canvas extent",
+  "fdir_source": "assets/reference/waterbody_flow_direction_arrows.geojson"
 };
 window.VJ_BOUNDED_REVIEW_META = {
   "municipal_boundary": {
@@ -85,14 +86,14 @@ window.VJ_BOUNDED_REVIEW_META = {
   },
   "waterbody_flow_direction_arrows": {
     "key": "waterbody_flow_direction_arrows",
-    "label": "OSM-Aligned Flow Direction Arrows",
+    "label": "Sharp FDir Flow Direction Arrows",
     "color": "#b45309",
     "geometry": "line",
     "defaultVisible": true,
     "weight": 3.8,
     "fillOpacity": 0.0,
-    "sourceFeatureCount": 22,
-    "featureCount": 10
+    "sourceFeatureCount": 31,
+    "featureCount": 16
   },
   "pump_receiving_waterbody_connectors": {
     "key": "pump_receiving_waterbody_connectors",

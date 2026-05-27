@@ -1,0 +1,16 @@
+{
+  "dashboard_reference_layer": "assets/reference/waterbody_flow_direction_arrows.geojson",
+  "authoritative_development_source": "Vijaywada/dss_dev/derived/flow_direction_v0/waterbody_flow_direction_arrows_v0.geojson",
+  "source_script": "Vijaywada/dss_dev/scripts/build_vijaywada_flow_direction.py",
+  "source_method": "Short directed FDir LineStrings generated from mapped OSM/official waterway geometry. Krishna, reservoir and Budameru polygon arrows are west-to-east review arrows; OSM Budameru and canal arrows follow OSM line direction rules documented in the source metadata.",
+  "osm_and_official_inputs": {
+    "krishna_river_osm_water": "Vijaywada/dss_dev/derived/osm_water/krishna_river_osm_water.geojson",
+    "major_canals_osm": "Vijaywada/dss_dev/derived/osm_canals/major_canals_osm.geojson",
+    "budameru_osm_waterways": "Vijaywada/dss_dev/derived/osm_budameru/budameru_osm_waterways.geojson",
+    "official_reservoir": "Vijaywada/raw_data/vijaywada_source/datasets/Water_Bodies/Reservoir.shp",
+    "official_budameru_canal": "Vijaywada/raw_data/vijaywada_source/datasets/Water_Bodies/Budameru_canal.shp"
+  },
+  "reference_arrow_count": 31,
+  "dashboard_bounded_arrow_count": 16,
+  "caveat": "These are direction-review arrows for stakeholder visualization and QA. They are not terrain-gradient arrows and are not a replacement for official gate/operation records."
+}

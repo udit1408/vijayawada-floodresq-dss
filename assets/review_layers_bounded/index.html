@@ -232,14 +232,11 @@
     }
     .flow-arrowhead {
       display: block;
-      width: 0;
-      height: 0;
-      border-top: 8px solid transparent;
-      border-bottom: 8px solid transparent;
-      border-left: 20px solid var(--arrow);
-      filter: drop-shadow(0 0 2px #fff) drop-shadow(0 1px 2px rgba(15, 23, 42, 0.35));
+      width: 44px;
+      height: 44px;
+      filter: drop-shadow(0 0 2px #fff) drop-shadow(0 2px 3px rgba(15, 23, 42, 0.42));
       transform: rotate(var(--angle));
-      transform-origin: 10px 8px;
+      transform-origin: 22px 22px;
     }
     @media (max-width: 920px) {
       .review-panel {
@@ -268,7 +265,7 @@
   <div id="map" aria-label="Vijayawada bounded hydro-network review map"></div>
   <section class="review-panel" aria-label="Review map summary">
     <h1>May 24 Hydro-Network View, Bounded To Vijayawada</h1>
-    <p>Reviewed water bodies, canals, OSM-aligned flow arrows, pumps, outfalls and control sections clipped to the DSS operational extent.</p>
+    <p>Reviewed water bodies, canals, FDir waterway arrows, pumps, outfalls and control sections clipped to the DSS operational extent.</p>
     <div class="review-stats" id="review-stats">
       <span class="review-pill">Loading layers</span>
     </div>
@@ -461,12 +458,25 @@
       return `<div class="popup-title">${escapeHtml(meta.label)}</div>${rows}`;
     }
 
-    function styleFor(meta) {
+    function fdirColor(feature) {
+      const props = feature?.properties || {};
+      const featureType = String(props.feature_type || "").toLowerCase();
+      const sourceLayer = String(props.source_layer || "").toLowerCase();
+      if (featureType.includes("river") || sourceLayer.includes("krishna")) return "#0369a1";
+      if (featureType.includes("reservoir")) return "#0284c7";
+      if (featureType.includes("budameru")) return "#0f766e";
+      if (featureType.includes("canal") || sourceLayer.includes("canal")) return "#b45309";
+      return "#b45309";
+    }
+
+    function styleFor(meta, feature) {
+      const isFdir = meta.key === "waterbody_flow_direction_arrows";
+      const color = isFdir ? fdirColor(feature) : meta.color;
       return {
-        color: meta.color,
-        weight: meta.weight,
-        opacity: meta.key === "waterbody_flow_direction_arrows" ? 0.98 : 0.88,
-        fillColor: meta.color,
+        color,
+        weight: isFdir ? Math.max(meta.weight || 3.8, 5.4) : meta.weight,
+        opacity: isFdir ? 1 : 0.88,
+        fillColor: color,
         fillOpacity: meta.geometry === "polygon" ? meta.fillOpacity : 0,
         dashArray: meta.dashArray || null,
         lineCap: "round",
@@ -511,7 +521,7 @@
         });
       } else {
         layer.setStyle({
-          ...styleFor(meta),
+          ...styleFor(meta, feature),
           color: "#111827",
           weight: Math.max((meta.weight || 2) + 2, 4.5),
           opacity: 1,
@@ -526,7 +536,7 @@
       if (meta.geometry === "point") {
         layer.setStyle(pointStyle(meta, feature));
       } else {
-        layer.setStyle(styleFor(meta));
+        layer.setStyle(styleFor(meta, feature));
       }
     }
 
@@ -572,13 +582,21 @@
       const start = coords[coords.length - 2];
       const end = coords[coords.length - 1];
       const angle = bearingDegrees(start, end) - 90;
+      const color = fdirColor(feature);
       return L.marker([end[1], end[0]], {
         interactive: false,
         icon: L.divIcon({
           className: "flow-arrowhead-icon",
-          html: `<span class="flow-arrowhead" style="--angle:${angle}deg"></span>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15]
+          html: `
+            <svg class="flow-arrowhead" style="--angle:${angle}deg" viewBox="0 0 44 44" aria-hidden="true">
+              <path d="M5 15 L27 15 L27 7 L41 22 L27 37 L27 29 L5 29 Z"
+                fill="${escapeHtml(color)}" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M5 15 L27 15 L27 7 L41 22 L27 37 L27 29 L5 29 Z"
+                fill="none" stroke="#0f172a" stroke-width="1.4" stroke-linejoin="round" opacity="0.42"/>
+            </svg>
+          `,
+          iconSize: [44, 44],
+          iconAnchor: [22, 22]
         })
       });
     }
@@ -598,7 +616,7 @@
       loadedLayerCount += 1;
       loadedFeatureCount += Array.isArray(geojson.features) ? geojson.features.length : 0;
       const layer = L.geoJSON(geojson, {
-        style: () => styleFor(meta),
+        style: (feature) => styleFor(meta, feature),
         pointToLayer: (feature, latlng) => pointFor(meta, feature, latlng),
         onEachFeature: (feature, itemLayer) => {
           itemLayer.bindPopup(popupHtml(feature, meta), { maxHeight: 340 });

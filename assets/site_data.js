@@ -111,12 +111,12 @@ window.VJ_DSS_DATA = {
     },
     {
       "key": "flow_arrows",
-      "title": "Major flow arrows (direction of flow)",
-      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_bounded_operational_arrows_v1",
+      "title": "FDir flow arrows (direction of flow)",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_fdir_sharp_v1",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
-      "description": "Bounded operational flow arrows registered to the DSS map canvas, including the upper and lower Krishna branches, Budameru and major city canal directions.",
+      "description": "FDir waterway arrows generated from the directed OSM/official review layer and clipped to the DSS canvas.",
       "swatch": "#b45309"
     },
     {

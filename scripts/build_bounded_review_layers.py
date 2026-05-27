@@ -19,6 +19,7 @@ from shapely.geometry import box
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = ROOT.parent / "basemap_review" / "layers"
+FDIR_SOURCE = ROOT / "assets" / "reference" / "waterbody_flow_direction_arrows.geojson"
 OUT_DIR = ROOT / "assets" / "review_layers_bounded"
 LAYERS_DIR = OUT_DIR / "layers"
 
@@ -75,7 +76,7 @@ LAYER_META = {
         "fillOpacity": 0.0,
     },
     "waterbody_flow_direction_arrows": {
-        "label": "OSM-Aligned Flow Direction Arrows",
+        "label": "Sharp FDir Flow Direction Arrows",
         "color": "#b45309",
         "geometry": "line",
         "defaultVisible": True,
@@ -143,8 +144,14 @@ def to_js_variable(key: str, geojson: dict) -> str:
 
 
 def clip_layer(key: str, bbox_wgs) -> tuple[dict, int, int]:
-    source = parse_layer(SOURCE_DIR / f"{key}.js")
-    gdf = gpd.GeoDataFrame.from_features(source["features"], crs="EPSG:4326")
+    if key == "waterbody_flow_direction_arrows" and FDIR_SOURCE.exists():
+        gdf = gpd.read_file(FDIR_SOURCE)
+        if gdf.crs is None:
+            gdf = gdf.set_crs("EPSG:4326")
+        gdf = gdf.to_crs("EPSG:4326")
+    else:
+        source = parse_layer(SOURCE_DIR / f"{key}.js")
+        gdf = gpd.GeoDataFrame.from_features(source["features"], crs="EPSG:4326")
     source_count = len(gdf)
     intersecting = gdf[gdf.intersects(bbox_wgs)].copy()
     if intersecting.empty:
@@ -179,6 +186,7 @@ def clip_layer(key: str, bbox_wgs) -> tuple[dict, int, int]:
                     "Arrow is aligned along mapped OSM/official waterbody geometry using the reviewed waterway "
                     "direction; it is not inferred from terrain surface slope."
                 )
+            props["dashboard_source_role"] = "FDir arrow reference used for dashboard direction display"
     return geojson, source_count, len(clipped)
 
 
@@ -208,7 +216,8 @@ def main() -> None:
         "feature_count": total_features,
         "clip_bounds_wgs84": list(bbox_wgs.bounds),
         "clip_bounds_utm44n": list(DSS_BOUNDS_UTM44N),
-        "source": "basemap_review May-24-style layer package, clipped to DSS canvas extent",
+        "source": "basemap_review May-24-style layer package, with FDir arrows from assets/reference/waterbody_flow_direction_arrows.geojson, clipped to DSS canvas extent",
+        "fdir_source": "assets/reference/waterbody_flow_direction_arrows.geojson",
     }
     metadata = (
         f"window.VJ_BOUNDED_REVIEW_BUILD = {json.dumps(build, indent=2)};\n"

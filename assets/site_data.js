@@ -112,11 +112,11 @@ window.VJ_DSS_DATA = {
     {
       "key": "flow_arrows",
       "title": "Major flow arrows (direction of flow)",
-      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_review_waterbody_arrows_v2",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_bounded_operational_arrows_v1",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
-      "description": "Major flow arrows from the identified flow-direction review layer. Fixed-size arrowheads come from the reviewed waterbody-flow layer in the earlier layers dashboard, including Krishna branches and major canal directions.",
+      "description": "Bounded operational flow arrows registered to the DSS map canvas, including the upper and lower Krishna branches, Budameru and major city canal directions.",
       "swatch": "#b45309"
     },
     {

@@ -61,6 +61,7 @@ h1 { margin:0 0 6px; font-size:clamp(26px,3.2vw,42px); line-height:1.05; letter-
 .field { display:grid; gap:5px; margin:8px 0; }
 .field label { color:#31414d; font-size:12px; font-weight:850; }
 select, input[type=range] { width:100%; }
+select { min-height:36px; padding:7px 8px; border:1px solid #cbd8e3; border-radius:6px; background:#fff; color:#20303c; font-weight:750; text-overflow:ellipsis; }
 .hint { color:var(--muted); font-size:12px; line-height:1.35; margin:6px 0 0; }
 .callout-link { display:inline-flex; align-items:center; justify-content:center; min-height:36px; margin-top:8px; padding:8px 11px; border-radius:6px; background:var(--teal); color:#fff; font-weight:850; text-decoration:none; }
 .callout-link:hover { background:#075e55; text-decoration:none; }
@@ -706,7 +707,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
     <div class="metric-grid">
       <div class="metric"><span>Selected Event</span><b>133 mm</b><small>Historical extreme rainfall | High river/canal state | Budameru inflow 100% | 133 mm rainfall</small></div>
       <div class="metric"><span>Duration</span><b>12 h</b><small>15-minute reporting interval</small></div>
-      <div class="metric"><span>Budameru Peak</span><b>1,550</b><small>m3/s inflow forcing</small></div>
+      <div class="metric"><span>Budameru Peak</span><b>1,550</b><small>m<sup>3</sup>/s inflow forcing</small></div>
       <div class="metric"><span>Peak Depth</span><b>5.82 m</b><small>selected scenario response</small></div>
       <div class="metric"><span>Peak Wet Area</span><b>4,491 ha</b><small>0.05 m threshold</small></div>
     </div>
@@ -1252,6 +1253,37 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
     speed: ['Velocity magnitude, m/s', 'linear-gradient(90deg, rgba(250,226,94,.65), rgba(245,117,39,.82), rgba(193,30,53,.9), rgba(90,18,107,.96))', ['0.02','0.5','1','2+']]
   };
   function scenario(id) { return data.scenarios.find(s => s.run_id === id) || data.scenarios[0]; }
+  function compactScenarioLabel(s) {
+    const rainfall = Number(s.rainfall_total_mm || 0);
+    const rainText = s.title && s.title.includes('Observed Aug 2024') ? 'Aug 2024' : 'Extreme';
+    const profile = s.profile || (s.title || '').replace(/rainfall \| /i, '').replace(/ river\/canal state/ig, '');
+    return `${rainText} ${Math.round(rainfall)} mm | ${profile}`.replace(/\s+/g, ' ').trim();
+  }
+  function refreshScenarioSelectTitle(select) {
+    if (!select) return;
+    select.title = select.options[select.selectedIndex]?.title || '';
+  }
+  function relabelScenarioSelect(select) {
+    if (!select) return;
+    [...select.options].forEach(option => {
+      const item = scenario(option.value);
+      option.textContent = compactScenarioLabel(item);
+      option.title = item.title || option.textContent;
+    });
+    refreshScenarioSelectTitle(select);
+    select.addEventListener('change', () => refreshScenarioSelectTitle(select));
+  }
+  function relabelScenarioComparisonTable() {
+    document.querySelectorAll('#scenarios tbody tr').forEach((row, index) => {
+      const item = data.scenarios[index];
+      const cells = row.querySelectorAll('td');
+      if (!item || cells.length < 6) return;
+      cells[0].textContent = compactScenarioLabel(item);
+      cells[0].title = item.title || cells[0].textContent;
+      cells[2].textContent = item.profile || cells[2].textContent;
+      cells[5].textContent = `${Math.round(Number(item.final_surface_volume_m3 || 0)).toLocaleString()} m³`;
+    });
+  }
   function updateLegend(resultType, resultLegend) {
     const l = legends[resultType];
     resultLegend.innerHTML = `<b>${l[0]}</b><div class="legend-ramp" style="background:${l[1]}"></div><div class="legend-labels">${l[2].map(x => `<span>${x}</span>`).join('')}</div>`;
@@ -1266,9 +1298,9 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
       return `Velocity view: max ${maxSpeed.toFixed(2)} m/s; p95 ${p95Speed.toFixed(2)} m/s.`;
     }
     if (resultType === 'extent') {
-      return `Wet extent view: ${Math.round(wetArea).toLocaleString()} ha; final volume ${Math.round(finalVolume).toLocaleString()} m3.`;
+      return `Wet extent view: ${Math.round(wetArea).toLocaleString()} ha; final volume ${Math.round(finalVolume).toLocaleString()} m³.`;
     }
-    return `Depth view: max ${maxDepth.toFixed(2)} m; wet area ${Math.round(wetArea).toLocaleString()} ha; final volume ${Math.round(finalVolume).toLocaleString()} m3.`;
+    return `Depth view: max ${maxDepth.toFixed(2)} m; wet area ${Math.round(wetArea).toLocaleString()} ha; final volume ${Math.round(finalVolume).toLocaleString()} m³.`;
   }
   function sampleProbe(runId, px, py) {
     if (!cursorGrids || !cursorGrids.scenarios || !cursorGrids.scenarios[runId]) return null;
@@ -1390,6 +1422,9 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
     });
     updateResult();
   }
+
+  ['overviewScenarioSelect', 'scenarioSelect', 'animationScenarioSelect'].forEach(id => relabelScenarioSelect(document.getElementById(id)));
+  relabelScenarioComparisonTable();
 
   setupMapController({
     scenarioSelect: document.getElementById('overviewScenarioSelect'),
@@ -1586,6 +1621,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
   });
   if (animationScenarioSelect.querySelector(`option[value="${data.animation.source_scenario || ''}"]`)) {
     animationScenarioSelect.value = data.animation.source_scenario;
+    refreshScenarioSelectTitle(animationScenarioSelect);
   }
   preloadAnimationFrames(animationScenarioSelect.value);
   setFrame(0);

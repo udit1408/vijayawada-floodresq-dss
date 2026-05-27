@@ -100,7 +100,32 @@ summary { cursor:pointer; font-weight:900; color:#22313d; }
 .legend-labels { display:flex; justify-content:space-between; gap:8px; color:#4b5965; }
 .legend-list { display:grid; grid-template-columns:1fr; gap:6px; margin:8px 0 12px; }
 .legend-note { color:var(--muted); font-size:12px; line-height:1.35; margin:0 0 9px; }
-.legend-chip { display:grid; grid-template-columns:14px minmax(0,1fr); gap:7px; align-items:center; font-size:12px; color:#24333f; }
+.overview-inspector .legend-ramp { width:100%; }
+.legend-chip { display:grid; grid-template-columns:24px minmax(0,1fr); gap:8px; align-items:center; min-height:22px; font-size:12px; color:#24333f; }
+.legend-chip .swatch { justify-self:center; width:16px; height:16px; border-radius:4px; }
+.legend-chip .line-swatch { position:relative; width:24px; height:14px; border:0; border-radius:0; background:transparent !important; }
+.legend-chip .line-swatch::before {
+  content:"";
+  position:absolute;
+  left:1px;
+  right:6px;
+  top:50%;
+  height:3px;
+  transform:translateY(-50%);
+  border-radius:999px;
+  background:var(--legend-line,#334155);
+  box-shadow:0 0 0 2px rgba(255,255,255,.75);
+}
+.legend-chip .line-swatch::after {
+  content:"";
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  border-left:7px solid var(--legend-line,#334155);
+  border-top:5px solid transparent;
+  border-bottom:5px solid transparent;
+}
 .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:8px; background:#fff; }
 table { width:100%; border-collapse:collapse; font-size:13px; }
 th, td { padding:9px 10px; border-bottom:1px solid #e7edf2; text-align:left; vertical-align:top; }
@@ -461,11 +486,11 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
           <span>Major canals and extended Budameru</span>
         </div>
         <div class="legend-chip">
-          <span class="swatch" style="background:#b45309"></span>
+          <span class="swatch line-swatch" style="--legend-line:#b45309"></span>
           <span>Waterway flow arrows</span>
         </div>
         <div class="legend-chip">
-          <span class="swatch" style="background:#4c1d95"></span>
+          <span class="swatch line-swatch" style="--legend-line:#4c1d95"></span>
           <span>Terrain downslope arrows</span>
         </div>
         <div class="legend-chip">

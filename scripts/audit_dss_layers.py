@@ -204,6 +204,8 @@ dd {{ margin:0; }}
 
 def main() -> int:
     out_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT
+    if not out_dir.is_absolute():
+        out_dir = ROOT / out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
     data = load_site_data()
@@ -257,7 +259,7 @@ def main() -> int:
 
     csv_path = out_dir / "layer_audit.csv"
     with csv_path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -281,13 +283,18 @@ def main() -> int:
             )
         )
 
+    rel_html = HTML_PAGE.relative_to(ROOT)
+    rel_base = BASE_MAP.relative_to(ROOT)
+    rel_csv = csv_path.relative_to(ROOT)
+    rel_gallery = (out_dir / "layer_gallery.html").relative_to(ROOT)
+
     md = f"""# Vijayawada DSS Single-Layer Audit
 
 Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
-Target dashboard: `{HTML_PAGE}`
+Target dashboard: `{rel_html}`
 
-Base map: `{BASE_MAP}` ({base_width} x {base_height})
+Base map: `{rel_base}` ({base_width} x {base_height})
 
 ## Summary
 
@@ -299,8 +306,8 @@ Base map: `{BASE_MAP}` ({base_width} x {base_height})
 
 ## Files
 
-- CSV audit: `{csv_path}`
-- Visual gallery: `{out_dir / "layer_gallery.html"}`
+- CSV audit: `{rel_csv}`
+- Visual gallery: `{rel_gallery}`
 
 ## Layer Results
 

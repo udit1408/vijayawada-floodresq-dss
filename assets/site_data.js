@@ -112,11 +112,11 @@ window.VJ_DSS_DATA = {
     {
       "key": "flow_arrows",
       "title": "Major flow arrows (direction of flow)",
-      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_flow_direction_atlas_v2",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_krishna_two_branch_arrows_v1",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
-      "description": "Major flow arrows from the identified flow-direction review layer. Arrowheads mark direction of flow for Krishna, reservoir, Budameru and major canals.",
+      "description": "Major flow arrows from the identified flow-direction review layer. Fixed-size arrowheads mark flow direction, including the upper and lower Krishna branches plus Budameru and major canals.",
       "swatch": "#b45309"
     },
     {
@@ -8082,7 +8082,7 @@ window.VJ_DSS_DATA = {
       {
         "artifact": "DEM/DTM source raster",
         "status": "available_dem_no_separate_dtm",
-        "source": "/Users/mirlab/Documents/Vijaywada/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
+        "source": "PROJECT_ROOT/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
         "output": "dem_dtm_source_20m.tif, dem_dtm_gap_filled_model_surface_20m.tif, terrain_dem.png",
         "model_use": "2D terrain base after datum review",
         "notes": "Current folder has DEM_VMB.tif. No distinct DTM/DSM pair was found locally. A separate nearest-neighbour gap-filled model surface is written to keep the FloodRESQ domain continuous."
@@ -8098,7 +8098,7 @@ window.VJ_DSS_DATA = {
       {
         "artifact": "Satellite / ortho reference",
         "status": "reference_map_not_georeferenced_ortho",
-        "source": "/Users/mirlab/Documents/Vijaywada/raw_data/vijaywada_source/datasets/all_maps/Vijayawada_water_bodies_satellite_map.png",
+        "source": "PROJECT_ROOT/raw_data/vijaywada_source/datasets/all_maps/Vijayawada_water_bodies_satellite_map.png",
         "output": "satellite_reference_map.png",
         "model_use": "visual interpretation and stakeholder context",
         "notes": "No georeferenced orthomosaic was found in the Vijayawada working directory."
@@ -8114,8 +8114,8 @@ window.VJ_DSS_DATA = {
     ],
     "manifest": {
       "generated_at_utc": "2026-05-02T16:10:09.354637+00:00",
-      "root": "/Users/mirlab/Documents/Vijaywada",
-      "batch_dir": "/Users/mirlab/Documents/Vijaywada/dss_dev/derived/floodresq_runs/floodresq_soilgrids_spatial_physics_single_mpi18_v0",
+      "root": "PROJECT_ROOT",
+      "batch_dir": "PROJECT_ROOT/dss_dev/derived/floodresq_runs/floodresq_soilgrids_spatial_physics_single_mpi18_v0",
       "bounds_utm44n": [
         455909.1916,
         1821868.8515,
@@ -8124,7 +8124,7 @@ window.VJ_DSS_DATA = {
       ],
       "resolution_m": 20.0,
       "dem": {
-        "source": "/Users/mirlab/Documents/Vijaywada/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
+        "source": "PROJECT_ROOT/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
         "source_crs": "EPSG:32644",
         "source_resolution_m": [
           0.999911071702454,
@@ -8223,8 +8223,8 @@ window.VJ_DSS_DATA = {
     ],
     "manifest": {
       "generated_utc": "2026-05-02T15:45:57Z",
-      "root": "/Users/mirlab/Documents/Vijaywada",
-      "output_dir": "/Users/mirlab/Documents/Vijaywada/dss_dev/derived/physics_layers_v0",
+      "root": "PROJECT_ROOT",
+      "output_dir": "PROJECT_ROOT/dss_dev/derived/physics_layers_v0",
       "crs": "EPSG:32644",
       "resolution_m": 20.0,
       "bounds_utm44n": [
@@ -8234,7 +8234,7 @@ window.VJ_DSS_DATA = {
         1836636.9934199261
       ],
       "terrain": {
-        "source_dem": "/Users/mirlab/Documents/Vijaywada/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
+        "source_dem": "PROJECT_ROOT/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
         "conditioned_hydraulic_terrain": "conditioned_hydraulic_terrain_20m.tif",
         "hydroconditioned_dem_without_building_raise": "hydroconditioned_dem_no_building_raise_20m.tif",
         "building_obstruction_height_m": 0.25,
@@ -8254,7 +8254,7 @@ window.VJ_DSS_DATA = {
           "model_surface_valid_fraction_inside_domain": 1.0
         },
         "dem_metadata": {
-          "source": "/Users/mirlab/Documents/Vijaywada/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
+          "source": "PROJECT_ROOT/raw_data/vijaywada_source/datasets/DEM/DEM/DEM_VMB.tif",
           "source_crs": "EPSG:32644",
           "source_resolution_m": [
             0.999911071702454,
@@ -8277,7 +8277,7 @@ window.VJ_DSS_DATA = {
         }
       },
       "lulc": {
-        "worldcover_source": "/Users/mirlab/Documents/Vijaywada/raw_data/vijaywada_source/datasets/LULC_WorldCover/tiles/ESA_WorldCover_10m_2021_v200_N15E078_Map.tif",
+        "worldcover_source": "PROJECT_ROOT/raw_data/vijaywada_source/datasets/LULC_WorldCover/tiles/ESA_WorldCover_10m_2021_v200_N15E078_Map.tif",
         "worldcover_classes": {
           "10": "Tree cover",
           "20": "Shrubland",
@@ -8380,7 +8380,7 @@ window.VJ_DSS_DATA = {
           "external_hsg_cells_used": 67792,
           "status": "applied_to_pervious_physics_classes",
           "enabled": true,
-          "source_raster": "/Users/mirlab/Documents/Vijaywada/dss_dev/derived/open_soils_v0/soilgrids_texture_hsg_20m.tif",
+          "source_raster": "PROJECT_ROOT/dss_dev/derived/open_soils_v0/soilgrids_texture_hsg_20m.tif",
           "source": "SoilGrids-derived 0-30 cm texture hydrologic soil group raster"
         },
         "min_mm_h": 0.0,

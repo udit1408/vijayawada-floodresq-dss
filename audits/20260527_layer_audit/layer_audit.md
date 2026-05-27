@@ -1,10 +1,10 @@
 # Vijayawada DSS Single-Layer Audit
 
-Generated: 2026-05-27 06:26:42
+Generated: 2026-05-27 06:52:56
 
-Target dashboard: `/Users/mirlab/Documents/Vijaywada/final_htmls_to_review/rtgs_aware_multitab_dss/map_dashboard.html`
+Target dashboard: `map_dashboard.html`
 
-Base map: `/Users/mirlab/Documents/Vijaywada/final_htmls_to_review/rtgs_aware_multitab_dss/assets/maps/base_context.png` (1700 x 1916)
+Base map: `assets/maps/base_context.png` (1700 x 1916)
 
 ## Summary
 
@@ -16,8 +16,8 @@ Base map: `/Users/mirlab/Documents/Vijaywada/final_htmls_to_review/rtgs_aware_mu
 
 ## Files
 
-- CSV audit: `/Users/mirlab/Documents/Vijaywada/final_htmls_to_review/rtgs_aware_multitab_dss/audits/20260527_layer_audit/layer_audit.csv`
-- Visual gallery: `/Users/mirlab/Documents/Vijaywada/final_htmls_to_review/rtgs_aware_multitab_dss/audits/20260527_layer_audit/layer_gallery.html`
+- CSV audit: `audits/20260527_layer_audit/layer_audit.csv`
+- Visual gallery: `audits/20260527_layer_audit/layer_gallery.html`
 
 ## Layer Results
 

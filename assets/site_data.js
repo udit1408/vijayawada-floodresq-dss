@@ -112,11 +112,11 @@ window.VJ_DSS_DATA = {
     {
       "key": "flow_arrows",
       "title": "Major flow arrows (direction of flow)",
-      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_refined_krishna_flow",
+      "image": "assets/maps/flow_arrows_identified.svg?v=20260527_flow_direction_atlas_v2",
       "kind": "image",
       "default_on": true,
       "group": "Water system",
-      "description": "Major flow arrows: Krishna reach arrows follow an OSM-derived river-polygon centerline; canal arrows use identified OSM/canal review alignments. Arrow heads mark direction of flow.",
+      "description": "Major flow arrows from the identified flow-direction review layer. Arrowheads mark direction of flow for Krishna, reservoir, Budameru and major canals.",
       "swatch": "#b45309"
     },
     {

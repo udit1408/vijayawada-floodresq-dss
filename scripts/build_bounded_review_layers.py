@@ -75,7 +75,7 @@ LAYER_META = {
         "fillOpacity": 0.0,
     },
     "waterbody_flow_direction_arrows": {
-        "label": "Bounded Flow Direction Arrows",
+        "label": "OSM-Aligned Flow Direction Arrows",
         "color": "#b45309",
         "geometry": "line",
         "defaultVisible": True,
@@ -156,6 +156,29 @@ def clip_layer(key: str, bbox_wgs) -> tuple[dict, int, int]:
     geojson = json.loads(clipped.to_json(drop_id=True))
     for feature in geojson.get("features", []):
         feature.setdefault("properties", {})["_bounded_to_dss_extent"] = True
+        if key == "waterbody_flow_direction_arrows":
+            props = feature["properties"]
+            source_layer = str(props.get("source_layer") or "")
+            feature_type = str(props.get("feature_type") or "")
+            if source_layer == "major_canals_osm":
+                props["direction_basis"] = (
+                    "Arrow is aligned along the OSM canal line, oriented from the Krishna/reservoir-connected "
+                    "end toward the mapped canal review reach; it is not a surface-gradient arrow."
+                )
+                props["review_status"] = (
+                    "OSM-derived review direction; confirm against irrigation department drawings or survey "
+                    "before hydraulic design."
+                )
+            elif "river" in feature_type:
+                props["direction_basis"] = (
+                    "Arrow is aligned along the OSM Krishna river-water geometry using the known downstream "
+                    "city reach direction; it is not inferred from terrain surface slope."
+                )
+            else:
+                props["direction_basis"] = (
+                    "Arrow is aligned along mapped OSM/official waterbody geometry using the reviewed waterway "
+                    "direction; it is not inferred from terrain surface slope."
+                )
     return geojson, source_count, len(clipped)
 
 

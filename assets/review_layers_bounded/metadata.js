@@ -85,7 +85,7 @@ window.VJ_BOUNDED_REVIEW_META = {
   },
   "waterbody_flow_direction_arrows": {
     "key": "waterbody_flow_direction_arrows",
-    "label": "Bounded Flow Direction Arrows",
+    "label": "OSM-Aligned Flow Direction Arrows",
     "color": "#b45309",
     "geometry": "line",
     "defaultVisible": true,

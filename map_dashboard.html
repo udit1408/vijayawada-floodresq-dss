@@ -233,7 +233,7 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
       <div class="bounded-review-head">
         <div>
           <h2>May 24 Bounded Hydro-Network Review</h2>
-          <p>Toggleable review map clipped to the Vijayawada DSS extent: municipal boundary, wards, Krishna and Budameru water bodies, canals, flow-direction arrows, pumps, outfalls and control sections. Hover any visible asset for stakeholder-ready details; click for the full attribute table.</p>
+          <p>Toggleable review map clipped to the Vijayawada DSS extent: municipal boundary, wards, Krishna and Budameru water bodies, canals, OSM-aligned flow-direction arrows, pumps, outfalls and control sections. Hover any visible asset for stakeholder-ready details; click for the full attribute table.</p>
         </div>
         <a class="bounded-review-link" href="assets/review_layers_bounded/index.html?v=20260527_may24_bounded_v1" target="_blank" rel="noopener">Open full-screen bounded viewer</a>
       </div>
@@ -317,10 +317,10 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
                   <span class="swatch" style="background:#b45309"></span>
                   <span>Major canals and extended Budameru</span>
                 </label>
-                <label class="layer-row" title="Bounded operational flow arrows registered to the DSS map canvas, including the upper and lower Krishna branches, Budameru and major city canal directions.">
+                <label class="layer-row" title="OSM-aligned mapped waterbody flow-direction arrows registered to the DSS map canvas, including the upper and lower Krishna branches, Budameru and major city canal directions. These are not terrain-surface-gradient arrows.">
                   <input type="checkbox" data-overview-layer="flow_arrows" checked>
                   <span class="swatch" style="background:#b45309"></span>
-                  <span>Major flow arrows (direction of flow)</span>
+                  <span>OSM-aligned flow arrows</span>
                 </label>
                 <label class="layer-row" title="Budameru breach-susceptibility review layer for boundary and inflow-risk context.">
                   <input type="checkbox" data-overview-layer="budameru_breach_susceptibility" checked>
@@ -492,8 +492,8 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
           <span class="swatch" style="background:#dc2626"></span>
           <span>RTGS AWARE flood hotspots and NRSC inflow boundary</span>
         </div></div>
-        <h3>Operational Direction Arrows</h3>
-        <p class="hint">The visible arrow toggle uses the bounded DSS-canvas layer: Krishna upper branch, Krishna lower/main branch, Budameru and major city canal directions.</p>
+        <h3>OSM-Aligned Direction Arrows</h3>
+        <p class="hint">The visible arrow toggle uses mapped OSM/official waterbody geometry clipped to the DSS canvas: Krishna upper branch, Krishna lower/main branch, Budameru and major city canal directions. These are review-network direction arrows, not terrain-surface-flow arrows.</p>
         <h3>River and Canal Conditions</h3>
         <img class="mini-media" src="assets/maps/boundary_conditions_stage_profiles.png?v=20260504062612" alt="Boundary condition stage profiles">
         <object class="mini-media" data="assets/maps/boundary_hydrographs.svg?v=20260504062612" type="image/svg+xml" aria-label="Boundary hydrographs"></object>
@@ -588,10 +588,10 @@ th { background:#f8fafc; font-weight:900; color:#253542; }
                   <span class="swatch" style="background:#b45309"></span>
                   <span>Major canals and extended Budameru</span>
                 </label>
-                <label class="layer-row" title="Bounded operational flow arrows registered to the DSS map canvas, including the upper and lower Krishna branches, Budameru and major city canal directions.">
+                <label class="layer-row" title="OSM-aligned mapped waterbody flow-direction arrows registered to the DSS map canvas, including the upper and lower Krishna branches, Budameru and major city canal directions. These are not terrain-surface-gradient arrows.">
                   <input type="checkbox" data-layer="flow_arrows" checked>
                   <span class="swatch" style="background:#b45309"></span>
-                  <span>Major flow arrows (direction of flow)</span>
+                  <span>OSM-aligned flow arrows</span>
                 </label>
                 <label class="layer-row" title="Budameru breach-susceptibility review layer for boundary and inflow-risk context.">
                   <input type="checkbox" data-layer="budameru_breach_susceptibility" >

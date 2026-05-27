@@ -268,7 +268,7 @@
   <div id="map" aria-label="Vijayawada bounded hydro-network review map"></div>
   <section class="review-panel" aria-label="Review map summary">
     <h1>May 24 Hydro-Network View, Bounded To Vijayawada</h1>
-    <p>Reviewed water bodies, canals, arrows, pumps, outfalls and control sections clipped to the DSS operational extent.</p>
+    <p>Reviewed water bodies, canals, OSM-aligned flow arrows, pumps, outfalls and control sections clipped to the DSS operational extent.</p>
     <div class="review-stats" id="review-stats">
       <span class="review-pill">Loading layers</span>
     </div>
@@ -358,7 +358,8 @@
       length_m: "Length",
       feature_name: "Feature",
       feature_type: "Type",
-      flow_direction: "Direction",
+      flow_direction: "Mapped flow direction",
+      direction_basis: "Direction basis",
       confidence: "Confidence",
       DPS_ID: "Pump ID",
       DPS_CAP: "Capacity",
@@ -381,7 +382,7 @@
     const preferredFields = [
       "REV_WRD_NO", "TN_NAME", "DIS_NAME", "MUN_AREA",
       "WN_NAME", "WN_TYPE", "RES_NAME",
-      "feature_name", "feature_type", "flow_direction", "confidence",
+      "feature_name", "feature_type", "flow_direction", "direction_basis", "confidence",
       "source_name", "canal_name", "waterway", "length_m",
       "DPS_ID", "DPS_CAP", "dps_id", "dps_cap", "locality",
       "target_name", "target_type", "distance_m", "drain_id",

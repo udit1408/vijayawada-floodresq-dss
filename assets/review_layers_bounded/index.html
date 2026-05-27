@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vijayawada Bounded Hydro-Network Review</title>
+  <link rel="icon" href="../branding/floodresq.png">
+  <link rel="stylesheet" href="../vendor/leaflet/leaflet.css">
+  <style>
+    :root {
+      --ink: #14212b;
+      --muted: #51616f;
+      --line: rgba(20, 33, 43, 0.16);
+      --panel: rgba(255, 255, 255, 0.96);
+      --arrow: #b45309;
+      --teal: #087f73;
+    }
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #e8eef1;
+    }
+    #map {
+      min-height: 520px;
+      background:
+        linear-gradient(0deg, rgba(15, 23, 42, 0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.028) 1px, transparent 1px),
+        #e8eef1;
+      background-size: 28px 28px;
+    }
+    .leaflet-container {
+      font-family: inherit;
+      background: transparent;
+    }
+    .leaflet-top.leaflet-left {
+      top: 10px;
+      left: 10px;
+    }
+    .leaflet-top.leaflet-right {
+      top: 10px;
+      right: 10px;
+    }
+    .leaflet-bottom.leaflet-right {
+      bottom: 12px;
+      right: 12px;
+    }
+    .leaflet-control-zoom,
+    .leaflet-control-layers {
+      border: 1px solid var(--line) !important;
+      border-radius: 7px !important;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14) !important;
+      overflow: hidden;
+    }
+    .leaflet-control-layers {
+      max-height: calc(100vh - 42px);
+      max-width: min(365px, calc(100vw - 24px));
+      overflow: auto;
+      color: #1f2f3b;
+      font-size: 12px;
+    }
+    .leaflet-control-layers-expanded {
+      padding: 9px 10px;
+    }
+    .review-panel {
+      position: absolute;
+      z-index: 800;
+      top: 12px;
+      left: 56px;
+      width: min(430px, calc(100vw - 460px));
+      padding: 10px 12px 11px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+    }
+    .review-panel h1 {
+      margin: 0 0 5px;
+      font-size: 16px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    .review-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.38;
+    }
+    .review-stats {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .review-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 25px;
+      padding: 4px 7px;
+      border: 1px solid #d5dde5;
+      border-radius: 999px;
+      background: #fff;
+      color: #273744;
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .review-pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--teal);
+    }
+    .coordinate-readout {
+      position: absolute;
+      z-index: 800;
+      left: 14px;
+      bottom: 14px;
+      padding: 7px 9px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+      font-size: 12px;
+      color: #31414d;
+    }
+    .leaflet-popup-content {
+      margin: 10px 12px;
+      min-width: 230px;
+      max-width: 360px;
+    }
+    .popup-title {
+      font-weight: 850;
+      margin-bottom: 7px;
+      color: #14212b;
+    }
+    .popup-row {
+      display: grid;
+      grid-template-columns: 106px minmax(0, 1fr);
+      gap: 8px;
+      padding: 3px 0;
+      font-size: 12px;
+      border-top: 1px solid #edf2f6;
+    }
+    .popup-key {
+      color: #667584;
+      overflow-wrap: anywhere;
+    }
+    .popup-value {
+      color: #14212b;
+      overflow-wrap: anywhere;
+    }
+    .flow-arrowhead-icon {
+      background: transparent;
+      border: 0;
+    }
+    .flow-arrowhead {
+      display: block;
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 20px solid var(--arrow);
+      filter: drop-shadow(0 0 2px #fff) drop-shadow(0 1px 2px rgba(15, 23, 42, 0.35));
+      transform: rotate(var(--angle));
+      transform-origin: 10px 8px;
+    }
+    @media (max-width: 920px) {
+      .review-panel {
+        left: 48px;
+        right: 10px;
+        width: auto;
+      }
+      .leaflet-top.leaflet-right {
+        top: auto;
+        bottom: 12px;
+        right: 12px;
+      }
+      .leaflet-control-layers {
+        max-height: 38vh;
+      }
+      .coordinate-readout {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="map" aria-label="Vijayawada bounded hydro-network review map"></div>
+  <section class="review-panel" aria-label="Review map summary">
+    <h1>May 24 Hydro-Network View, Bounded To Vijayawada</h1>
+    <p>Reviewed water bodies, canals, arrows, pumps, outfalls and control sections clipped to the DSS operational extent.</p>
+    <div class="review-stats" id="review-stats">
+      <span class="review-pill">Loading layers</span>
+    </div>
+  </section>
+  <div class="coordinate-readout" id="coordinate-readout">Lat/Lon</div>
+
+  <script src="../vendor/leaflet/leaflet.js"></script>
+  <script src="metadata.js"></script>
+  <script src="layers/municipal_boundary.js"></script>
+  <script src="layers/revenue_wards.js"></script>
+  <script src="layers/budameru_canal.js"></script>
+  <script src="layers/krishna_river_osm_water.js"></script>
+  <script src="layers/reservoir.js"></script>
+  <script src="layers/major_canals_osm.js"></script>
+  <script src="layers/waterbody_flow_direction_arrows.js"></script>
+  <script src="layers/pump_receiving_waterbody_connectors.js"></script>
+  <script src="layers/pump_drain_link_connectors.js"></script>
+  <script src="layers/drainage_pump_stations.js"></script>
+  <script src="layers/candidate_outfalls.js"></script>
+  <script src="layers/control_sections.js"></script>
+  <script>
+    const reviewLayers = window.VJ_BOUNDED_REVIEW_LAYERS || {};
+    const layerMeta = window.VJ_BOUNDED_REVIEW_META || {};
+    const build = window.VJ_BOUNDED_REVIEW_BUILD || {};
+    const layerOrder = [
+      "municipal_boundary",
+      "revenue_wards",
+      "budameru_canal",
+      "krishna_river_osm_water",
+      "reservoir",
+      "major_canals_osm",
+      "waterbody_flow_direction_arrows",
+      "pump_receiving_waterbody_connectors",
+      "pump_drain_link_connectors",
+      "drainage_pump_stations",
+      "candidate_outfalls",
+      "control_sections"
+    ];
+    const defaultVisible = new Set(layerOrder.filter((key) => layerMeta[key] && layerMeta[key].defaultVisible));
+    const bbox = build.clip_bounds_wgs84 || [80.5867, 16.4781, 80.6842, 16.5841];
+    const extentBounds = L.latLngBounds([bbox[1], bbox[0]], [bbox[3], bbox[2]]);
+    const map = L.map("map", {
+      preferCanvas: true,
+      zoomControl: false,
+      maxBounds: extentBounds.pad(0.08),
+      maxBoundsViscosity: 0.72
+    });
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+    const cleanBase = L.layerGroup().addTo(map);
+    const baseMaps = {
+      "Clean vector canvas": cleanBase
+    };
+    const overlayLayers = {};
+    const visibleBounds = L.latLngBounds([]);
+    let loadedLayerCount = 0;
+    let loadedFeatureCount = 0;
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function(char) {
+        return {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"}[char];
+      });
+    }
+
+    function numeric(value, digits) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return value;
+      return number.toLocaleString(undefined, { maximumFractionDigits: digits });
+    }
+
+    function popupHtml(feature, meta) {
+      const props = feature.properties || {};
+      const rows = Object.keys(props)
+        .filter((key) => props[key] !== null && props[key] !== undefined && props[key] !== "")
+        .filter((key) => !key.startsWith("_"))
+        .slice(0, 16)
+        .map((key) => {
+          const value = typeof props[key] === "number" ? numeric(props[key], 3) : props[key];
+          return `<div class="popup-row"><div class="popup-key">${escapeHtml(key)}</div><div class="popup-value">${escapeHtml(value)}</div></div>`;
+        })
+        .join("");
+      return `<div class="popup-title">${escapeHtml(meta.label)}</div>${rows}`;
+    }
+
+    function styleFor(meta) {
+      return {
+        color: meta.color,
+        weight: meta.weight,
+        opacity: meta.key === "waterbody_flow_direction_arrows" ? 0.98 : 0.88,
+        fillColor: meta.color,
+        fillOpacity: meta.geometry === "polygon" ? meta.fillOpacity : 0,
+        dashArray: meta.dashArray || null,
+        lineCap: "round",
+        lineJoin: "round"
+      };
+    }
+
+    function pointFor(meta, feature, latlng) {
+      const props = feature.properties || {};
+      let radius = meta.key === "candidate_outfalls" ? 4.0 : 4.8;
+      let fillColor = meta.color;
+      let strokeColor = "#ffffff";
+      if (meta.key === "drainage_pump_stations") {
+        const cap = Number(props.DPS_CAP || props.capacity || 0);
+        radius = Math.max(5, Math.min(13, 5 + Math.sqrt(Math.max(cap, 0)) * 0.58));
+        fillColor = cap > 0 ? "#ea580c" : "#9ca3af";
+        strokeColor = cap > 0 ? "#ffffff" : "#475569";
+      }
+      return L.circleMarker(latlng, {
+        radius,
+        color: strokeColor,
+        weight: 1.1,
+        opacity: 0.96,
+        fillColor,
+        fillOpacity: meta.fillOpacity || 0.86
+      });
+    }
+
+    function lineCoordinateSets(geometry) {
+      if (!geometry) return [];
+      if (geometry.type === "LineString") return [geometry.coordinates];
+      if (geometry.type === "MultiLineString") return geometry.coordinates;
+      if (geometry.type === "GeometryCollection") {
+        return geometry.geometries.flatMap((item) => lineCoordinateSets(item));
+      }
+      return [];
+    }
+
+    function bearingDegrees(start, end) {
+      const lat1 = start[1] * Math.PI / 180;
+      const lat2 = end[1] * Math.PI / 180;
+      const dLon = (end[0] - start[0]) * Math.PI / 180;
+      const y = Math.sin(dLon) * Math.cos(lat2);
+      const x = Math.cos(lat1) * Math.sin(lat2) -
+        Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+      return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    }
+
+    function flowArrowMarker(feature) {
+      const sets = lineCoordinateSets(feature.geometry);
+      if (!sets.length) return null;
+      const coords = sets.reduce((best, item) => item.length > best.length ? item : best, []);
+      if (coords.length < 2) return null;
+      const start = coords[coords.length - 2];
+      const end = coords[coords.length - 1];
+      const angle = bearingDegrees(start, end) - 90;
+      return L.marker([end[1], end[0]], {
+        interactive: false,
+        icon: L.divIcon({
+          className: "flow-arrowhead-icon",
+          html: `<span class="flow-arrowhead" style="--angle:${angle}deg"></span>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        })
+      });
+    }
+
+    function addFlowArrowheads(layer, geojson) {
+      if (!geojson || !Array.isArray(geojson.features)) return;
+      for (const feature of geojson.features) {
+        const marker = flowArrowMarker(feature);
+        if (marker) layer.addLayer(marker);
+      }
+    }
+
+    for (const key of layerOrder) {
+      const geojson = reviewLayers[key];
+      const meta = layerMeta[key];
+      if (!geojson || !meta) continue;
+      loadedLayerCount += 1;
+      loadedFeatureCount += Array.isArray(geojson.features) ? geojson.features.length : 0;
+      const layer = L.geoJSON(geojson, {
+        style: () => styleFor(meta),
+        pointToLayer: (feature, latlng) => pointFor(meta, feature, latlng),
+        onEachFeature: (feature, itemLayer) => {
+          itemLayer.bindPopup(popupHtml(feature, meta), { maxHeight: 340 });
+          const props = feature.properties || {};
+          const name = props.feature_name || props.source_name || props.name || props.WARD_NAME || props.arrow_id;
+          if (name && (meta.key === "waterbody_flow_direction_arrows" || meta.geometry === "point")) {
+            itemLayer.bindTooltip(String(name), { sticky: true, direction: "top", opacity: 0.92 });
+          }
+        }
+      });
+      if (key === "waterbody_flow_direction_arrows") {
+        addFlowArrowheads(layer, geojson);
+      }
+      const label = `${meta.label} (${Number(meta.featureCount || geojson.features?.length || 0).toLocaleString()})`;
+      overlayLayers[label] = layer;
+      if (defaultVisible.has(key)) {
+        layer.addTo(map);
+        const bounds = layer.getBounds && layer.getBounds();
+        if (bounds && bounds.isValid()) visibleBounds.extend(bounds);
+      }
+    }
+
+    L.control.layers(baseMaps, overlayLayers, { collapsed: false, position: "topright" }).addTo(map);
+    if (visibleBounds.isValid()) {
+      map.fitBounds(visibleBounds, { padding: [30, 30] });
+    } else {
+      map.fitBounds(extentBounds, { padding: [30, 30] });
+    }
+
+    const stats = document.getElementById("review-stats");
+    const arrowCount = layerMeta.waterbody_flow_direction_arrows?.featureCount || 0;
+    stats.innerHTML = [
+      `${loadedLayerCount} layers`,
+      `${loadedFeatureCount.toLocaleString()} bounded features`,
+      `${Number(arrowCount).toLocaleString()} arrows`
+    ].map((item) => `<span class="review-pill">${escapeHtml(item)}</span>`).join("");
+
+    const readout = document.getElementById("coordinate-readout");
+    map.on("mousemove", (event) => {
+      readout.textContent = `${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`;
+    });
+    map.on("click", (event) => {
+      readout.textContent = `${event.latlng.lat.toFixed(6)}, ${event.latlng.lng.toFixed(6)}`;
+    });
+    setTimeout(() => map.invalidateSize(), 250);
+  </script>
+</body>
+</html>

@@ -1,0 +1,675 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.61748966051931,
+            16.4943984478359
+          ],
+          [
+            80.62264300157612,
+            16.4944078085995
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 0.0,
+        "arrow_id": "FD-001",
+        "confidence": "medium",
+        "direction_basis": "Drawn along the mapped Krishna river-water polygon; downstream direction is represented through the city reach.",
+        "feature_name": "Krishna River",
+        "feature_type": "river",
+        "flow_direction": "west to east across the Vijayawada review reach",
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "Review arrow only; verify with official hydraulic/survey records before modeling.",
+        "source_layer": "krishna_river_osm_water"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.62425559301755,
+            16.494410711702542
+          ],
+          [
+            80.62940893841902,
+            16.49441990577672
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 0.0,
+        "arrow_id": "FD-002",
+        "confidence": "medium",
+        "direction_basis": "Drawn along the mapped Krishna river-water polygon; downstream direction is represented through the city reach.",
+        "feature_name": "Krishna River",
+        "feature_type": "river",
+        "flow_direction": "west to east across the Vijayawada review reach",
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "Review arrow only; verify with official hydraulic/survey records before modeling.",
+        "source_layer": "krishna_river_osm_water"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.63102153120776,
+            16.494422756718983
+          ],
+          [
+            80.63617488087581,
+            16.494431784103117
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 0.0,
+        "arrow_id": "FD-003",
+        "confidence": "medium",
+        "direction_basis": "Drawn along the mapped Krishna river-water polygon; downstream direction is represented through the city reach.",
+        "feature_name": "Krishna River",
+        "feature_type": "river",
+        "flow_direction": "west to east across the Vijayawada review reach",
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "Review arrow only; verify with official hydraulic/survey records before modeling.",
+        "source_layer": "krishna_river_osm_water"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.5922196772227,
+            16.51449865424032
+          ],
+          [
+            80.59737353502213,
+            16.514508649394923
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 0.0,
+        "arrow_id": "FD-004",
+        "confidence": "low",
+        "direction_basis": "Drawn along the mapped reservoir/backwater polygon to show the main through-flow direction near the barrage reach.",
+        "feature_name": "Krishna reservoir / Prakasam backwater reach",
+        "feature_type": "reservoir",
+        "flow_direction": "west to east across the Vijayawada review reach",
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "Review arrow only; verify with official hydraulic/survey records before modeling.",
+        "source_layer": "reservoir"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.63322754146141,
+            16.538023522480646
+          ],
+          [
+            80.64079729900273,
+            16.538036689993117
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 0.0,
+        "arrow_id": "FD-005",
+        "confidence": "low",
+        "direction_basis": "Drawn along the mapped Budameru canal polygon as an approximate west-to-east review direction.",
+        "feature_name": "Budameru Canal",
+        "feature_type": "canal",
+        "flow_direction": "west to east across the Vijayawada review reach",
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "Review arrow only; verify with official hydraulic/survey records before modeling.",
+        "source_layer": "budameru_canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.65263718979182,
+            16.538056734723302
+          ],
+          [
+            80.66020696451619,
+            16.538069198175656
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 0.0,
+        "arrow_id": "FD-006",
+        "confidence": "low",
+        "direction_basis": "Drawn along the mapped Budameru canal polygon as an approximate west-to-east review direction.",
+        "feature_name": "Budameru Canal",
+        "feature_type": "canal",
+        "flow_direction": "west to east across the Vijayawada review reach",
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "Review arrow only; verify with official hydraulic/survey records before modeling.",
+        "source_layer": "budameru_canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.78046567510417,
+            16.37618981529294
+          ],
+          [
+            80.78457257488535,
+            16.371797337709584
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 312.01,
+        "arrow_id": "FD-007",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Bandar / Machilipatnam Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 178423444.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Machilipatnam Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.79031256919876,
+            16.368600007935495
+          ],
+          [
+            80.79581475739496,
+            16.366011229650788
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 333.96,
+        "arrow_id": "FD-008",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Bandar / Machilipatnam Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 178423444.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Machilipatnam Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.8008619078274,
+            16.36188504795477
+          ],
+          [
+            80.80482175200508,
+            16.357347231469113
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 310.06,
+        "arrow_id": "FD-009",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Bandar / Machilipatnam Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 178423444.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Machilipatnam Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.76372346249829,
+            16.418851421648924
+          ],
+          [
+            80.7651657260481,
+            16.413616870810586
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 284.83,
+        "arrow_id": "FD-010",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Bandar / Machilipatnam Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 182456534.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Machilipatnam Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.76647313278423,
+            16.407887044700196
+          ],
+          [
+            80.7683388283318,
+            16.402777729438306
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 289.35,
+        "arrow_id": "FD-011",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Bandar / Machilipatnam Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 182456534.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Machilipatnam Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.77034003523974,
+            16.3972358767116
+          ],
+          [
+            80.77219852213395,
+            16.3921241383304
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 289.27,
+        "arrow_id": "FD-012",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Bandar / Machilipatnam Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 182456534.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Machilipatnam Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.7555941497046,
+            16.525926858702267
+          ],
+          [
+            80.7634301680692,
+            16.52291758406514
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 338.22,
+        "arrow_id": "FD-013",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Eluru Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 665131445.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Eluru Kaaluva"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.79725406472042,
+            16.51524301177737
+          ],
+          [
+            80.80473728958226,
+            16.518951297525334
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 27.13,
+        "arrow_id": "FD-014",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Eluru Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 665131445.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Eluru Kaaluva"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.83199011011905,
+            16.540710956978025
+          ],
+          [
+            80.8387429918657,
+            16.545586231490756
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 36.77,
+        "arrow_id": "FD-015",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Eluru Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 665131445.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Eluru Kaaluva"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.63232921879566,
+            16.525275192609588
+          ],
+          [
+            80.63973561469048,
+            16.529030438761996
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 27.62,
+        "arrow_id": "FD-016",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Eluru Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 1312642215.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Eluru Kaaluva"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.657820331115,
+            16.526721059711534
+          ],
+          [
+            80.66590689644566,
+            16.524778712646974
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 345.92,
+        "arrow_id": "FD-017",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Eluru Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 1312642215.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Eluru Kaaluva"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.68455433826242,
+            16.527172303072728
+          ],
+          [
+            80.69285118204039,
+            16.525884067472848
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 350.77,
+        "arrow_id": "FD-018",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Eluru Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 1312642215.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Eluru Kaaluva"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.60650321712428,
+            16.511758597855863
+          ],
+          [
+            80.61005874487842,
+            16.511838427712995
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 1.22,
+        "arrow_id": "FD-019",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Krishna Eastern Main Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 45068473.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Krishna Eastern Main canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.67972094260355,
+            16.525253205894778
+          ],
+          [
+            80.6880067974758,
+            16.52422030340897
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 352.55,
+        "arrow_id": "FD-020",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Ryves Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 45068590.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Rivas Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.74514934185527,
+            16.49952050046532
+          ],
+          [
+            80.75242358925351,
+            16.495422488162905
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 329.65,
+        "arrow_id": "FD-021",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Ryves Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 45068590.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Rivas Canal"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            80.79744960842508,
+            16.45287323064607
+          ],
+          [
+            80.80344830943797,
+            16.447156261757026
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "_layer_label": "Waterbody Flow Direction Arrows",
+        "angle_deg": 315.3,
+        "arrow_id": "FD-022",
+        "confidence": "medium",
+        "direction_basis": "Canal arrow is oriented from the line endpoint closest to the Krishna/reservoir review geometry toward the opposite endpoint.",
+        "feature_name": "Ryves Canal",
+        "feature_type": "major_canal",
+        "flow_direction": "away from nearest Krishna/reservoir endpoint along mapped canal line",
+        "osm_id": 45068590.0,
+        "release_source": "basemap_review/layers/waterbody_flow_direction_arrows.js",
+        "review_status": "OSM-derived review arrow; confirm against irrigation department drawings or survey.",
+        "source_layer": "major_canals_osm",
+        "source_name": "Rivas Canal"
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

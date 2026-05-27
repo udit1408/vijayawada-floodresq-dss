@@ -1,173 +1,45 @@
 #!/usr/bin/env python3
-"""Build the dashboard flow-direction arrow overlay.
+"""Build the dashboard flow-direction arrow overlay from the reviewed layer.
 
-The overlay uses fixed-size SVG arrowheads so arrows remain readable when the
-1700 x 1916 map is scaled down inside the DSS. Krishna River arrows include
-the two visible OSM waterbody branches in the review extent: the upper
-backwater/northern branch and the lower/main branch.
+Source: `assets/reference/waterbody_flow_direction_arrows.geojson`, copied from
+the earlier `/layers/` basemap-review dashboard. That layer contains the 22
+reviewed waterbody/canal direction arrows; this script projects them onto the
+1700 x 1916 DSS canvas and uses fixed-size SVG arrowheads so they remain clear
+when the dashboard map is scaled.
 """
 
 from __future__ import annotations
 
+import json
 from html import escape
 from pathlib import Path
 
+try:
+    from pyproj import Transformer
+except ImportError as exc:  # pragma: no cover - local generation guard
+    raise SystemExit(
+        "pyproj is required to rebuild the flow-arrow SVG. "
+        "Run this script from the project GIS Python environment."
+    ) from exc
+
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "assets" / "reference" / "waterbody_flow_direction_arrows.geojson"
 OUT = ROOT / "assets" / "maps" / "flow_arrows_identified.svg"
 
 W, H = 1700, 1916
+BOUNDS_UTM44N = (455909.1916, 1821868.8515, 466289.1916, 1833568.8515)
 
-
-ARROWS = [
-    # Krishna OSM waterbody branch review arrows. These are placed in pixel
-    # coordinates against the registered 1700 x 1916 DSS map canvas.
-    {
-        "id": "KR-UP-01",
-        "name": "Krishna upper/northern branch",
-        "kind": "river upper-branch",
-        "color": "river",
-        "label": "Krishna upper branch",
-        "d": "M 38 1210 C 72 1222, 111 1242, 150 1262",
-    },
-    {
-        "id": "KR-UP-02",
-        "name": "Krishna upper/northern branch",
-        "kind": "river upper-branch",
-        "color": "river",
-        "d": "M 172 1268 C 211 1284, 254 1302, 306 1318",
-    },
-    {
-        "id": "KR-LOW-01",
-        "name": "Krishna lower/main branch",
-        "kind": "river lower-branch",
-        "color": "river",
-        "label": "Krishna lower/main branch",
-        "d": "M 30 1438 C 76 1464, 122 1492, 178 1518",
-    },
-    {
-        "id": "KR-LOW-02",
-        "name": "Krishna lower/main branch",
-        "kind": "river lower-branch",
-        "color": "river",
-        "d": "M 218 1538 C 278 1570, 344 1596, 422 1610",
-    },
-    {
-        "id": "KR-MAIN-01",
-        "name": "Krishna main city reach",
-        "kind": "river main-branch",
-        "color": "river",
-        "d": "M 535.1 1622.2 L 646.5 1622.2",
-    },
-    {
-        "id": "KR-MAIN-02",
-        "name": "Krishna main city reach",
-        "kind": "river main-branch",
-        "color": "river",
-        "d": "M 675.0 1622.2 L 790.0 1622.2",
-    },
-    {
-        "id": "KR-MAIN-03",
-        "name": "Krishna main city reach",
-        "kind": "river main-branch",
-        "color": "river",
-        "d": "M 818.0 1622.2 L 936.0 1622.2",
-    },
-    # Mapped canal / rivulet review arrows from the static flow-direction
-    # layer. These give the overview tab enough directional context without
-    # turning the map into a linework atlas.
-    {
-        "id": "FD-005",
-        "name": "Budameru Canal",
-        "kind": "canal",
-        "color": "canal",
-        "d": "M 811.6 832.4 L 943.9 832.4",
-    },
-    {
-        "id": "FD-006",
-        "name": "Budameru Canal",
-        "kind": "canal",
-        "color": "canal",
-        "d": "M 1150.8 832.4 L 1283.1 832.4",
-    },
-    {
-        "id": "FD-007",
-        "name": "Budameru Canal",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 775.4 845.2 L 835.3 962.6",
-    },
-    {
-        "id": "FD-008",
-        "name": "Budameru Canal",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 1244.2 1026.3 L 1393.6 1059.0",
-    },
-    {
-        "id": "FD-013",
-        "name": "Budameru River",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 183.9 464.5 L 225.1 522.6",
-    },
-    {
-        "id": "FD-014",
-        "name": "Budameru River",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 284.6 573.4 L 348.4 601.5",
-    },
-    {
-        "id": "FD-015",
-        "name": "Budameru River",
-        "kind": "budameru",
-        "color": "budameru",
-        "d": "M 412.6 647.3 L 474.0 681.3",
-    },
-    {
-        "id": "FD-025",
-        "name": "Eluru Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 795.5 1063.3 L 925.1 995.5",
-    },
-    {
-        "id": "FD-026",
-        "name": "Eluru Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 1241.1 1037.9 L 1382.3 1073.4",
-    },
-    {
-        "id": "FD-027",
-        "name": "Eluru Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 1708.3 1030.5 L 1853.2 1054.1",
-    },
-    {
-        "id": "FD-028",
-        "name": "Krishna Eastern Main Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 343.7 1307.3 L 405.8 1306.0",
-    },
-    {
-        "id": "FD-029",
-        "name": "Ryves Canal",
-        "kind": "major-canal",
-        "color": "major",
-        "d": "M 1623.8 1065.1 L 1768.5 1084.1",
-    },
-]
-
-
-MARKERS = {
+COLORS = {
     "river": ("#0369a1", "head-river"),
+    "reservoir": ("#0284c7", "head-river"),
     "canal": ("#b45309", "head-canal"),
-    "budameru": ("#0f766e", "head-budameru"),
-    "major": ("#92400e", "head-major"),
+    "major_canal": ("#92400e", "head-major"),
+}
+
+LABELS = {
+    "FD-004": ("Krishna upper / reservoir branch", 42, 1225),
+    "FD-001": ("Krishna lower / main branch", 520, 1588),
 }
 
 
@@ -179,35 +51,67 @@ def marker(marker_id: str, color: str) -> str:
     </marker>"""
 
 
-def arrow_group(spec: dict[str, str]) -> str:
-    color, marker_id = MARKERS[spec["color"]]
+def pixel_path(coords: list[list[float]], transformer: Transformer) -> str:
+    minx, miny, maxx, maxy = BOUNDS_UTM44N
+    parts: list[str] = []
+    for i, (lon, lat) in enumerate(coords):
+        x, y = transformer.transform(lon, lat)
+        px = (x - minx) / (maxx - minx) * W
+        py = (maxy - y) / (maxy - miny) * H
+        op = "M" if i == 0 else "L"
+        parts.append(f"{op} {px:.1f} {py:.1f}")
+    return " ".join(parts)
+
+
+def arrow_group(feature: dict, transformer: Transformer) -> str:
+    props = feature.get("properties", {})
+    geom = feature.get("geometry", {})
+    coords = geom.get("coordinates", [])
+    if geom.get("type") != "LineString" or len(coords) < 2:
+        return ""
+
+    arrow_id = str(props.get("arrow_id", "arrow"))
+    name = str(props.get("feature_name", "Waterbody flow direction"))
+    kind = str(props.get("feature_type", "major_canal"))
+    color, marker_id = COLORS.get(kind, COLORS["major_canal"])
+    d = pixel_path(coords, transformer)
     title = (
-        f'{spec["id"]}: {spec["name"]}. '
-        "Arrow head marks review flow direction. Verify against official "
-        "hydraulic records before design use."
+        f"{arrow_id}: {name}. Reviewed waterbody/canal direction from the "
+        "basemap-review /layers/ dashboard. Arrow head marks review flow "
+        "direction; verify against official hydraulic records before design use."
     )
+
     label_block = ""
-    if spec.get("label"):
-        is_upper_krishna = "upper" in spec["name"].lower()
-        label_y = "1188" if is_upper_krishna else "1588"
-        label_x = "42" if is_upper_krishna else "520"
-        text = escape(spec["label"])
+    if arrow_id in LABELS:
+        text, x, y = LABELS[arrow_id]
         label_block = f"""
-      <text class="flow-label halo-label" x="{label_x}" y="{label_y}">{text}</text>
-      <text class="flow-label fill-label" x="{label_x}" y="{label_y}">{text}</text>"""
+      <text class="flow-label halo-label" x="{x}" y="{y}">{escape(text)}</text>
+      <text class="flow-label fill-label" x="{x}" y="{y}">{escape(text)}</text>"""
+
+    css_kind = kind.replace("_", "-")
     return f"""
-    <g class="major-flow-arrow {escape(spec['kind'])}" data-arrow-id="{escape(spec['id'])}" data-name="{escape(spec['name'])}">
+    <g class="major-flow-arrow {escape(css_kind)}" data-arrow-id="{escape(arrow_id)}" data-name="{escape(name)}">
       <title>{escape(title)}</title>
-      <path class="arrow-halo" d="{spec['d']}"/>
-      <path class="arrow-shadow" d="{spec['d']}"/>
-      <path class="arrow-shaft" d="{spec['d']}" stroke="{color}" marker-end="url(#{marker_id})"/>{label_block}
+      <path class="arrow-halo" d="{d}"/>
+      <path class="arrow-shadow" d="{d}"/>
+      <path class="arrow-shaft" d="{d}" stroke="{color}" marker-end="url(#{marker_id})"/>{label_block}
     </g>"""
 
 
 def build_svg() -> str:
-    marker_defs = "\n".join(marker(marker_id, color) for color, marker_id in MARKERS.values())
-    arrows = "\n".join(arrow_group(spec) for spec in ARROWS)
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Major Vijayawada river and canal flow arrows, including upper and lower Krishna branches">
+    source = json.loads(SOURCE.read_text(encoding="utf-8"))
+    features = source.get("features", [])
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:32644", always_xy=True)
+    marker_defs = "\n".join(
+        marker(marker_id, color)
+        for color, marker_id in {
+            COLORS["river"],
+            COLORS["canal"],
+            COLORS["major_canal"],
+        }
+    )
+    arrows = "\n".join(filter(None, (arrow_group(feature, transformer) for feature in features)))
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Major Vijayawada waterbody and canal flow arrows from the reviewed layers dashboard">
   <defs>
 {marker_defs}
     <style>
@@ -235,9 +139,7 @@ def build_svg() -> str:
         opacity: 0.98;
       }}
       .river .arrow-shaft,
-      .upper-branch .arrow-shaft,
-      .lower-branch .arrow-shaft,
-      .main-branch .arrow-shaft {{
+      .reservoir .arrow-shaft {{
         stroke-width: 8.2;
       }}
       .flow-label {{
@@ -261,7 +163,7 @@ def build_svg() -> str:
     </style>
   </defs>
   <rect width="{W}" height="{H}" fill="none"/>
-  <g id="flow-direction-arrows" data-source="OSM waterbody and canal review layer; Krishna branches made explicit for dashboard readability">
+  <g id="flow-direction-arrows" data-source="basemap_review/layers/waterbody_flow_direction_arrows.js" data-feature-count="{len(features)}">
 {arrows}
   </g>
 </svg>

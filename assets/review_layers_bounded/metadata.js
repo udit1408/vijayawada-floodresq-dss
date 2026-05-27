@@ -1,7 +1,7 @@
 window.VJ_BOUNDED_REVIEW_BUILD = {
   "title": "Vijayawada Bounded Hydro-Network Review",
-  "layer_count": 12,
-  "feature_count": 705,
+  "layer_count": 13,
+  "feature_count": 853,
   "clip_bounds_wgs84": [
     80.58668528724874,
     16.47812214137254,
@@ -14,8 +14,9 @@ window.VJ_BOUNDED_REVIEW_BUILD = {
     466289.1916,
     1833568.8515
   ],
-  "source": "basemap_review May-24-style layer package, with FDir arrows from assets/reference/waterbody_flow_direction_arrows.geojson, clipped to DSS canvas extent",
-  "fdir_source": "assets/reference/waterbody_flow_direction_arrows.geojson"
+  "source": "basemap_review May-24-style layer package, with path-following waterway arrows and DEM terrain arrows clipped to DSS canvas extent",
+  "fdir_source": "assets/reference/waterbody_flow_direction_arrows.geojson",
+  "terrain_arrow_source": "assets/reference/terrain_flow_direction_arrows.geojson"
 };
 window.VJ_BOUNDED_REVIEW_META = {
   "municipal_boundary": {
@@ -86,14 +87,25 @@ window.VJ_BOUNDED_REVIEW_META = {
   },
   "waterbody_flow_direction_arrows": {
     "key": "waterbody_flow_direction_arrows",
-    "label": "Sharp FDir Flow Direction Arrows",
+    "label": "Waterway Flow Direction Arrows",
     "color": "#b45309",
     "geometry": "line",
     "defaultVisible": true,
     "weight": 3.8,
     "fillOpacity": 0.0,
-    "sourceFeatureCount": 31,
-    "featureCount": 16
+    "sourceFeatureCount": 46,
+    "featureCount": 46
+  },
+  "terrain_flow_direction_arrows": {
+    "key": "terrain_flow_direction_arrows",
+    "label": "Terrain Downslope Arrows",
+    "color": "#4c1d95",
+    "geometry": "line",
+    "defaultVisible": true,
+    "weight": 2.4,
+    "fillOpacity": 0.0,
+    "sourceFeatureCount": 118,
+    "featureCount": 118
   },
   "pump_receiving_waterbody_connectors": {
     "key": "pump_receiving_waterbody_connectors",

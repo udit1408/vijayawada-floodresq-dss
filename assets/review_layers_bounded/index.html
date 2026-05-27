@@ -265,7 +265,7 @@
   <div id="map" aria-label="Vijayawada bounded hydro-network review map"></div>
   <section class="review-panel" aria-label="Review map summary">
     <h1>May 24 Hydro-Network View, Bounded To Vijayawada</h1>
-    <p>Reviewed water bodies, canals, FDir waterway arrows, pumps, outfalls and control sections clipped to the DSS operational extent.</p>
+    <p>Reviewed water bodies, canals, waterway flow arrows, DEM terrain arrows, pumps, outfalls and control sections clipped to the DSS operational extent.</p>
     <div class="review-stats" id="review-stats">
       <span class="review-pill">Loading layers</span>
     </div>
@@ -286,6 +286,7 @@
   <script src="layers/reservoir.js"></script>
   <script src="layers/major_canals_osm.js"></script>
   <script src="layers/waterbody_flow_direction_arrows.js"></script>
+  <script src="layers/terrain_flow_direction_arrows.js"></script>
   <script src="layers/pump_receiving_waterbody_connectors.js"></script>
   <script src="layers/pump_drain_link_connectors.js"></script>
   <script src="layers/drainage_pump_stations.js"></script>
@@ -303,6 +304,7 @@
       "reservoir",
       "major_canals_osm",
       "waterbody_flow_direction_arrows",
+      "terrain_flow_direction_arrows",
       "pump_receiving_waterbody_connectors",
       "pump_drain_link_connectors",
       "drainage_pump_stations",
@@ -358,6 +360,7 @@
       flow_direction: "Mapped flow direction",
       direction_basis: "Direction basis",
       confidence: "Confidence",
+      slope_m_per_m: "Terrain slope",
       DPS_ID: "Pump ID",
       DPS_CAP: "Capacity",
       dps_id: "Pump ID",
@@ -380,6 +383,7 @@
       "REV_WRD_NO", "TN_NAME", "DIS_NAME", "MUN_AREA",
       "WN_NAME", "WN_TYPE", "RES_NAME",
       "feature_name", "feature_type", "flow_direction", "direction_basis", "confidence",
+      "slope_m_per_m",
       "source_name", "canal_name", "waterway", "length_m",
       "DPS_ID", "DPS_CAP", "dps_id", "dps_cap", "locality",
       "target_name", "target_type", "distance_m", "drain_id",
@@ -471,11 +475,12 @@
 
     function styleFor(meta, feature) {
       const isFdir = meta.key === "waterbody_flow_direction_arrows";
+      const isTerrainArrow = meta.key === "terrain_flow_direction_arrows";
       const color = isFdir ? fdirColor(feature) : meta.color;
       return {
         color,
-        weight: isFdir ? Math.max(meta.weight || 3.8, 5.4) : meta.weight,
-        opacity: isFdir ? 1 : 0.88,
+        weight: isFdir ? Math.max(meta.weight || 3.8, 5.4) : isTerrainArrow ? Math.max(meta.weight || 2.4, 2.8) : meta.weight,
+        opacity: isFdir ? 1 : isTerrainArrow ? 0.76 : 0.88,
         fillColor: color,
         fillOpacity: meta.geometry === "polygon" ? meta.fillOpacity : 0,
         dashArray: meta.dashArray || null,
@@ -582,21 +587,23 @@
       const start = coords[coords.length - 2];
       const end = coords[coords.length - 1];
       const angle = bearingDegrees(start, end) - 90;
-      const color = fdirColor(feature);
+      const isTerrain = feature.properties?.feature_type === "terrain_downslope";
+      const color = isTerrain ? "#4c1d95" : fdirColor(feature);
+      const size = isTerrain ? 24 : 44;
       return L.marker([end[1], end[0]], {
         interactive: false,
         icon: L.divIcon({
           className: "flow-arrowhead-icon",
           html: `
-            <svg class="flow-arrowhead" style="--angle:${angle}deg" viewBox="0 0 44 44" aria-hidden="true">
+            <svg class="flow-arrowhead" style="--angle:${angle}deg;width:${size}px;height:${size}px" viewBox="0 0 44 44" aria-hidden="true">
               <path d="M5 15 L27 15 L27 7 L41 22 L27 37 L27 29 L5 29 Z"
                 fill="${escapeHtml(color)}" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
               <path d="M5 15 L27 15 L27 7 L41 22 L27 37 L27 29 L5 29 Z"
                 fill="none" stroke="#0f172a" stroke-width="1.4" stroke-linejoin="round" opacity="0.42"/>
             </svg>
           `,
-          iconSize: [44, 44],
-          iconAnchor: [22, 22]
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2]
         })
       });
     }
@@ -639,7 +646,7 @@
           });
         }
       });
-      if (key === "waterbody_flow_direction_arrows") {
+      if (key === "waterbody_flow_direction_arrows" || key === "terrain_flow_direction_arrows") {
         addFlowArrowheads(layer, geojson);
       }
       const label = `${meta.label} (${Number(meta.featureCount || geojson.features?.length || 0).toLocaleString()})`;
@@ -660,10 +667,12 @@
 
     const stats = document.getElementById("review-stats");
     const arrowCount = layerMeta.waterbody_flow_direction_arrows?.featureCount || 0;
+    const terrainArrowCount = layerMeta.terrain_flow_direction_arrows?.featureCount || 0;
     stats.innerHTML = [
       `${loadedLayerCount} layers`,
       `${loadedFeatureCount.toLocaleString()} bounded features`,
-      `${Number(arrowCount).toLocaleString()} arrows`
+      `${Number(arrowCount).toLocaleString()} waterway arrows`,
+      `${Number(terrainArrowCount).toLocaleString()} terrain arrows`
     ].map((item) => `<span class="review-pill">${escapeHtml(item)}</span>`).join("");
 
     const readout = document.getElementById("coordinate-readout");

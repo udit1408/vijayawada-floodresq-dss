@@ -20,6 +20,7 @@ from shapely.geometry import box
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = ROOT.parent / "basemap_review" / "layers"
 FDIR_SOURCE = ROOT / "assets" / "reference" / "waterbody_flow_direction_arrows.geojson"
+TERRAIN_ARROW_SOURCE = ROOT / "assets" / "reference" / "terrain_flow_direction_arrows.geojson"
 OUT_DIR = ROOT / "assets" / "review_layers_bounded"
 LAYERS_DIR = OUT_DIR / "layers"
 
@@ -76,11 +77,19 @@ LAYER_META = {
         "fillOpacity": 0.0,
     },
     "waterbody_flow_direction_arrows": {
-        "label": "Sharp FDir Flow Direction Arrows",
+        "label": "Waterway Flow Direction Arrows",
         "color": "#b45309",
         "geometry": "line",
         "defaultVisible": True,
         "weight": 3.8,
+        "fillOpacity": 0.0,
+    },
+    "terrain_flow_direction_arrows": {
+        "label": "Terrain Downslope Arrows",
+        "color": "#4c1d95",
+        "geometry": "line",
+        "defaultVisible": True,
+        "weight": 2.4,
         "fillOpacity": 0.0,
     },
     "pump_receiving_waterbody_connectors": {
@@ -149,6 +158,11 @@ def clip_layer(key: str, bbox_wgs) -> tuple[dict, int, int]:
         if gdf.crs is None:
             gdf = gdf.set_crs("EPSG:4326")
         gdf = gdf.to_crs("EPSG:4326")
+    elif key == "terrain_flow_direction_arrows" and TERRAIN_ARROW_SOURCE.exists():
+        gdf = gpd.read_file(TERRAIN_ARROW_SOURCE)
+        if gdf.crs is None:
+            gdf = gdf.set_crs("EPSG:4326")
+        gdf = gdf.to_crs("EPSG:4326")
     else:
         source = parse_layer(SOURCE_DIR / f"{key}.js")
         gdf = gpd.GeoDataFrame.from_features(source["features"], crs="EPSG:4326")
@@ -187,6 +201,13 @@ def clip_layer(key: str, bbox_wgs) -> tuple[dict, int, int]:
                     "direction; it is not inferred from terrain surface slope."
                 )
             props["dashboard_source_role"] = "FDir arrow reference used for dashboard direction display"
+        elif key == "terrain_flow_direction_arrows":
+            props = feature["properties"]
+            props["direction_basis"] = (
+                "Computed from smoothed local DEM/DTM gradient on the conditioned hydraulic terrain; "
+                "displayed separately from river/canal FDir arrows."
+            )
+            props["dashboard_source_role"] = "Terrain downslope arrow reference used for dashboard direction display"
     return geojson, source_count, len(clipped)
 
 
@@ -216,8 +237,9 @@ def main() -> None:
         "feature_count": total_features,
         "clip_bounds_wgs84": list(bbox_wgs.bounds),
         "clip_bounds_utm44n": list(DSS_BOUNDS_UTM44N),
-        "source": "basemap_review May-24-style layer package, with FDir arrows from assets/reference/waterbody_flow_direction_arrows.geojson, clipped to DSS canvas extent",
+        "source": "basemap_review May-24-style layer package, with path-following waterway arrows and DEM terrain arrows clipped to DSS canvas extent",
         "fdir_source": "assets/reference/waterbody_flow_direction_arrows.geojson",
+        "terrain_arrow_source": "assets/reference/terrain_flow_direction_arrows.geojson",
     }
     metadata = (
         f"window.VJ_BOUNDED_REVIEW_BUILD = {json.dumps(build, indent=2)};\n"
